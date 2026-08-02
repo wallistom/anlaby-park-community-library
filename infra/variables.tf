@@ -71,3 +71,13 @@ variable "throttling_rate_limit" {
   type        = number
   default     = 10
 }
+
+variable "github_repository" {
+  description = <<-EOT
+    The GitHub repository allowed to assume the deploy role, as "owner/name".
+    The trust policy pins this exactly, so no other repository — and no fork —
+    can obtain credentials for this account.
+  EOT
+  type        = string
+  default     = "wallistom/anlaby-park-community-library"
+}

@@ -109,6 +109,83 @@ If the trustees keep their existing hosting, delete `infra/hosting.tf` and the `
 
 ---
 
+## Deploying changes day to day
+
+Once the repository is set up, publishing a change is a merge:
+
+```bash
+git switch -c my-change
+# ...edit...
+git commit -am "fix: correct the Saturday closing time"
+git push -u origin my-change
+```
+
+Open a pull request. **CI** checks formatting, colour contrast, the Angular
+build, the backend tests, and Terraform validity. Merge to `main` and the
+**Deploy** workflow builds the site, uploads it, and invalidates CloudFront.
+
+Infrastructure is deliberately not applied by CI. Terraform changes are rare and
+occasionally destructive, so they stay a deliberate `terraform apply` from a
+machine with credentials. Content and UI changes — the frequent kind — are one
+merge away from live.
+
+### Repository configuration
+
+CI needs nothing. Deploy needs three repository **variables** (Settings →
+Secrets and variables → Actions → Variables). None of them are secret:
+
+| Variable | Where it comes from |
+| --- | --- |
+| `AWS_DEPLOY_ROLE` | `terraform output github_deploy_role_arn` |
+| `WEBSITE_BUCKET` | `terraform output website_bucket` |
+| `CLOUDFRONT_DISTRIBUTION_ID` | `terraform output cloudfront_distribution_id` |
+
+There are **no AWS access keys anywhere**. GitHub exchanges a short-lived OIDC
+token for temporary credentials, and the role it assumes is pinned to this
+repository on the `main` branch — a fork cannot use it. The role can write to
+the website bucket and invalidate the cache; it cannot read DynamoDB, change
+Lambdas, or touch Terraform state.
+
+---
+
+## Terraform state
+
+State lives in S3 at `s3://apcl-tfstate-572643177124/prod/terraform.tfstate`,
+versioned and encrypted, with a DynamoDB table holding the lock. It is not on
+anybody's laptop — losing the machine that ran the first apply would otherwise
+orphan every resource Terraform created.
+
+The bucket and lock table are bootstrapped outside Terraform, because they have
+to exist before the backend can be configured:
+
+```bash
+aws s3api create-bucket --bucket apcl-tfstate-572643177124 --region eu-west-2 \
+  --create-bucket-configuration LocationConstraint=eu-west-2
+aws s3api put-bucket-versioning --bucket apcl-tfstate-572643177124 \
+  --versioning-configuration Status=Enabled
+aws dynamodb create-table --table-name apcl-tfstate-lock --region eu-west-2 \
+  --attribute-definitions AttributeName=LockID,AttributeType=S \
+  --key-schema AttributeName=LockID,KeyType=HASH --billing-mode PAY_PER_REQUEST
+```
+
+---
+
+## What must never be committed
+
+`.gitignore` blocks these, and it is worth knowing why:
+
+- **`infra/terraform.tfvars`** — names real trustees and carries the OAuth
+  client ID. Personal data belonging to the charity.
+- **`infra/terraform.tfstate`** — the full resource graph, including the values
+  of every variable.
+
+The Google client ID *is* committed, in `src/environments/`. That is deliberate
+and not a leak: an OAuth client ID for a web application is public by design,
+the ID-token flow uses no client secret, and it is already served in the site's
+JavaScript to every visitor.
+
+---
+
 ## How authentication works
 
 Trustees sign in with Google. The browser receives a signed ID token and sends it as a bearer token;

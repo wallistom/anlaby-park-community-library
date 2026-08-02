@@ -1,0 +1,83 @@
+name: CI
+
+# Runs on every push and pull request. Nothing here touches AWS, so it needs
+# no credentials at all.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check formatting
+        run: npx prettier --check "src/**/*.{ts,html,css}"
+
+      # Fails the build if any colour pairing drops below WCAG AA. This is the
+      # gate that exists because contrast silently regressed once before.
+      - name: Colour contrast
+        run: npm run check:contrast
+
+      - name: Build
+        run: npx ng build
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/anlaby-park-library/browser
+          retention-days: 5
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile all handlers
+        run: python -m compileall -q backend/src
+
+      - name: Tests
+        working-directory: backend
+        run: python -m unittest discover -s tests -t . -v
+
+  infrastructure:
+    name: Terraform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Formatting
+        working-directory: infra
+        run: terraform fmt -check -recursive
+
+      # No backend, so this validates syntax and references without needing
+      # AWS credentials or touching remote state.
+      - name: Validate
+        working-directory: infra
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate

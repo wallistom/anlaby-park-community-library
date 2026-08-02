@@ -32,3 +32,13 @@ output "allowed_trustee_emails" {
   description = "Accounts that can sign in to the trustee area."
   value       = var.allowed_trustee_emails
 }
+
+output "github_deploy_role_arn" {
+  description = "Set as the AWS_DEPLOY_ROLE repository variable in GitHub Actions."
+  value       = aws_iam_role.github_deploy.arn
+}
+
+output "cloudfront_distribution_id" {
+  description = "Set as the CLOUDFRONT_DISTRIBUTION_ID repository variable."
+  value       = aws_cloudfront_distribution.site.id
+}

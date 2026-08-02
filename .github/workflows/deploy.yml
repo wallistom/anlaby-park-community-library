@@ -1,0 +1,89 @@
+name: Deploy
+
+# Publishes the built site on every push to main, once CI has passed.
+#
+# Infrastructure is deliberately NOT applied here. Terraform changes are rare,
+# occasionally destructive, and worth a human running them — whereas content
+# and UI changes happen often and should be one merge away from live.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two deploys at once, and let a newer commit supersede an
+# in-flight one rather than racing it to the bucket.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # required to request the GitHub OIDC token
+
+jobs:
+  deploy:
+    name: Publish to CloudFront
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Same gates as CI. A deploy should never be able to ship something a
+      # pull request would have rejected.
+      - name: Colour contrast
+        run: npm run check:contrast
+
+      - name: Build
+        run: npx ng build
+
+      # Exchanges the GitHub OIDC token for short-lived AWS credentials. There
+      # are no access keys stored anywhere in this repository.
+      - name: Assume AWS deploy role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE }}
+          aws-region: eu-west-2
+
+      # Hashed assets first with a long cache, then index.html with none —
+      # uploading in this order means a visitor can never receive a new
+      # index.html that references chunks which have not landed yet.
+      # --delete belongs on this step, not the next one: the index.html sync is
+      # filtered to a single file, so --delete there would never reap the old
+      # hashed chunks and the bucket would grow forever. Excluded files are not
+      # considered for deletion, so index.html survives this step untouched.
+      - name: Upload hashed assets
+        run: |
+          aws s3 sync dist/anlaby-park-library/browser/ "s3://${{ vars.WEBSITE_BUCKET }}/" \
+            --delete \
+            --exclude "index.html" \
+            --cache-control "public,max-age=31536000,immutable"
+
+      # Uploaded last so a visitor never receives an index.html referencing
+      # chunks that have not been written yet.
+      - name: Upload index.html
+        run: |
+          aws s3 sync dist/anlaby-park-library/browser/ "s3://${{ vars.WEBSITE_BUCKET }}/" \
+            --exclude "*" --include "index.html" \
+            --cache-control "public,max-age=0,must-revalidate"
+
+      # Only index.html needs busting; everything else is content-hashed.
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" \
+            --paths "/index.html" "/"
+
+      - name: Summary
+        run: |
+          echo "### Deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://d2d5pvqwty4462.cloudfront.net" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Commit \`${GITHUB_SHA::7}\`" >> "$GITHUB_STEP_SUMMARY"
