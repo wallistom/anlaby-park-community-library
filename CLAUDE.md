@@ -158,6 +158,21 @@ rather than a plausible guess.
 `src/app/core/site.data.ts` is the single source of truth. Change a fact there, not in a
 template.
 
+### What's On is a calendar, not a list
+
+A flat chronological list does not survive real data: the API expands repeats
+120 days ahead, so the library's own timetable becomes ~130 occurrences. The page
+offers a **week** view (default, because it matches the printed timetable people
+already know) and a **month** view.
+
+The month grid is hidden below `sm` and replaced by a list of days that have
+something on. Seven columns at 320px leaves 45px per cell, which can only show a
+dot — and a dot you must tap to identify is hostile to this audience.
+
+Date maths lives in `src/app/core/calendar.ts` and deliberately avoids
+`toISOString()`, which shifts to UTC and would move every event a day back during
+British Summer Time.
+
 ### Days and times live in events, not in code
 
 `site.data.ts` describes what each club *is*. When it meets comes from recurring events the
