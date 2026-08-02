@@ -13,6 +13,7 @@ export type IconName =
   | 'menu'
   | 'close'
   | 'arrowRight'
+  | 'arrowLeft'
   | 'phone'
   | 'mail'
   | 'mapPin'
@@ -110,6 +111,9 @@ export type IconName =
         }
         @case ('arrowRight') {
           <svg:path d="M5 12h14m-6-7 7 7-7 7" />
+        }
+        @case ('arrowLeft') {
+          <svg:path d="M19 12H5m6 7-7-7 7-7" />
         }
         @case ('phone') {
           <svg:path

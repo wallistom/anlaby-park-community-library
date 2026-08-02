@@ -66,47 +66,47 @@
 <section class="border-line border-y bg-surface section">
   <div class="container-page">
     <div class="flex flex-wrap items-end justify-between gap-4">
-      <h2 class="text-3xl font-semibold">What's on</h2>
+      <h2 class="text-3xl font-semibold">On this week</h2>
       <a routerLink="/whats-on" class="link-arrow">
-        All events
+        See the full calendar
         <app-icon name="arrowRight" [size]="16" />
       </a>
     </div>
 
-    @if (nextEvents().length > 0) {
-      <ul class="mt-8 grid gap-6 md:grid-cols-3">
-        @for (event of nextEvents(); track event.occurrenceId; let i = $index) {
-          <li [appReveal]="i * 80">
-            <article class="flex h-full flex-col">
-              <p class="text-ochre-700 text-sm font-semibold">
-                {{ event.date | date: 'EEEE d MMMM' }}
-                @if (event.startTime) {
-                  <span class="text-ink-muted">· {{ event.startTime }}</span>
-                }
-              </p>
-              <h3 class="font-display mt-1.5 text-xl font-semibold">{{ event.title }}</h3>
-              <p class="text-ink-soft mt-2 flex-1 leading-relaxed">{{ event.description }}</p>
-              <p class="text-ink-muted mt-3 text-sm">
-                {{ event.location }}
-                @if (event.cost) {
-                  <span>· {{ event.cost }}</span>
-                }
-              </p>
-            </article>
+    @if (comingDays().length > 0) {
+      <ul class="mt-8 flex flex-col gap-3">
+        @for (day of comingDays(); track day.iso) {
+          <li class="border-line flex flex-col gap-2 border-t pt-4 sm:flex-row sm:gap-6">
+            <p class="text-forest-800 shrink-0 font-semibold sm:w-44">
+              {{ day.isToday ? 'Today' : (day.date | date: 'EEEE d MMMM') }}
+            </p>
+            <ul class="flex min-w-0 flex-col gap-2">
+              @for (event of day.events; track event.occurrenceId) {
+                <li class="flex flex-col gap-x-3 gap-y-0.5 sm:flex-row">
+                  @if (event.startTime) {
+                    <span class="text-ink-muted shrink-0 text-sm tabular-nums sm:w-20">
+                      {{ event.startTime | libraryTime }}
+                    </span>
+                  }
+                  <span class="min-w-0">
+                    <span class="font-semibold">{{ event.title }}</span>
+                    @if (event.cost) {
+                      <span class="text-ink-muted text-sm"> · {{ event.cost }}</span>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
           </li>
         }
       </ul>
     } @else {
       <!-- Shown before any events are published, and if the API is unreachable. -->
       <p class="prose-body mt-6 max-w-2xl">
-        No one-off events in the diary just now — but our weekly clubs run as usual, from Baby
-        Bounce on a Tuesday morning to the Bridge Club in the afternoon.
-        <a routerLink="/activities" class="text-forest-700 font-semibold hover:underline">
-          See what's on every week</a
-        >, or ring us on
-        <a [href]="'tel:' + site.phoneHref" class="text-forest-700 font-semibold hover:underline">
-          {{ site.phone }}</a
-        >.
+        Nothing in the diary for the next few days. Our weekly clubs still run — those are listed
+        under <a routerLink="/activities" class="link">activities</a> — or ring us on
+        <a [href]="'tel:' + site.phoneHref" class="link">{{ site.phone }}</a> and we will tell you
+        what is coming up.
       </p>
     }
   </div>
