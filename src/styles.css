@@ -404,16 +404,14 @@
 @keyframes page-enter {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
 router-outlet + * {
-  animation: page-enter var(--duration-page) var(--ease-gentle) both;
+  animation: page-enter var(--duration-page) var(--ease-out-soft) both;
 }
 
 /* --- Scroll reveal ------------------------------------------------------ */
@@ -480,12 +478,14 @@ router-outlet + * {
   transition: transform var(--duration-micro) var(--ease-out-soft);
 }
 
-.btn:hover app-icon:last-child,
-.btn-primary:hover app-icon:last-child,
-.btn-accent:hover app-icon:last-child,
-.btn-on-dark:hover app-icon:last-child,
-.link-arrow:hover app-icon {
-  transform: translateX(2px);
+@media (hover: hover) {
+  .btn:hover app-icon:last-child,
+  .btn-primary:hover app-icon:last-child,
+  .btn-accent:hover app-icon:last-child,
+  .btn-on-dark:hover app-icon:last-child,
+  .link-arrow:hover app-icon {
+    transform: translateX(2px);
+  }
 }
 
 /* --- Cards -------------------------------------------------------------- */
@@ -499,21 +499,17 @@ router-outlet + * {
     box-shadow var(--duration-micro) var(--ease-out-soft);
 }
 
-.card-interactive:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px -8px rgb(31 66 52 / 0.18);
+@media (hover: hover) {
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px -8px rgb(31 66 52 / 0.18);
+  }
 }
 
 /* --- Forms -------------------------------------------------------------- */
 
 .field-input {
-  transition:
-    border-color var(--duration-micro) var(--ease-out-soft),
-    box-shadow var(--duration-micro) var(--ease-out-soft);
-}
-
-.field-input:focus {
-  box-shadow: 0 0 0 3px var(--color-forest-100);
+  transition: border-color var(--duration-micro) var(--ease-out-soft);
 }
 
 /* --- Mobile drawer ------------------------------------------------------ */
