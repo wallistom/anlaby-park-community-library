@@ -73,21 +73,46 @@
       </a>
     </div>
 
-    @if (comingDays().length > 0) {
+    @if (events.state() === 'loading') {
+      <!-- Skeleton rows match the real layout, so the section does not jump
+           when the events arrive. -->
+      <ul class="mt-8 flex flex-col gap-3" aria-hidden="true">
+        @for (row of [1, 2, 3, 4]; track row) {
+          <li class="border-line flex flex-col gap-2 border-t pt-4 sm:flex-row sm:gap-6">
+            <div class="bg-line h-5 w-40 shrink-0 animate-pulse rounded"></div>
+            <div class="flex min-w-0 flex-1 flex-col gap-2">
+              <div class="flex items-center gap-3">
+                <div class="bg-line h-4 w-16 shrink-0 animate-pulse rounded"></div>
+                <div class="bg-line h-5 w-44 animate-pulse rounded"></div>
+              </div>
+              @if (row === 2) {
+                <div class="flex items-center gap-3">
+                  <div class="bg-line h-4 w-16 shrink-0 animate-pulse rounded"></div>
+                  <div class="bg-line h-5 w-32 animate-pulse rounded"></div>
+                </div>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+      <p class="sr-only" aria-live="polite">Loading this week's events</p>
+    } @else if (comingDays().length > 0) {
       <ul class="mt-8 flex flex-col gap-3">
         @for (day of comingDays(); track day.iso) {
-          <li class="border-line flex flex-col gap-2 border-t pt-4 sm:flex-row sm:gap-6">
+          <!-- items-baseline so the day, the time, and the title sit on one
+               line despite three different font sizes. -->
+          <li
+            class="border-line flex flex-col gap-2 border-t pt-4 sm:flex-row sm:items-baseline sm:gap-6"
+          >
             <p class="text-forest-800 shrink-0 font-semibold sm:w-44">
               {{ day.isToday ? 'Today' : (day.date | date: 'EEEE d MMMM') }}
             </p>
             <ul class="flex min-w-0 flex-col gap-2">
               @for (event of day.events; track event.occurrenceId) {
-                <li class="flex flex-col gap-x-3 gap-y-0.5 sm:flex-row">
-                  @if (event.startTime) {
-                    <span class="text-ink-muted shrink-0 text-sm tabular-nums sm:w-20">
-                      {{ event.startTime | libraryTime }}
-                    </span>
-                  }
+                <li class="flex flex-col gap-x-3 gap-y-0.5 sm:flex-row sm:items-baseline">
+                  <span class="text-ink-muted shrink-0 text-sm tabular-nums sm:w-20">
+                    {{ event.startTime ? (event.startTime | libraryTime) : 'All day' }}
+                  </span>
                   <span class="min-w-0">
                     <span class="font-semibold">{{ event.title }}</span>
                     @if (event.cost) {
