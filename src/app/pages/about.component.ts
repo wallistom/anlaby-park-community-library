@@ -34,7 +34,7 @@ export class AboutComponent {
     {
       year: 'Today',
       title: 'Flourishing',
-      body: `A full library service run with Hull City Council, more than ${SITE.volunteerCount} volunteer library assistants, and a building that is busy five days a week.`,
+      body: `A full library service run in partnership with Hull City Council, kept going by more than ${SITE.volunteerCount} volunteer library assistants.`,
     },
   ];
 

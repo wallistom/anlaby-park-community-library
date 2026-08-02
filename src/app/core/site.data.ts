@@ -3,10 +3,24 @@ import { Activity, Facility, OpeningDay, Trustee, VolunteerRole } from './models
 /**
  * Single source of truth for the library's factual details.
  *
- * Everything here is taken from the existing anlabyparkcommunitylibrary.com
- * site. Prose has been rewritten, but names, numbers, hours, and the charity
- * registration are reproduced exactly. Anything the old site did not publish is
- * marked with a TODO rather than guessed at.
+ * PROVENANCE — read before relying on any of this.
+ *
+ * Every value here was scraped from the old anlabyparkcommunitylibrary.com,
+ * which is itself out of date and internally inconsistent: its own pages give
+ * the trustee board as ten, eleven and twelve members, and the library's
+ * printed April 2025 timetable disagrees with the website about Monday and
+ * Thursday closing times (5.30pm against 5.00pm) and shows an Art Group running
+ * on a Wednesday the website lists as closed.
+ *
+ * So treat all of this as UNVERIFIED until a trustee confirms it. Two rules
+ * follow from that:
+ *
+ *   1. Reproduce, never derive. Publishing the hours table is fine — it is what
+ *      the source said. Counting it and writing "open five days a week" is not:
+ *      it turns one possible error into several, and it reads as though someone
+ *      checked. Aggregate claims like that have been removed.
+ *   2. Where the source published nothing, the site says so rather than
+ *      guessing. See the TODO(content) markers.
  */
 
 export const SITE = {
