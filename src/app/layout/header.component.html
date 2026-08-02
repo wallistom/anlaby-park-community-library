@@ -2,7 +2,9 @@
   class="sticky top-0 z-50 border-b transition-all duration-300"
   [class]="scrolled() ? 'border-line bg-page/95 backdrop-blur-md' : 'border-transparent bg-page'"
 >
-  <div class="mx-auto flex max-w-7xl items-center gap-3 px-5 py-3 sm:px-8 lg:gap-6">
+  <div
+    class="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-3 sm:px-8 lg:gap-6"
+  >
     <!-- The mark and the name are one link, so it is a single target rather
          than two adjacent ones. -->
     <a
@@ -27,7 +29,7 @@
 
     <!-- Nav takes the slack in the middle, so the header stays balanced rather
          than the links crowding the right-hand actions. -->
-    <nav class="hidden flex-1 items-center justify-center gap-0.5 lg:flex" aria-label="Main">
+    <nav class="hidden items-center justify-center gap-0.5 lg:flex" aria-label="Main">
       @for (item of navItems; track item.path) {
         <a
           [routerLink]="item.path"
@@ -39,7 +41,7 @@
       }
     </nav>
 
-    <div class="ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
+    <div class="col-start-3 flex shrink-0 items-center justify-end gap-2">
       <a routerLink="/support" class="btn-accent btn-sm hidden lg:inline-flex">Donate</a>
 
       <button
