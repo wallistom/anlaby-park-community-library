@@ -15,6 +15,7 @@ import { CtaBandComponent } from '../shared/cta-band.component';
 import { IconComponent } from '../shared/icon.component';
 import { TimePipe } from '../shared/time.pipe';
 import { EventsService } from '../core/events.service';
+import { formatRange } from '../core/opening-hours.model';
 import { OpeningHoursService } from '../core/opening-hours.service';
 import { SITE } from '../core/site.data';
 import { EventOccurrence } from '../core/models';
@@ -45,8 +46,10 @@ export interface CalendarDay {
   isToday: boolean;
   /** False for the leading and trailing days that pad the month grid. */
   inCurrentMonth: boolean;
-  /** Opening hours, so a day with nothing on still says something useful. */
-  hours: string | null;
+  /** Opening hours for this date, exceptions applied. */
+  hours: string;
+  /** Why the hours differ, when an exception applies. */
+  closureReason?: string;
 }
 
 /**
@@ -229,14 +232,17 @@ export class WhatsOnComponent implements OnInit {
 
   private toDay(date: Date, inCurrentMonth: boolean): CalendarDay {
     const iso = toIso(date);
-    const opening = this.openingHours.days.find((day) => day.dayIndex === date.getDay());
+    // Resolved per date rather than per weekday, so a bank holiday or a
+    // Christmas closure shows on the day it actually falls.
+    const opening = this.openingHours.resolve(iso);
     return {
       date,
       iso,
       events: this.events.eventsOn(iso),
       isToday: isSameDay(date, this.today),
       inCurrentMonth,
-      hours: opening?.hours ?? null,
+      hours: formatRange(opening),
+      closureReason: opening.isException ? opening.reason : undefined,
     };
   }
 }

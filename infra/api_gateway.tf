@@ -94,6 +94,7 @@ locals {
     "POST /hire-enquiries" = { function = "create_hire_enquiry", protected = false }
     "POST /volunteers"     = { function = "create_volunteer_application", protected = false }
     "POST /messages"       = { function = "create_message", protected = false }
+    "GET /settings"        = { function = "get_settings", protected = false }
 
     # Trustees only
     "GET /admin/events"                       = { function = "list_all_events", protected = true }
@@ -105,6 +106,7 @@ locals {
     "GET /admin/volunteers"                   = { function = "list_volunteer_applications", protected = true }
     "PATCH /admin/volunteers/{applicationId}" = { function = "update_volunteer_status", protected = true }
     "GET /admin/messages"                     = { function = "list_messages", protected = true }
+    "PUT /admin/settings"                     = { function = "update_settings", protected = true }
     "PATCH /admin/messages/{messageId}"       = { function = "update_message_status", protected = true }
   }
 }

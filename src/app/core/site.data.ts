@@ -1,4 +1,5 @@
-import { Activity, Facility, OpeningDay, Trustee, VolunteerRole } from './models';
+import { Activity, Facility, Trustee, VolunteerRole } from './models';
+import { LibrarySettings } from './opening-hours.model';
 
 /**
  * Single source of truth for the library's factual details.
@@ -49,21 +50,47 @@ export const SITE = {
 
 export const ADDRESS_ONE_LINE = `${SITE.address.line1}, ${SITE.address.line2}, ${SITE.address.city} ${SITE.address.postcode}`;
 
-/** Minutes from midnight, so opening status can be computed without parsing. */
-const AM_9_30 = 9 * 60 + 30;
-const PM_12_30 = 12 * 60 + 30;
-const PM_1_30 = 13 * 60 + 30;
-const PM_5_00 = 17 * 60;
+/**
+ * The starting weekly pattern and notice.
+ *
+ * These are the DEFAULTS ONLY. Trustees edit the live values through the admin
+ * area, and the API is the source of truth. This copy exists so the site still
+ * shows something sensible when the API is unreachable — a library website that
+ * cannot say when it opens is worse than one showing slightly stale hours.
+ *
+ * Values are the scraped ones; see the provenance note above. Once a trustee
+ * saves in the admin area, these stop being used except as an offline fallback.
+ */
+export const DEFAULT_SETTINGS: LibrarySettings = {
+  pattern: [
+    { dayIndex: 1, closed: false, opensAt: '13:30', closesAt: '17:00' },
+    { dayIndex: 2, closed: false, opensAt: '09:30', closesAt: '12:30' },
+    { dayIndex: 3, closed: true },
+    { dayIndex: 4, closed: false, opensAt: '13:30', closesAt: '17:00' },
+    { dayIndex: 5, closed: false, opensAt: '09:30', closesAt: '12:30' },
+    { dayIndex: 6, closed: false, opensAt: '09:30', closesAt: '12:30' },
+    { dayIndex: 0, closed: true },
+  ],
+  exceptions: [],
+  notice: {
+    active: true,
+    title: 'We are open as usual during building works',
+    body: 'Remedial works to the building run until December 2026. We have moved into temporary accommodation on site, and every service — books, computers, the Coffee Corner, and all our groups — carries on as normal.',
+  },
+};
 
-export const OPENING_HOURS: OpeningDay[] = [
-  { day: 'Monday', hours: '1.30pm – 5.00pm', dayIndex: 1, opensAt: PM_1_30, closesAt: PM_5_00 },
-  { day: 'Tuesday', hours: '9.30am – 12.30pm', dayIndex: 2, opensAt: AM_9_30, closesAt: PM_12_30 },
-  { day: 'Wednesday', hours: null, dayIndex: 3 },
-  { day: 'Thursday', hours: '1.30pm – 5.00pm', dayIndex: 4, opensAt: PM_1_30, closesAt: PM_5_00 },
-  { day: 'Friday', hours: '9.30am – 12.30pm', dayIndex: 5, opensAt: AM_9_30, closesAt: PM_12_30 },
-  { day: 'Saturday', hours: '9.30am – 12.30pm', dayIndex: 6, opensAt: AM_9_30, closesAt: PM_12_30 },
-  { day: 'Sunday', hours: null, dayIndex: 0 },
-];
+/** Monday first, matching how the hours are read and printed. */
+export const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
+
+export const DAY_NAMES: Record<number, string> = {
+  0: 'Sunday',
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
+};
 
 export const TRUSTEES: Trustee[] = [
   { name: 'Steve Ashton', role: 'Chair' },
@@ -248,19 +275,3 @@ export const VOLUNTEER_ROLES: VolunteerRole[] = [
     description: 'Make items we can sell on our stalls to raise funds.',
   },
 ];
-
-/**
- * Sitewide notice. The trustees announced remedial building works running from
- * August 2025 to December 2026, with temporary accommodation keeping the
- * library open throughout.
- *
- * TODO(content): confirm the current status and end date before launch, and
- * set `active: false` once the works finish.
- */
-export const SITE_NOTICE = {
-  active: true,
-  title: 'We are open as usual during building works',
-  body: 'Remedial works to the building run until December 2026. We have moved into temporary accommodation on site, and every service — books, computers, the Coffee Corner, and all our groups — carries on as normal.',
-  linkText: 'Any questions? Get in touch',
-  linkPath: '/contact',
-} as const;

@@ -92,6 +92,13 @@ export const routes: Routes = [
           import('./admin/manage-events.component').then((m) => m.ManageEventsComponent),
       },
       {
+        path: 'hours',
+        canActivate: [adminGuard],
+        title: 'Opening hours — Trustee area',
+        loadComponent: () =>
+          import('./admin/manage-hours.component').then((m) => m.ManageHoursComponent),
+      },
+      {
         path: 'enquiries',
         canActivate: [adminGuard],
         title: 'Enquiries — Trustee area',

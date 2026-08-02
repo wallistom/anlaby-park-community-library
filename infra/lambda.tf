@@ -103,6 +103,20 @@ locals {
       actions   = ["dynamodb:UpdateItem"]
     }
 
+    # --- Settings ---------------------------------------------------------
+    get_settings = {
+      handler   = "settings.get.handler"
+      env       = { SETTINGS_TABLE = aws_dynamodb_table.settings.name }
+      resources = [aws_dynamodb_table.settings.arn]
+      actions   = ["dynamodb:GetItem"]
+    }
+    update_settings = {
+      handler   = "settings.update.handler"
+      env       = { SETTINGS_TABLE = aws_dynamodb_table.settings.name }
+      resources = [aws_dynamodb_table.settings.arn]
+      actions   = ["dynamodb:PutItem"]
+    }
+
     # --- Messages ---------------------------------------------------------
     create_message = {
       handler   = "messages.create.handler"

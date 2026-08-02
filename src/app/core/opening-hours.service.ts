@@ -1,69 +1,125 @@
-import { Injectable, computed, signal } from '@angular/core';
-import { OPENING_HOURS } from './site.data';
-import { OpeningDay } from './models';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { DAY_NAMES, DEFAULT_SETTINGS, WEEK_ORDER } from './site.data';
+import {
+  LibrarySettings,
+  ResolvedDay,
+  formatRange,
+  resolveDay,
+  sortExceptions,
+  upcomingExceptions,
+} from './opening-hours.model';
+import { toIso } from './calendar';
 
 export interface OpenStatus {
   isOpen: boolean;
-  /** Short label for the header pill, e.g. "Open until 5.00pm". */
+  /** Short label, e.g. "Open until 5.00pm". */
   label: string;
-  /** Longer sentence used on the Visit page. */
+  /** Fuller sentence for the Visit page. */
   detail: string;
+  /** Set when today is an exception, so the reason can be shown. */
+  reason?: string;
+}
+
+export interface WeekRow {
+  dayIndex: number;
+  name: string;
+  hours: string;
 }
 
 /**
- * Works out whether the library is open right now.
+ * Whether the library is open, and when.
  *
- * The clock is held in a signal refreshed every minute so the status pill stays
- * correct on a page left open, rather than freezing at load time.
+ * Settings are loaded from the API and start from the compiled-in defaults, so
+ * the site is never blank and never wrong-by-omission if the API is down. The
+ * clock is a signal refreshed every minute, so a page left open does not freeze
+ * on a stale status.
  */
 @Injectable({ providedIn: 'root' })
 export class OpeningHoursService {
+  private readonly http = inject(HttpClient);
+
   private readonly now = signal(new Date());
+  private readonly stored = signal<LibrarySettings>(DEFAULT_SETTINGS);
+  private loadStarted = false;
 
-  readonly days = OPENING_HOURS;
-
-  /** The row matching today, used to highlight it in the hours table. */
-  readonly today = computed(() => {
-    const dayIndex = this.now().getDay();
-    return OPENING_HOURS.find((day) => day.dayIndex === dayIndex) ?? null;
+  /** Exceptions sorted narrowest-first, so a single day beats a range. */
+  readonly settings = computed<LibrarySettings>(() => {
+    const value = this.stored();
+    return { ...value, exceptions: sortExceptions(value.exceptions) };
   });
+
+  readonly notice = computed(() => this.settings().notice);
+
+  /** The whole week, Monday first, for the hours table. */
+  readonly week = computed<WeekRow[]>(() => {
+    const settings = this.settings();
+    return WEEK_ORDER.map((dayIndex) => {
+      const day = settings.pattern.find((entry) => entry.dayIndex === dayIndex);
+      const resolved: ResolvedDay = {
+        iso: '',
+        closed: day?.closed ?? true,
+        opensAt: day?.opensAt,
+        closesAt: day?.closesAt,
+        isException: false,
+      };
+      return { dayIndex, name: DAY_NAMES[dayIndex], hours: formatRange(resolved) };
+    });
+  });
+
+  readonly todayIndex = computed(() => this.now().getDay());
+
+  /** Exceptions still to come, so upcoming closures can be announced early. */
+  readonly upcoming = computed(() =>
+    upcomingExceptions(this.settings().exceptions, toIso(this.now())),
+  );
 
   readonly status = computed<OpenStatus>(() => {
     const now = this.now();
     const minutes = now.getHours() * 60 + now.getMinutes();
-    const today = this.today();
+    const today = resolveDay(toIso(now), this.settings());
 
-    if (today?.opensAt !== undefined && today.closesAt !== undefined) {
-      if (minutes >= today.opensAt && minutes < today.closesAt) {
-        const closing = formatMinutes(today.closesAt);
+    if (!today.closed && today.opensAt && today.closesAt) {
+      const opens = toMinutes(today.opensAt);
+      const closes = toMinutes(today.closesAt);
+
+      if (minutes >= opens && minutes < closes) {
+        const until = formatTimeLabel(today.closesAt);
         return {
           isOpen: true,
-          label: `Open until ${closing}`,
-          detail: `We are open now and close at ${closing} today.`,
+          label: `Open until ${until}`,
+          detail: `We are open now and close at ${until} today.`,
+          reason: today.reason,
         };
       }
-
-      if (minutes < today.opensAt) {
-        const opening = formatMinutes(today.opensAt);
+      if (minutes < opens) {
+        const from = formatTimeLabel(today.opensAt);
         return {
           isOpen: false,
-          label: `Opens ${opening}`,
-          detail: `We are closed at the moment and open again at ${opening} today.`,
+          label: `Opens ${from}`,
+          detail: `We are closed at the moment and open again at ${from} today.`,
+          reason: today.reason,
         };
       }
     }
 
-    const next = this.nextOpening(now.getDay());
+    const next = this.nextOpening();
     if (!next) {
-      return { isOpen: false, label: 'Closed', detail: 'We are closed at the moment.' };
+      return {
+        isOpen: false,
+        label: 'Closed',
+        detail: today.reason ?? 'We are closed at the moment.',
+        reason: today.reason,
+      };
     }
-
-    const { day, dayLabel } = next;
-    const opening = formatMinutes(day.opensAt!);
     return {
       isOpen: false,
-      label: `Opens ${dayLabel}`,
-      detail: `We are closed at the moment. We open again ${dayLabel} at ${opening}.`,
+      label: `Opens ${next.when}`,
+      detail: today.reason
+        ? `${today.reason}. We open again ${next.when} at ${next.at}.`
+        : `We are closed at the moment. We open again ${next.when} at ${next.at}.`,
+      reason: today.reason,
     };
   });
 
@@ -73,23 +129,70 @@ export class OpeningHoursService {
     }
   }
 
-  /** Finds the next day the library opens, starting the day after `fromDay`. */
-  private nextOpening(fromDay: number): { day: OpeningDay; dayLabel: string } | null {
-    for (let offset = 1; offset <= 7; offset++) {
-      const dayIndex = (fromDay + offset) % 7;
-      const day = OPENING_HOURS.find((entry) => entry.dayIndex === dayIndex);
-      if (day?.opensAt !== undefined) {
-        return { day, dayLabel: offset === 1 ? 'tomorrow' : `on ${day.day}` };
+  /**
+   * Fetches the live settings once.
+   *
+   * A failure is deliberately silent: the defaults are already in place and a
+   * visitor should never see an error where the opening hours belong.
+   */
+  load(): void {
+    if (this.loadStarted) {
+      return;
+    }
+    this.loadStarted = true;
+    this.http.get<Partial<LibrarySettings>>(`${environment.apiBaseUrl}/settings`).subscribe({
+      next: (value) => {
+        if (value?.pattern?.length) {
+          this.stored.set({
+            pattern: value.pattern,
+            exceptions: value.exceptions ?? [],
+            notice: value.notice ?? DEFAULT_SETTINGS.notice,
+          });
+        }
+      },
+      error: () => {
+        /* keep the defaults */
+      },
+    });
+  }
+
+  /** Applies settings saved in the admin area without a refetch. */
+  apply(settings: LibrarySettings): void {
+    this.stored.set(settings);
+  }
+
+  /** Hours for a given date, exceptions included — used by the calendar. */
+  resolve(iso: string): ResolvedDay {
+    return resolveDay(iso, this.settings());
+  }
+
+  /** Scans forward for the next day the library opens. */
+  private nextOpening(): { when: string; at: string } | null {
+    const today = this.now();
+    for (let offset = 1; offset <= 14; offset++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() + offset);
+      const day = resolveDay(toIso(date), this.settings());
+      if (!day.closed && day.opensAt) {
+        return {
+          when: offset === 1 ? 'tomorrow' : `on ${DAY_NAMES[date.getDay()]}`,
+          at: formatTimeLabel(day.opensAt),
+        };
       }
     }
     return null;
   }
 }
 
-function formatMinutes(totalMinutes: number): string {
-  const hours24 = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  const suffix = hours24 >= 12 ? 'pm' : 'am';
-  const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
-  return `${hours12}.${String(minutes).padStart(2, '0')}${suffix}`;
+function toMinutes(value: string): number {
+  const [hours, minutes] = value.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+function formatTimeLabel(value: string): string {
+  const [rawHours, minutes] = value.split(':');
+  const hours = Number(rawHours);
+  const suffix = hours >= 12 ? 'pm' : 'am';
+  const hours12 = hours % 12 === 0 ? 12 : hours % 12;
+  return `${hours12}.${minutes}${suffix}`;
 }

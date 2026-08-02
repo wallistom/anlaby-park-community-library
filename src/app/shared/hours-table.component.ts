@@ -32,18 +32,18 @@ import { IconComponent } from './icon.component';
       </div>
 
       <dl class="mt-6 flex flex-col">
-        @for (day of hours.days; track day.dayIndex) {
+        @for (day of hours.week(); track day.dayIndex) {
           <div
             class="flex items-baseline justify-between gap-4 rounded-lg px-3 py-2.5"
             [class]="
-              day.dayIndex === hours.today()?.dayIndex
+              day.dayIndex === hours.todayIndex()
                 ? 'bg-forest-50 text-forest-900 font-semibold'
                 : 'text-ink-soft'
             "
           >
             <dt class="flex items-center gap-2">
-              {{ day.day }}
-              @if (day.dayIndex === hours.today()?.dayIndex) {
+              {{ day.name }}
+              @if (day.dayIndex === hours.todayIndex()) {
                 <span
                   class="bg-forest-700 rounded-full px-2.5 py-0.5 text-[0.7rem] tracking-wide text-white uppercase"
                 >
@@ -51,8 +51,8 @@ import { IconComponent } from './icon.component';
                 </span>
               }
             </dt>
-            <dd class="tabular-nums" [class.text-ink-muted]="!day.hours">
-              {{ day.hours ?? 'Closed' }}
+            <dd class="tabular-nums" [class.text-ink-muted]="day.hours === 'Closed'">
+              {{ day.hours }}
             </dd>
           </div>
         }
