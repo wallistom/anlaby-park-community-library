@@ -32,11 +32,9 @@ import {
 
 type ViewMode = 'week' | 'month';
 
-/** Opens on next week once fewer than three days of this one remain. */
-function openingCursor(): Date {
-  const today = new Date();
-  const daysLeft = 7 - ((today.getDay() + 6) % 7);
-  return daysLeft < 3 ? addDays(today, daysLeft) : today;
+/** Days remaining in the calendar week containing `date`, today included. */
+function daysLeftInWeek(date: Date): number {
+  return 7 - ((date.getDay() + 6) % 7);
 }
 
 /** One day in either view, with everything the template needs precomputed. */
@@ -73,14 +71,14 @@ export class WhatsOnComponent implements OnInit {
   private readonly injector = inject(Injector);
   protected readonly site = SITE;
 
-  protected readonly view = signal<ViewMode>('week');
+  protected readonly view = signal<ViewMode>('month');
   /**
    * Anchor date; whichever week or month contains it is the one shown.
    *
    * Late in the week there is almost nothing left to show, so the view opens on
    * next week instead of a card or two of leftovers.
    */
-  protected readonly cursor = signal(openingCursor());
+  protected readonly cursor = signal(new Date());
   /** Day selected in the month grid, shown in detail beneath it. */
   protected readonly selectedIso = signal<string | null>(null);
 
@@ -143,6 +141,20 @@ export class WhatsOnComponent implements OnInit {
 
   protected readonly onCurrentMonth = computed(() => isSameMonth(this.cursor(), this.today));
 
+  /**
+   * Whether this month contains anything other than the weekly clubs.
+   *
+   * The regular timetable forms a strong visual rhythm in the grid, which makes
+   * the one-off events — a fayre, a talk, a quiz night — easy to miss. They are
+   * given the accent colour, and the legend only appears when there is one to
+   * explain.
+   */
+  protected readonly monthHasOneOff = computed(() =>
+    this.month().some(
+      (day) => day.inCurrentMonth && day.events.some((event) => event.recurrence === 'none'),
+    ),
+  );
+
   protected readonly selectedDay = computed(() => {
     const iso = this.selectedIso();
     return iso ? (this.month().find((day) => day.iso === iso) ?? null) : null;
@@ -176,6 +188,11 @@ export class WhatsOnComponent implements OnInit {
 
   protected setView(mode: ViewMode): void {
     this.selectedIso.set(null);
+    // Late in the week there is almost nothing left to show, so switching to
+    // the week view lands on next week rather than a lone leftover day.
+    if (mode === 'week' && this.onCurrentWeek() && daysLeftInWeek(this.today) < 3) {
+      this.cursor.set(addDays(this.today, daysLeftInWeek(this.today)));
+    }
     this.view.set(mode);
   }
 

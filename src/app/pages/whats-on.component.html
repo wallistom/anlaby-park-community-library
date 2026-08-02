@@ -1,7 +1,7 @@
 <app-page-hero
   eyebrow="What's on"
   heading="Everything happening at the library"
-  intro="Our weekly clubs, one-off talks, and the fayres and quiz nights that keep us going. Pick a week to see it day by day, or a month to plan further ahead."
+  intro="Our weekly clubs, one-off talks, and the fayres and quiz nights that keep us going. Browse the month to plan ahead, or switch to a week to see it day by day."
 />
 
 <section class="container-page mt-10">
@@ -180,7 +180,12 @@
                 <span class="mt-1 flex flex-col gap-0.5">
                   @for (event of day.events.slice(0, 2); track event.occurrenceId) {
                     <span
-                      class="bg-forest-100 text-forest-900 truncate rounded px-1.5 py-px text-[0.7rem] leading-tight font-medium"
+                      class="truncate rounded px-1.5 py-px text-[0.7rem] leading-tight font-medium"
+                      [class]="
+                        event.recurrence === 'none'
+                          ? 'bg-ochre-100 text-ochre-900'
+                          : 'bg-forest-100 text-forest-900'
+                      "
                     >
                       {{ event.title }}
                     </span>
@@ -227,6 +232,19 @@
           </div>
         } @else if (monthDaysWithEvents().length) {
           <p class="text-ink-muted mt-4 text-sm">Select a highlighted day to see what is on.</p>
+        }
+
+        @if (monthHasOneOff()) {
+          <p class="text-ink-muted mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+            <span class="flex items-center gap-2">
+              <span class="bg-forest-100 inline-block h-3 w-6 rounded" aria-hidden="true"></span>
+              Weekly club
+            </span>
+            <span class="flex items-center gap-2">
+              <span class="bg-ochre-100 inline-block h-3 w-6 rounded" aria-hidden="true"></span>
+              One-off event
+            </span>
+          </p>
         }
       </div>
 
