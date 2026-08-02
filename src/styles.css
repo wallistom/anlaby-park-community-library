@@ -126,8 +126,18 @@
      (plus rounded-full for pills). Tailwind's own scale is left alone so
      these names keep their usual meanings. */
 
-  /* --- Motion ----------------------------------------------------------- */
+  /* --- Motion -----------------------------------------------------------
+
+     Deliberately restrained. Movement is small (2–8px) and quick, and only
+     ever `transform` or `opacity` so it stays on the compositor. Nothing here
+     should be noticeable as an effect — it should only make the interface feel
+     less abrupt. Every rule below is disabled by prefers-reduced-motion. */
   --ease-gentle: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
+
+  --duration-micro: 150ms; /* hover, press */
+  --duration-quick: 220ms; /* drawers, disclosure */
+  --duration-page: 280ms; /* route changes */
 }
 
 @layer base {
@@ -375,12 +385,43 @@
   }
 }
 
-/* Entrance animation used by the reveal directive. Global so it is available
-   to every lazily loaded page. */
+/* ---------------------------------------------------------------------------
+   Motion
+
+   Everything here is opacity/transform only, so it composites on the GPU and
+   cannot cause layout shift. The prefers-reduced-motion rule in the base layer
+   collapses every duration to ~0, which leaves each element at its final
+   state — so nothing below needs its own reduced-motion handling.
+--------------------------------------------------------------------------- */
+
+/* --- Route changes ------------------------------------------------------ */
+
+/* Angular inserts the routed component as the outlet's next sibling, so this
+   selector matches a genuinely new element on every navigation and the
+   animation replays without any TypeScript. `to { transform: none }` matters:
+   a lingering transform would make the page a containing block and break any
+   position:fixed descendant. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+router-outlet + * {
+  animation: page-enter var(--duration-page) var(--ease-gentle) both;
+}
+
+/* --- Scroll reveal ------------------------------------------------------ */
+
 @keyframes reveal-up {
   from {
     opacity: 0;
-    transform: translateY(1rem);
+    transform: translateY(0.75rem);
   }
   to {
     opacity: 1;
@@ -393,5 +434,142 @@
 }
 
 .reveal-visible {
-  animation: reveal-up 0.6s var(--ease-gentle) both;
+  animation: reveal-up 0.5s var(--ease-gentle) both;
+}
+
+/* --- Buttons and links -------------------------------------------------- */
+
+/* Colour was already transitioning; transform is added so a press registers
+   physically. The scale is tiny on purpose — it should read as the control
+   yielding, not bouncing. */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-accent,
+.btn-on-dark,
+.btn-on-dark-secondary,
+.pill,
+.pill-on,
+.pill-off {
+  transition:
+    background-color var(--duration-micro) var(--ease-out-soft),
+    border-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft),
+    transform var(--duration-micro) var(--ease-out-soft);
+}
+
+.btn:active:not(:disabled),
+.btn-primary:active:not(:disabled),
+.btn-secondary:active:not(:disabled),
+.btn-accent:active:not(:disabled),
+.btn-on-dark:active:not(:disabled),
+.btn-on-dark-secondary:active:not(:disabled),
+.pill:active,
+.pill-on:active,
+.pill-off:active {
+  transform: scale(0.98);
+}
+
+/* Arrows lean towards where they are taking you. Two pixels is enough to
+   register without becoming a gimmick. */
+.btn app-icon:last-child,
+.btn-primary app-icon:last-child,
+.btn-accent app-icon:last-child,
+.btn-on-dark app-icon:last-child,
+.link-arrow app-icon {
+  transition: transform var(--duration-micro) var(--ease-out-soft);
+}
+
+.btn:hover app-icon:last-child,
+.btn-primary:hover app-icon:last-child,
+.btn-accent:hover app-icon:last-child,
+.btn-on-dark:hover app-icon:last-child,
+.link-arrow:hover app-icon {
+  transform: translateX(2px);
+}
+
+/* --- Cards -------------------------------------------------------------- */
+
+/* A hover-only lift. The resting state stays flat, so the page is no busier
+   than before — this is an affordance, not decoration. */
+.card-interactive {
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    transform var(--duration-micro) var(--ease-out-soft),
+    box-shadow var(--duration-micro) var(--ease-out-soft);
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -8px rgb(31 66 52 / 0.18);
+}
+
+/* --- Forms -------------------------------------------------------------- */
+
+.field-input {
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    box-shadow var(--duration-micro) var(--ease-out-soft);
+}
+
+.field-input:focus {
+  box-shadow: 0 0 0 3px var(--color-forest-100);
+}
+
+/* --- Mobile drawer ------------------------------------------------------ */
+
+/* The drawer is mounted by a control-flow block, so it animates on insert
+   without any state to manage. */
+@keyframes drawer-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.drawer-enter {
+  animation: drawer-in var(--duration-quick) var(--ease-gentle) both;
+}
+
+/* --- Disclosure --------------------------------------------------------- */
+
+/* Used by the trustee enquiry rows. Animating grid-template-rows lets the
+   panel expand to its natural height without hardcoding one. */
+@keyframes disclosure-open {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+.disclosure {
+  display: grid;
+  animation: disclosure-open var(--duration-quick) var(--ease-gentle) both;
+}
+
+.disclosure > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* --- Images ------------------------------------------------------------- */
+
+/* Photographs fade in once decoded rather than snapping in. Width and height
+   are set on the elements, so the space is reserved either way and nothing
+   moves. */
+.img-fade {
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out-soft);
+}
+
+.img-fade.is-loaded {
+  opacity: 1;
 }

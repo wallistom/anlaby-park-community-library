@@ -5,6 +5,7 @@ import { HoursTableComponent } from '../shared/hours-table.component';
 import { CtaBandComponent } from '../shared/cta-band.component';
 import { IconComponent } from '../shared/icon.component';
 import { RevealDirective } from '../shared/reveal.directive';
+import { ImageFadeDirective } from '../shared/image-fade.directive';
 import { OpeningHoursService } from '../core/opening-hours.service';
 import { ADDRESS_ONE_LINE, FACILITIES, SITE } from '../core/site.data';
 
@@ -18,6 +19,7 @@ import { ADDRESS_ONE_LINE, FACILITIES, SITE } from '../core/site.data';
     CtaBandComponent,
     IconComponent,
     RevealDirective,
+    ImageFadeDirective,
   ],
   templateUrl: './visit.component.html',
 })
