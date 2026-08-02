@@ -89,76 +89,78 @@
           </button>
 
           @if (expandedId() === row.id) {
-            <div class="border-line bg-page border-t px-5 py-5">
-              <dl class="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <dt class="text-ink-muted text-xs tracking-wide uppercase">Email</dt>
-                  <dd class="mt-0.5">
-                    <a
-                      [href]="'mailto:' + row.email"
-                      class="text-forest-700 font-medium break-all hover:underline"
-                    >
-                      {{ row.email }}
-                    </a>
-                  </dd>
-                </div>
-                @if (row.phone) {
+            <div class="disclosure">
+              <div class="border-line bg-page border-t px-5 py-5">
+                <dl class="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <dt class="text-ink-muted text-xs tracking-wide uppercase">Phone</dt>
+                    <dt class="text-ink-muted text-xs tracking-wide uppercase">Email</dt>
                     <dd class="mt-0.5">
                       <a
-                        [href]="'tel:' + row.phone"
-                        class="text-forest-700 font-medium hover:underline"
+                        [href]="'mailto:' + row.email"
+                        class="text-forest-700 font-medium break-all hover:underline"
                       >
-                        {{ row.phone }}
+                        {{ row.email }}
                       </a>
                     </dd>
                   </div>
-                }
-                @for (detail of row.details; track detail.label) {
-                  <div>
-                    <dt class="text-ink-muted text-xs tracking-wide uppercase">
-                      {{ detail.label }}
-                    </dt>
-                    <dd class="text-ink mt-0.5 font-medium">{{ detail.value }}</dd>
+                  @if (row.phone) {
+                    <div>
+                      <dt class="text-ink-muted text-xs tracking-wide uppercase">Phone</dt>
+                      <dd class="mt-0.5">
+                        <a
+                          [href]="'tel:' + row.phone"
+                          class="text-forest-700 font-medium hover:underline"
+                        >
+                          {{ row.phone }}
+                        </a>
+                      </dd>
+                    </div>
+                  }
+                  @for (detail of row.details; track detail.label) {
+                    <div>
+                      <dt class="text-ink-muted text-xs tracking-wide uppercase">
+                        {{ detail.label }}
+                      </dt>
+                      <dd class="text-ink mt-0.5 font-medium">{{ detail.value }}</dd>
+                    </div>
+                  }
+                </dl>
+
+                @if (row.body) {
+                  <div class="border-line mt-5 border-t pt-5">
+                    <p class="text-ink-muted text-xs tracking-wide uppercase">Message</p>
+                    <p class="text-ink mt-2 leading-relaxed whitespace-pre-line">
+                      {{ row.body }}
+                    </p>
                   </div>
                 }
-              </dl>
 
-              @if (row.body) {
-                <div class="border-line mt-5 border-t pt-5">
-                  <p class="text-ink-muted text-xs tracking-wide uppercase">Message</p>
-                  <p class="text-ink mt-2 leading-relaxed whitespace-pre-line">
-                    {{ row.body }}
-                  </p>
+                <div class="border-line mt-5 flex flex-wrap gap-2 border-t pt-5">
+                  <button
+                    type="button"
+                    (click)="setStatus(row, 'new')"
+                    [disabled]="row.status === 'new'"
+                    class="border-line-strong hover:bg-surface rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
+                  >
+                    Mark as new
+                  </button>
+                  <button
+                    type="button"
+                    (click)="setStatus(row, 'in_progress')"
+                    [disabled]="row.status === 'in_progress'"
+                    class="border-line-strong hover:bg-surface rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
+                  >
+                    I'm dealing with this
+                  </button>
+                  <button
+                    type="button"
+                    (click)="setStatus(row, 'closed')"
+                    [disabled]="row.status === 'closed'"
+                    class="bg-forest-800 hover:bg-forest-700 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-40"
+                  >
+                    Mark as done
+                  </button>
                 </div>
-              }
-
-              <div class="border-line mt-5 flex flex-wrap gap-2 border-t pt-5">
-                <button
-                  type="button"
-                  (click)="setStatus(row, 'new')"
-                  [disabled]="row.status === 'new'"
-                  class="border-line-strong hover:bg-surface rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
-                >
-                  Mark as new
-                </button>
-                <button
-                  type="button"
-                  (click)="setStatus(row, 'in_progress')"
-                  [disabled]="row.status === 'in_progress'"
-                  class="border-line-strong hover:bg-surface rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
-                >
-                  I'm dealing with this
-                </button>
-                <button
-                  type="button"
-                  (click)="setStatus(row, 'closed')"
-                  [disabled]="row.status === 'closed'"
-                  class="bg-forest-800 hover:bg-forest-700 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-40"
-                >
-                  Mark as done
-                </button>
               </div>
             </div>
           }
