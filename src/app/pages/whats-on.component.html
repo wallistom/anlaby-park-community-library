@@ -79,8 +79,15 @@
               @if (day.isToday) {
                 <span class="chip-accent">Today</span>
               }
-              <span class="text-ink-muted ml-auto text-sm">
-                {{ day.hours ? 'Open ' + day.hours : 'Library closed' }}
+              <span
+                class="ml-auto text-sm"
+                [class]="day.closureReason ? 'text-ochre-800' : 'text-ink-muted'"
+              >
+                @if (day.closureReason) {
+                  {{ day.closureReason }} · {{ day.hours }}
+                } @else {
+                  {{ day.hours === 'Closed' ? 'Library closed' : 'Open ' + day.hours }}
+                }
               </span>
             </div>
 

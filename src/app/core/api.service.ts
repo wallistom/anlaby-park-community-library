@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { LibrarySettings } from './opening-hours.model';
 import {
   ContactMessage,
   EnquiryStatus,
@@ -58,6 +59,10 @@ export class ApiService {
   }
 
   // --- Trustee-only endpoints ---------------------------------------------
+
+  saveSettings(settings: LibrarySettings): Observable<LibrarySettings> {
+    return this.http.put<LibrarySettings>(`${this.base}/admin/settings`, settings);
+  }
 
   listAllEvents(): Observable<LibraryEvent[]> {
     return this.http.get<LibraryEvent[]>(`${this.base}/admin/events`);

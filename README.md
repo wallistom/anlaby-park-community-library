@@ -33,6 +33,10 @@ contact, privacy. Trustee-only: sign-in, event management, and an enquiry inbox.
 - **Room hire enquiries** — the booking form writes to DynamoDB and appears in the trustee inbox.
 - **Volunteer enquiries** — structured signup capturing interests and availability.
 - **Contact** — general messages, routed to the trustee inbox.
+- **Opening hours** — a weekly pattern plus dated exceptions (bank holidays, the Christmas run,
+  a short-notice closure), each with a public reason. Trustees also control the site banner from
+  the same screen. The live open/closed status, the hours table and the What's On day lines all
+  resolve through it, so a closure can never leave one surface claiming the library is open.
 
 ---
 

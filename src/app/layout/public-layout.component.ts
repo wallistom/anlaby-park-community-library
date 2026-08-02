@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header.component';
 import { FooterComponent } from './footer.component';
 import { IconComponent } from '../shared/icon.component';
-import { SITE_NOTICE } from '../core/site.data';
+import { OpeningHoursService } from '../core/opening-hours.service';
 
 /** Chrome shared by every public page: skip link, notice, header, footer. */
 @Component({
@@ -18,17 +18,17 @@ import { SITE_NOTICE } from '../core/site.data';
       Skip to main content
     </a>
 
-    @if (notice.active && noticeVisible()) {
+    @if (notice().active && noticeVisible()) {
       <div class="bg-ochre-100 text-ochre-950 border-ochre-200 border-b">
         <div
           class="mx-auto flex max-w-7xl items-start gap-3 px-5 py-3 text-sm sm:items-center sm:px-8"
         >
           <span class="text-ochre-700 mt-0.5 sm:mt-0"><app-icon name="info" [size]="18" /></span>
           <p class="flex-1">
-            <strong class="font-semibold">{{ notice.title }}.</strong>
-            {{ notice.body }}
-            <a [routerLink]="notice.linkPath" class="font-semibold underline underline-offset-2">
-              {{ notice.linkText }}
+            <strong class="font-semibold">{{ notice().title }}.</strong>
+            {{ notice().body }}
+            <a routerLink="/contact" class="font-semibold underline underline-offset-2">
+              Any questions? Get in touch
             </a>
           </p>
           <button
@@ -53,6 +53,11 @@ import { SITE_NOTICE } from '../core/site.data';
   `,
 })
 export class PublicLayoutComponent {
-  protected readonly notice = SITE_NOTICE;
+  private readonly hours = inject(OpeningHoursService);
+  protected readonly notice = this.hours.notice;
+
+  constructor() {
+    this.hours.load();
+  }
   protected readonly noticeVisible = signal(true);
 }
