@@ -1,0 +1,272 @@
+<app-page-hero
+  eyebrow="Room hire"
+  heading="Affordable space, right in the heart of the estate"
+  intro="Our rooms are available to hire for one-off events and regular bookings. Every pound goes straight back into keeping the library open."
+/>
+
+<section class="container-page mt-20">
+  <div class="grid gap-12 lg:grid-cols-12">
+    <!-- ── Information ─────────────────────────────────────────────────── -->
+    <div class="lg:col-span-5">
+      <h2 class="text-2xl font-semibold">What we can offer</h2>
+      <p class="prose-body mt-4">
+        We are a small community building, not a conference centre — and the rates reflect that.
+        Groups have been meeting here for years, from chess clubs to children's parties.
+      </p>
+
+      <ul class="mt-6 flex flex-col gap-2.5">
+        @for (item of suitableFor; track item) {
+          <li class="text-ink-soft flex items-start gap-3">
+            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+              <app-icon name="check" [size]="14" />
+            </span>
+            <span>{{ item }}</span>
+          </li>
+        }
+      </ul>
+
+      <!-- The current site publishes charges only inside a downloadable PDF,
+           so we do not reproduce figures we cannot verify.
+           TODO(content): replace with the real rate card once confirmed. -->
+      <div class="border-ochre-200 bg-ochre-50 mt-8 rounded-2xl border p-6">
+        <h3 class="font-display text-ochre-950 flex items-center gap-2 text-lg font-semibold">
+          <span class="text-ochre-700"><app-icon name="pound" [size]="20" /></span>
+          Hire charges
+        </h3>
+        <p class="text-ochre-900 mt-2 leading-relaxed">
+          Our current rate card is available on request — send an enquiry below or ring
+          <a [href]="'tel:' + site.phoneHref" class="font-semibold underline underline-offset-2">
+            {{ site.phone }}
+          </a>
+          and we will talk you through the options and availability.
+        </p>
+        <p class="text-ochre-800 mt-3 text-sm">
+          Community and charity groups: do ask. We would rather the room was used.
+        </p>
+      </div>
+
+      <div class="border-line mt-6 rounded-2xl border bg-surface p-6">
+        <h3 class="font-display flex items-center gap-2 text-lg font-semibold">
+          <span class="text-forest-700"><app-icon name="info" [size]="20" /></span>
+          Good to know
+        </h3>
+        <p class="text-ink-soft mt-2 leading-relaxed">
+          Bookings are usually outside library opening hours, so the space is yours. The building
+          has step-free access and an accessible toilet, and refreshments can often be arranged
+          through the Coffee Corner.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Enquiry form ────────────────────────────────────────────────── -->
+    <div class="lg:col-span-7">
+      <div class="card p-7 sm:p-9">
+        @if (state() === 'success') {
+          <div class="py-10 text-center" role="status">
+            <span
+              class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-success-soft text-success"
+            >
+              <app-icon name="check" [size]="32" />
+            </span>
+            <h2 class="font-display mt-5 text-2xl font-semibold">Thank you — that's with us</h2>
+            <p class="text-ink-soft mx-auto mt-3 max-w-md text-lg">
+              A trustee will be in touch to confirm availability and charges. We are all volunteers,
+              so please allow a few days — and do ring if your enquiry is urgent.
+            </p>
+            <a
+              [href]="'tel:' + site.phoneHref"
+              class="text-forest-700 mt-6 inline-flex items-center gap-2 font-semibold hover:underline"
+            >
+              <app-icon name="phone" [size]="17" />
+              {{ site.phone }}
+            </a>
+          </div>
+        } @else {
+          <h2 class="text-2xl font-semibold">Send an enquiry</h2>
+          <p class="text-ink-soft mt-2">
+            Tell us roughly what you need and we will come back to you with availability and a
+            price. Nothing is committed at this stage.
+          </p>
+
+          <form
+            [formGroup]="form"
+            (ngSubmit)="submit()"
+            class="mt-8 flex flex-col gap-5"
+            novalidate
+          >
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label for="name" class="field-label"
+                  >Your name <span aria-hidden="true">*</span></label
+                >
+                <input
+                  id="name"
+                  type="text"
+                  formControlName="name"
+                  autocomplete="name"
+                  class="field-input"
+                  [attr.aria-invalid]="invalid('name')"
+                  [attr.aria-describedby]="invalid('name') ? 'name-error' : null"
+                />
+                @if (invalid('name')) {
+                  <p id="name-error" class="field-error">
+                    <app-icon name="info" [size]="15" />
+                    Please tell us your name.
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label for="organisation" class="field-label">Group or organisation</label>
+                <input
+                  id="organisation"
+                  type="text"
+                  formControlName="organisation"
+                  autocomplete="organization"
+                  class="field-input"
+                />
+                <p class="field-hint">Optional</p>
+              </div>
+
+              <div>
+                <label for="email" class="field-label"
+                  >Email <span aria-hidden="true">*</span></label
+                >
+                <input
+                  id="email"
+                  type="email"
+                  formControlName="email"
+                  autocomplete="email"
+                  class="field-input"
+                  [attr.aria-invalid]="invalid('email')"
+                  [attr.aria-describedby]="invalid('email') ? 'email-error' : null"
+                />
+                @if (invalid('email')) {
+                  <p id="email-error" class="field-error">
+                    <app-icon name="info" [size]="15" />
+                    Please enter an email address we can reply to.
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label for="phone" class="field-label">Phone</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  formControlName="phone"
+                  autocomplete="tel"
+                  class="field-input"
+                />
+                <p class="field-hint">Optional, but often quicker</p>
+              </div>
+
+              <div>
+                <label for="preferredDate" class="field-label">
+                  Date wanted <span aria-hidden="true">*</span>
+                </label>
+                <input
+                  id="preferredDate"
+                  type="date"
+                  formControlName="preferredDate"
+                  [min]="todayIso"
+                  class="field-input"
+                  [attr.aria-invalid]="invalid('preferredDate')"
+                  [attr.aria-describedby]="invalid('preferredDate') ? 'date-error' : null"
+                />
+                @if (invalid('preferredDate')) {
+                  <p id="date-error" class="field-error">
+                    <app-icon name="info" [size]="15" />
+                    Please choose a date, even if it is approximate.
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label for="frequency" class="field-label">
+                  How often <span aria-hidden="true">*</span>
+                </label>
+                <select id="frequency" formControlName="frequency" class="field-input">
+                  <option>One-off booking</option>
+                  <option>Weekly</option>
+                  <option>Fortnightly</option>
+                  <option>Monthly</option>
+                  <option>Not sure yet</option>
+                </select>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label for="attendees" class="field-label">
+                  Roughly how many people <span aria-hidden="true">*</span>
+                </label>
+                <input
+                  id="attendees"
+                  type="number"
+                  formControlName="attendees"
+                  min="1"
+                  max="200"
+                  class="field-input sm:max-w-[12rem]"
+                  [attr.aria-invalid]="invalid('attendees')"
+                  [attr.aria-describedby]="invalid('attendees') ? 'attendees-error' : null"
+                />
+                @if (invalid('attendees')) {
+                  <p id="attendees-error" class="field-error">
+                    <app-icon name="info" [size]="15" />
+                    Please give a number between 1 and 200.
+                  </p>
+                }
+              </div>
+            </div>
+
+            <div>
+              <label for="message" class="field-label">
+                What do you need the room for? <span aria-hidden="true">*</span>
+              </label>
+              <textarea
+                id="message"
+                rows="5"
+                formControlName="message"
+                class="field-input resize-y"
+                placeholder="A short description of your group and what you would be doing."
+                [attr.aria-invalid]="invalid('message')"
+                [attr.aria-describedby]="invalid('message') ? 'message-error' : null"
+              ></textarea>
+              @if (invalid('message')) {
+                <p id="message-error" class="field-error">
+                  <app-icon name="info" [size]="15" />
+                  Please give us a sentence or two so we know what you need.
+                </p>
+              }
+            </div>
+
+            @if (state() === 'error') {
+              <div class="alert-danger" role="alert">
+                <app-icon name="info" [size]="19" />
+                <p class="text-sm">
+                  Sorry, we could not send that. Please try again, or ring us on
+                  <a [href]="'tel:' + site.phoneHref" class="font-semibold underline">
+                    {{ site.phone }}
+                  </a>
+                  .
+                </p>
+              </div>
+            }
+
+            <div class="flex flex-wrap items-center gap-4">
+              <button type="submit" [disabled]="state() === 'submitting'" class="btn-primary">
+                {{ state() === 'submitting' ? 'Sending…' : 'Send enquiry' }}
+                @if (state() !== 'submitting') {
+                  <app-icon name="arrowRight" [size]="18" />
+                }
+              </button>
+              <p class="text-ink-muted text-sm">
+                Fields marked <span aria-hidden="true">*</span
+                ><span class="sr-only">with an asterisk</span> are required.
+              </p>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+</section>

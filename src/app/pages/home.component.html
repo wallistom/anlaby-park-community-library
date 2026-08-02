@@ -1,0 +1,189 @@
+<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="container-page pt-14 pb-20 sm:pt-20">
+  <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+    <div>
+      <p class="text-ink-soft flex items-center gap-2 text-sm font-medium">
+        <span
+          class="inline-flex h-2 w-2 rounded-full"
+          [class]="hours.status().isOpen ? 'bg-success' : 'bg-ochre-500'"
+          aria-hidden="true"
+        ></span>
+        {{ hours.status().label }}
+      </p>
+
+      <h1 class="mt-5 text-4xl font-semibold sm:text-5xl">Your library, run by your neighbours</h1>
+
+      <p class="prose-body mt-6">
+        In 2013 this building was earmarked for closure, so local people took it on themselves.
+        Today we are Hull's first and only community-run library — free to join, open to everyone,
+        and kept going by more than {{ site.volunteerCount }} volunteers.
+      </p>
+
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <a routerLink="/visit" class="btn-primary">
+          Plan your visit
+          <app-icon name="arrowRight" [size]="18" />
+        </a>
+        <a
+          routerLink="/activities"
+          class="border-line-strong hover:bg-sunken inline-flex items-center justify-center rounded-xl border px-6 py-3.5 font-semibold transition-colors"
+        >
+          Clubs &amp; activities
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <img
+        src="images/library-exterior.jpg"
+        alt="The library from The Greenway: a white single-storey building with a pitched roof, its sign above the entrance, and a ramped path up to the door."
+        width="512"
+        height="512"
+        class="aspect-[4/3] w-full rounded-2xl object-cover"
+      />
+    </div>
+  </div>
+</section>
+
+<!-- ── What's on ─────────────────────────────────────────────────────────── -->
+<section class="border-line border-y bg-surface section">
+  <div class="container-page">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <h2 class="text-3xl font-semibold">What's on</h2>
+      <a routerLink="/whats-on" class="link-arrow">
+        All events
+        <app-icon name="arrowRight" [size]="16" />
+      </a>
+    </div>
+
+    @if (nextEvents().length > 0) {
+      <ul class="mt-8 grid gap-6 md:grid-cols-3">
+        @for (event of nextEvents(); track event.occurrenceId; let i = $index) {
+          <li [appReveal]="i * 80">
+            <article class="flex h-full flex-col">
+              <p class="text-ochre-700 text-sm font-semibold">
+                {{ event.date | date: 'EEEE d MMMM' }}
+                @if (event.startTime) {
+                  <span class="text-ink-muted">· {{ event.startTime }}</span>
+                }
+              </p>
+              <h3 class="font-display mt-1.5 text-xl font-semibold">{{ event.title }}</h3>
+              <p class="text-ink-soft mt-2 flex-1 leading-relaxed">{{ event.description }}</p>
+              <p class="text-ink-muted mt-3 text-sm">
+                {{ event.location }}
+                @if (event.cost) {
+                  <span>· {{ event.cost }}</span>
+                }
+              </p>
+            </article>
+          </li>
+        }
+      </ul>
+    } @else {
+      <!-- Shown before any events are published, and if the API is unreachable. -->
+      <p class="prose-body mt-6 max-w-2xl">
+        No one-off events in the diary just now — but our weekly clubs run as usual, from Baby
+        Bounce on a Tuesday morning to the Bridge Club in the afternoon.
+        <a routerLink="/activities" class="text-forest-700 font-semibold hover:underline">
+          See what's on every week</a
+        >, or ring us on
+        <a [href]="'tel:' + site.phoneHref" class="text-forest-700 font-semibold hover:underline">
+          {{ site.phone }}</a
+        >.
+      </p>
+    }
+  </div>
+</section>
+
+<!-- ── What's here ───────────────────────────────────────────────────────── -->
+<section class="container-page py-20">
+  <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+    <div class="order-2 lg:order-1">
+      <img
+        src="images/library-interior.jpg"
+        alt="Inside the library: wooden shelving filled with books, a display of jigsaws and games, a book trolley, and a raffle hamper on the end of a bay."
+        width="512"
+        height="512"
+        class="aspect-[4/3] w-full rounded-2xl object-cover"
+      />
+    </div>
+
+    <div class="order-1 lg:order-2">
+      <h2 class="text-3xl font-semibold">More than a room full of books</h2>
+      <p class="prose-body mt-5">
+        We run a full library service in partnership with Hull City Council, so your free membership
+        reaches the whole city catalogue. Alongside it you will find the practical things people
+        actually need — and a decent cup of coffee.
+      </p>
+
+      <ul class="mt-7 flex flex-col gap-2.5">
+        @for (item of offerings; track item.title) {
+          <li class="text-ink-soft flex items-start gap-3">
+            <span class="text-forest-600 mt-1"><app-icon name="check" [size]="16" /></span>
+            <span>{{ item.title }}</span>
+          </li>
+        }
+      </ul>
+
+      <a routerLink="/visit" class="link-arrow mt-7">
+        Everything we offer
+        <app-icon name="arrowRight" [size]="16" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Visit ─────────────────────────────────────────────────────────────── -->
+<section class="border-line border-y bg-surface section">
+  <div class="container-page grid gap-12 lg:grid-cols-2 lg:gap-16">
+    <div>
+      <h2 class="text-3xl font-semibold">Come and find us</h2>
+      <p class="prose-body mt-5">
+        You do not need to be a member to walk in, use the wi-fi, read the paper, or buy a coffee.
+        Joining is free and takes a couple of minutes at the counter.
+      </p>
+
+      <address class="mt-8 flex flex-col gap-4 text-base not-italic">
+        <p class="text-ink-soft flex items-start gap-3">
+          <span class="text-forest-600 mt-0.5"><app-icon name="mapPin" [size]="19" /></span>
+          <span>
+            {{ site.address.line1 }}, {{ site.address.line2 }}<br />
+            {{ site.address.city }} {{ site.address.postcode }}
+          </span>
+        </p>
+        <a
+          [href]="'tel:' + site.phoneHref"
+          class="text-ink-soft hover:text-forest-900 flex items-center gap-3"
+        >
+          <span class="text-forest-600"><app-icon name="phone" [size]="19" /></span>
+          {{ site.phone }}
+        </a>
+      </address>
+    </div>
+
+    <div>
+      <app-hours-table [showNote]="false" />
+    </div>
+  </div>
+</section>
+
+<!-- ── Support ───────────────────────────────────────────────────────────── -->
+<section class="container-page py-20">
+  <div class="bg-inverse rounded-2xl px-8 py-14 text-center sm:px-12">
+    <h2 class="mx-auto max-w-2xl text-3xl font-semibold text-white sm:text-4xl">
+      It costs around £{{ site.annualRunningCost.toLocaleString('en-GB') }} a year to keep these
+      doors open
+    </h2>
+    <p class="text-ink-on-dark mx-auto mt-5 max-w-xl text-lg leading-relaxed">
+      Nobody here is paid. Every pound goes on heat, light, books, and insurance — so a small
+      regular gift, or a couple of hours of your time, makes a real difference.
+    </p>
+    <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+      <a routerLink="/support" class="btn-on-dark">
+        Support the library
+        <app-icon name="arrowRight" [size]="18" />
+      </a>
+      <a routerLink="/volunteer" class="btn-on-dark-secondary"> Volunteer with us </a>
+    </div>
+  </div>
+</section>

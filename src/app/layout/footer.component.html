@@ -1,0 +1,160 @@
+<footer class="bg-inverse mt-24 text-white">
+  <div class="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+    <div class="grid gap-12 lg:grid-cols-12">
+      <!-- Identity -->
+      <div class="lg:col-span-4">
+        <div class="flex items-center gap-3">
+          <span
+            class="bg-ochre-500 text-forest-950 flex h-11 w-11 items-center justify-center rounded-xl"
+          >
+            <app-icon name="book" [size]="22" />
+          </span>
+          <span class="leading-none">
+            <span class="font-display block text-lg font-semibold text-white">Anlaby Park</span>
+            <span
+              class="text-ink-on-dark-muted block text-xs font-medium tracking-[0.16em] uppercase"
+            >
+              Community Library
+            </span>
+          </span>
+        </div>
+
+        <p class="text-ink-on-dark mt-5 text-sm leading-relaxed">
+          {{ site.tagline }}, run by volunteers from the community it serves.
+        </p>
+      </div>
+
+      <!-- Link columns -->
+      <div class="grid gap-8 sm:grid-cols-2 lg:col-span-4">
+        <div>
+          <h2 class="text-ink-on-dark-muted text-xs font-semibold tracking-[0.14em] uppercase">
+            Explore
+          </h2>
+          <ul class="mt-4 flex flex-col gap-2.5">
+            @for (link of exploreLinks; track link.path) {
+              <li>
+                <a
+                  [routerLink]="link.path"
+                  class="text-ink-on-dark text-sm underline-offset-4 hover:text-white hover:underline"
+                >
+                  {{ link.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-ink-on-dark-muted text-xs font-semibold tracking-[0.14em] uppercase">
+            Get involved
+          </h2>
+          <ul class="mt-4 flex flex-col gap-2.5">
+            @for (link of supportLinks; track link.path) {
+              <li>
+                <a
+                  [routerLink]="link.path"
+                  class="text-ink-on-dark text-sm underline-offset-4 hover:text-white hover:underline"
+                >
+                  {{ link.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <!-- Find us -->
+      <div class="lg:col-span-4">
+        <h2 class="text-ink-on-dark-muted text-xs font-semibold tracking-[0.14em] uppercase">
+          Find us
+        </h2>
+
+        <address class="mt-4 flex flex-col gap-3 text-sm not-italic">
+          <p class="text-ink-on-dark flex items-start gap-3">
+            <span class="text-ochre-400 mt-0.5"><app-icon name="mapPin" [size]="18" /></span>
+            <span>
+              {{ site.address.line1 }}<br />
+              {{ site.address.line2 }}<br />
+              {{ site.address.city }} {{ site.address.postcode }}
+            </span>
+          </p>
+          <a
+            [href]="'tel:' + site.phoneHref"
+            class="text-ink-on-dark flex items-center gap-3 hover:text-white"
+          >
+            <span class="text-ochre-400"><app-icon name="phone" [size]="18" /></span>
+            {{ site.phone }}
+          </a>
+          <a
+            [href]="'mailto:' + site.email"
+            class="text-ink-on-dark flex items-start gap-3 break-all hover:text-white"
+          >
+            <span class="text-ochre-400 mt-0.5"><app-icon name="mail" [size]="18" /></span>
+            <span class="break-all">{{ site.email }}</span>
+          </a>
+        </address>
+
+        <h2 class="text-ink-on-dark-muted mt-8 text-xs font-semibold tracking-[0.14em] uppercase">
+          Opening hours
+        </h2>
+        <dl class="mt-4 flex flex-col gap-1.5 text-sm">
+          @for (day of openingHours; track day.dayIndex) {
+            <div class="flex items-baseline justify-between gap-4">
+              <dt class="text-ink-on-dark">{{ day.day }}</dt>
+              <dd
+                class="tabular-nums"
+                [class]="day.hours ? 'text-ink-on-dark' : 'text-ink-on-dark-muted'"
+              >
+                {{ day.hours ?? 'Closed' }}
+              </dd>
+            </div>
+          }
+        </dl>
+
+        <div class="mt-8 flex items-center gap-3">
+          <a
+            [href]="site.social.facebook"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="border-line-inverse hover:border-ochre-400 hover:text-ochre-400 text-ink-on-dark flex h-11 w-11 items-center justify-center rounded-xl border transition-colors"
+          >
+            <span class="sr-only">Follow us on Facebook (opens in a new tab)</span>
+            <app-icon name="facebook" [size]="19" />
+          </a>
+          <a
+            [href]="site.social.x"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="border-line-inverse hover:border-ochre-400 hover:text-ochre-400 text-ink-on-dark flex h-11 w-11 items-center justify-center rounded-xl border transition-colors"
+          >
+            <span class="sr-only">Follow us on X (opens in a new tab)</span>
+            <app-icon name="x" [size]="19" />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legal -->
+    <div
+      class="border-line-inverse text-ink-on-dark-muted mt-14 flex flex-col gap-4 border-t pt-8 text-xs sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>
+        © {{ year }} {{ site.name }}. Registered charity no. {{ site.charityNumber }} — a Charitable
+        Incorporated Organisation since {{ site.charityStatusFrom }}.
+      </p>
+      <div class="-mx-2 flex items-center gap-2">
+        <a
+          routerLink="/privacy"
+          class="inline-flex min-h-11 items-center px-2 underline-offset-4 hover:text-white hover:underline"
+        >
+          Privacy policy
+        </a>
+        <a
+          routerLink="/admin"
+          class="inline-flex min-h-11 items-center px-2 underline-offset-4 hover:text-white hover:underline"
+        >
+          Trustee login
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

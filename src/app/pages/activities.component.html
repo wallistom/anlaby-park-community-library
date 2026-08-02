@@ -1,0 +1,88 @@
+<app-page-hero
+  eyebrow="Activities & clubs"
+  heading="There is almost certainly something here for you"
+  intro="Our groups are led by volunteers and built around whatever the community asks for. Most are free or cost very little, and none of them expect you to know anybody when you walk in."
+/>
+
+<section class="container-page mt-20">
+  <p class="text-ink-soft flex items-center gap-2">
+    <app-icon name="clock" [size]="17" />
+    <span>
+      Days and times for every group are on
+      <a routerLink="/whats-on" class="link">What's On</a>.
+    </span>
+  </p>
+
+  <!-- Activity list -->
+  <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    @for (activity of activities; track activity.name; let i = $index) {
+      <li class="border-line flex flex-col rounded-2xl border bg-surface p-6" [appReveal]="i * 45">
+        <h2 class="font-display text-xl font-semibold">{{ activity.name }}</h2>
+        @if (activity.category === 'external') {
+          <p class="text-ink-muted mt-1 text-xs font-medium">
+            {{ categoryLabels[activity.category] }}
+          </p>
+        }
+        <p class="text-ink-soft mt-2 flex-1 text-sm leading-relaxed">
+          {{ activity.description }}
+        </p>
+      </li>
+    }
+  </ul>
+</section>
+
+<!-- ── How to join in ────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="border-forest-200 bg-forest-50 rounded-2xl border p-8 sm:p-12">
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-6">
+        <h2 class="text-3xl font-semibold">How do I join one?</h2>
+        <p class="prose-body mt-4">
+          You turn up. That really is it — there is no membership, no form, and no minimum
+          commitment. If you would rather check the day and time first, or you would like someone to
+          keep an eye out for you on your first visit, give us a ring and say so.
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a [href]="'tel:' + site.phoneHref" class="btn-primary">
+            <app-icon name="phone" [size]="18" />
+            {{ site.phone }}
+          </a>
+          <a
+            [href]="'mailto:' + site.email"
+            class="border-forest-300 hover:bg-surface inline-flex items-center justify-center gap-2 rounded-xl border px-6 py-3.5 font-semibold transition-colors"
+          >
+            <app-icon name="mail" [size]="18" />
+            Email us
+          </a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-6">
+        <div class="border-forest-200 rounded-2xl border bg-surface p-6">
+          <h3 class="font-display flex items-center gap-2 text-lg font-semibold">
+            <span class="text-ochre-600"><app-icon name="sparkles" [size]="20" /></span>
+            Want to start something new?
+          </h3>
+          <p class="text-ink-soft mt-3 leading-relaxed">
+            Most of what runs here started because somebody suggested it. If you have an idea for a
+            group — or you already run one and need somewhere to meet — we would like to hear from
+            you.
+          </p>
+          <p class="text-ink-soft mt-3 leading-relaxed">
+            Independent groups meet here too. The Hull &amp; District Chess Club is a long-standing
+            example.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-cta-band
+  heading="Need a room for your own group?"
+  body="Our rooms are available for regular bookings and one-off events, at community rates that keep the library running."
+  primaryLabel="Enquire about room hire"
+  primaryPath="/room-hire"
+  secondaryLabel="See what's on"
+  secondaryPath="/whats-on"
+/>

@@ -1,0 +1,125 @@
+<app-page-hero
+  eyebrow="Support us"
+  heading="It takes about £18,000 a year to keep this library open"
+  intro="We receive no core funding for the building. Every penny of that comes from donations, room hire, and the fayres, quizzes, and race nights our volunteers put on."
+/>
+
+<!-- ── The number ────────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="grid items-center gap-10 lg:grid-cols-12">
+    <div class="min-w-0 lg:col-span-5">
+      <!-- Padding and figure size step down on narrow screens: at text-6xl
+           inside p-10 this card's min-content was 305px, wider than a 320px
+           phone can show. -->
+      <div class="bg-inverse rounded-2xl p-7 text-center sm:p-10">
+        <div>
+          <p class="text-ink-on-dark-muted text-sm font-medium">Our annual running costs</p>
+          <p
+            class="font-display text-ochre-300 mt-3 text-5xl font-semibold sm:text-6xl md:text-7xl"
+          >
+            £{{ annualCost }}
+          </p>
+          <p class="text-ink-on-dark mt-3 text-sm">
+            That is roughly £{{ (site.annualRunningCost / 12).toFixed(0) }} every month, before a
+            single book is bought.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="min-w-0 lg:col-span-7">
+      <h2 class="text-3xl font-semibold">Where the money goes</h2>
+      <p class="prose-body mt-4">
+        Nobody here is paid — not the trustees, not the sixty-odd volunteers. The money covers the
+        building and the service, nothing else.
+      </p>
+      <ul class="mt-6 flex flex-col gap-3">
+        @for (cost of costs; track cost.label; let i = $index) {
+          <li
+            class="border-line flex items-start gap-3 rounded-xl border bg-surface px-5 py-4"
+            [appReveal]="i * 50"
+          >
+            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+              <app-icon name="check" [size]="14" />
+            </span>
+            <span>
+              <span class="text-ink block font-semibold">{{ cost.label }}</span>
+              <span class="text-ink-soft text-sm">{{ cost.detail }}</span>
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Ways to give ──────────────────────────────────────────────────────── -->
+<section class="bg-sunken mt-20 section">
+  <div class="container-page">
+    <div class="max-w-2xl">
+      <p class="eyebrow">How to help</p>
+      <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">Ways to give</h2>
+      <p class="prose-body mt-4">
+        Whatever suits you. Regular gifts help us most, but a one-off donation or a handful of
+        change in the tin is genuinely welcome.
+      </p>
+    </div>
+
+    <ul class="mt-10 grid gap-5 lg:grid-cols-3">
+      @for (option of givingOptions; track option.title; let i = $index) {
+        <li [appReveal]="i * 70">
+          <div
+            class="flex h-full flex-col rounded-2xl border bg-surface p-7"
+            [class]="option.preferred ? 'border-ochre-400 ring-ochre-200 ring-2' : 'border-line'"
+          >
+            @if (option.preferred) {
+              <span
+                class="bg-ochre-100 text-ochre-900 mb-4 w-fit rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
+              >
+                Most helpful
+              </span>
+            }
+            <span
+              class="flex h-12 w-12 items-center justify-center rounded-xl"
+              [class]="
+                option.preferred ? 'bg-ochre-100 text-ochre-700' : 'bg-forest-50 text-forest-700'
+              "
+            >
+              <app-icon [name]="option.icon" [size]="24" />
+            </span>
+            <h3 class="font-display mt-4 text-xl font-semibold">{{ option.title }}</h3>
+            <p class="text-ink-soft mt-2 flex-1 leading-relaxed">{{ option.description }}</p>
+            <p class="border-line text-ink-soft mt-5 border-t pt-4 text-sm font-medium">
+              {{ option.action }}
+            </p>
+          </div>
+        </li>
+      }
+    </ul>
+
+    <div class="border-line mt-8 rounded-2xl border bg-surface p-7">
+      <h3 class="font-display flex items-center gap-2 text-lg font-semibold">
+        <span class="text-forest-700"><app-icon name="info" [size]="20" /></span>
+        Setting up a standing order
+      </h3>
+      <p class="text-ink-soft mt-3 leading-relaxed">
+        Our standing order form comes in two parts: page one goes to your own bank to set the
+        payment up, and page two comes back to our Treasurer so we know to expect it. Ask at the
+        counter, or email
+        <a [href]="'mailto:' + site.email" class="text-forest-700 font-semibold hover:underline">
+          <span class="break-all">{{ site.email }}</span>
+        </a>
+        and we will send one over.
+      </p>
+    </div>
+  </div>
+</section>
+
+<app-cta-band
+  heading="Thank you — genuinely"
+  body="This library exists because people in this community decided it should. Every donation, hour, and cake keeps that going."
+  primaryLabel="Volunteer with us"
+  primaryPath="/volunteer"
+  secondaryLabel="Get in touch"
+  secondaryPath="/contact"
+/>

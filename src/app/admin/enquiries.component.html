@@ -1,0 +1,181 @@
+<h1 class="text-3xl font-semibold">Enquiries</h1>
+<p class="text-ink-soft mt-2">
+  Everything submitted through the website. Mark items as you deal with them so other trustees know
+  where things stand.
+</p>
+
+<!-- Tabs -->
+<div role="group" aria-label="Choose a type of enquiry" class="mt-8 flex flex-wrap gap-2">
+  @for (tab of tabs; track tab.value) {
+    <button
+      type="button"
+      (click)="activeTab.set(tab.value); expandedId.set(null)"
+      [attr.aria-pressed]="activeTab() === tab.value"
+      [class]="activeTab() === tab.value ? 'pill-on' : 'pill-off'"
+    >
+      {{ tab.label }}
+      @if (newCounts()[tab.value] > 0) {
+        <span
+          class="ml-2 rounded-full px-2 py-0.5 text-xs"
+          [class]="
+            activeTab() === tab.value
+              ? 'bg-ochre-400 text-forest-950'
+              : 'bg-ochre-100 text-ochre-900'
+          "
+        >
+          {{ newCounts()[tab.value] }}
+        </span>
+      }
+    </button>
+  }
+</div>
+
+@if (error()) {
+  <div class="mt-6 alert-danger" role="alert">
+    <app-icon name="info" [size]="20" />
+    <div>
+      <p class="font-semibold">Something went wrong</p>
+      <p class="mt-1 text-sm">
+        The API may not be deployed yet, or your session may have expired. Try signing out and back
+        in.
+      </p>
+    </div>
+  </div>
+}
+
+@if (loading()) {
+  <p class="text-ink-muted mt-8" aria-live="polite">Loading…</p>
+} @else {
+  <p class="text-ink-muted mt-6 text-sm" aria-live="polite">
+    {{ rows().length }} in total, {{ newCount() }} not yet picked up.
+  </p>
+
+  @if (rows().length > 0) {
+    <ul class="mt-4 flex flex-col gap-3">
+      @for (row of rows(); track row.id) {
+        <li class="border-line overflow-hidden rounded-2xl border bg-surface">
+          <button
+            type="button"
+            (click)="toggle(row.id)"
+            [attr.aria-expanded]="expandedId() === row.id"
+            class="hover:bg-page flex w-full flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 text-left transition-colors"
+          >
+            <span
+              class="rounded-full px-3 py-1 text-xs font-semibold"
+              [class]="
+                row.status === 'new'
+                  ? 'bg-ochre-100 text-ochre-900'
+                  : row.status === 'in_progress'
+                    ? 'bg-forest-100 text-forest-900'
+                    : 'bg-line text-ink-soft'
+              "
+            >
+              {{
+                row.status === 'in_progress'
+                  ? 'In progress'
+                  : row.status === 'new'
+                    ? 'New'
+                    : 'Closed'
+              }}
+            </span>
+
+            <span class="font-display font-semibold">{{ row.name }}</span>
+            <span class="text-ink-muted min-w-0 truncate text-sm">{{ row.heading }}</span>
+
+            <span class="text-ink-muted ml-auto flex items-center gap-3 text-sm">
+              {{ row.submittedAt | date: 'd MMM y' }}
+              <app-icon [name]="expandedId() === row.id ? 'close' : 'plus'" [size]="16" />
+            </span>
+          </button>
+
+          @if (expandedId() === row.id) {
+            <div class="border-line bg-page border-t px-5 py-5">
+              <dl class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <dt class="text-ink-muted text-xs tracking-wide uppercase">Email</dt>
+                  <dd class="mt-0.5">
+                    <a
+                      [href]="'mailto:' + row.email"
+                      class="text-forest-700 font-medium break-all hover:underline"
+                    >
+                      {{ row.email }}
+                    </a>
+                  </dd>
+                </div>
+                @if (row.phone) {
+                  <div>
+                    <dt class="text-ink-muted text-xs tracking-wide uppercase">Phone</dt>
+                    <dd class="mt-0.5">
+                      <a
+                        [href]="'tel:' + row.phone"
+                        class="text-forest-700 font-medium hover:underline"
+                      >
+                        {{ row.phone }}
+                      </a>
+                    </dd>
+                  </div>
+                }
+                @for (detail of row.details; track detail.label) {
+                  <div>
+                    <dt class="text-ink-muted text-xs tracking-wide uppercase">
+                      {{ detail.label }}
+                    </dt>
+                    <dd class="text-ink mt-0.5 font-medium">{{ detail.value }}</dd>
+                  </div>
+                }
+              </dl>
+
+              @if (row.body) {
+                <div class="border-line mt-5 border-t pt-5">
+                  <p class="text-ink-muted text-xs tracking-wide uppercase">Message</p>
+                  <p class="text-ink mt-2 leading-relaxed whitespace-pre-line">
+                    {{ row.body }}
+                  </p>
+                </div>
+              }
+
+              <div class="border-line mt-5 flex flex-wrap gap-2 border-t pt-5">
+                <button
+                  type="button"
+                  (click)="setStatus(row, 'new')"
+                  [disabled]="row.status === 'new'"
+                  class="border-line-strong hover:bg-surface rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
+                >
+                  Mark as new
+                </button>
+                <button
+                  type="button"
+                  (click)="setStatus(row, 'in_progress')"
+                  [disabled]="row.status === 'in_progress'"
+                  class="border-line-strong hover:bg-surface rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
+                >
+                  I'm dealing with this
+                </button>
+                <button
+                  type="button"
+                  (click)="setStatus(row, 'closed')"
+                  [disabled]="row.status === 'closed'"
+                  class="bg-forest-800 hover:bg-forest-700 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-40"
+                >
+                  Mark as done
+                </button>
+              </div>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  } @else if (!error()) {
+    <div
+      class="border-line-strong mt-4 rounded-2xl border border-dashed bg-surface/60 px-6 py-16 text-center"
+    >
+      <span
+        class="bg-forest-50 text-forest-600 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+      >
+        <app-icon name="inbox" [size]="26" />
+      </span>
+      <h2 class="font-display mt-4 text-xl font-semibold">Nothing here yet</h2>
+      <p class="text-ink-soft mt-2">Submissions from the website will appear here.</p>
+    </div>
+  }
+}

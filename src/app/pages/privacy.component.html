@@ -1,0 +1,117 @@
+<app-page-hero
+  eyebrow="Privacy"
+  heading="Privacy policy"
+  intro="We collect as little as we can, we never sell it, and you can ask us to delete it at any time."
+/>
+
+<section class="container-page mt-20">
+  <div class="mx-auto max-w-3xl">
+    <div class="flex flex-col gap-10">
+      <section>
+        <h2 class="text-2xl font-semibold">Who we are</h2>
+        <p class="prose-body mt-3">
+          {{ site.name }} is a Charitable Incorporated Organisation, registered charity number
+          {{ site.charityNumber }}, at {{ site.address.line1 }}, {{ site.address.line2 }},
+          {{ site.address.city }} {{ site.address.postcode }}. We are the data controller for the
+          information described here.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold">What we collect, and why</h2>
+        <p class="prose-body mt-3">
+          We only collect information you type into one of our forms. Specifically:
+        </p>
+        <ul class="text-ink-soft mt-4 flex flex-col gap-3">
+          <li class="border-line rounded-xl border bg-surface px-5 py-4">
+            <strong class="text-ink block">Room hire enquiries</strong>
+            Your name, email, phone number, organisation, and details of the booking — so we can
+            reply and arrange it.
+          </li>
+          <li class="border-line rounded-xl border bg-surface px-5 py-4">
+            <strong class="text-ink block">Volunteer enquiries</strong>
+            Your name, contact details, availability, and the roles you are interested in — so a
+            trustee can get in touch.
+          </li>
+          <li class="border-line rounded-xl border bg-surface px-5 py-4">
+            <strong class="text-ink block">Contact messages</strong>
+            Your name, email, and message — so we can answer you.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold">Our lawful basis</h2>
+        <p class="prose-body mt-3">
+          We rely on legitimate interests: you have contacted us and expect a reply. We do not run a
+          mailing list, and we never use your details for marketing.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold">Where it is stored</h2>
+        <p class="prose-body mt-3">
+          Submissions are stored in Amazon Web Services' London region (eu-west-2) and are readable
+          only by trustees who have signed in with an approved Google account. We do not transfer
+          your data outside the UK, and we never sell or share it with third parties for marketing.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold">Cookies and tracking</h2>
+        <p class="prose-body mt-3">
+          This website sets no advertising or analytics cookies. Trustees signing in to the admin
+          area have a session token stored in their own browser, which is cleared when they sign out
+          or close the tab. Fonts are loaded from Google Fonts, and the trustee sign-in uses
+          Google's identity service — both of which will see the visiting IP address as part of
+          serving the request.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold">How long we keep it</h2>
+        <p class="prose-body mt-3">
+          We keep enquiries only as long as we need them to deal with your request and to keep
+          proper charity records, and we review them periodically.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold">Your rights</h2>
+        <p class="prose-body mt-3">
+          You can ask us for a copy of what we hold about you, ask us to correct it, or ask us to
+          delete it. Email
+          <a [href]="'mailto:' + site.email" class="text-forest-700 font-semibold hover:underline">
+            <span class="break-all">{{ site.email }}</span>
+          </a>
+          or ring
+          <a [href]="'tel:' + site.phoneHref" class="text-forest-700 font-semibold hover:underline">
+            {{ site.phone }}
+          </a>
+          and we will sort it out.
+        </p>
+        <p class="prose-body mt-3">
+          If you are unhappy with how we have handled your information, you can complain to the
+          Information Commissioner's Office at
+          <a
+            href="https://ico.org.uk"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-forest-700 font-semibold hover:underline"
+          >
+            ico.org.uk</a
+          >.
+        </p>
+      </section>
+
+      <div class="card p-6">
+        <p class="text-ink-soft text-sm">
+          Questions about any of this? Please
+          <a routerLink="/contact" class="text-forest-700 font-semibold hover:underline">
+            get in touch</a
+          >. We would rather explain than have you wondering.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

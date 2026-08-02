@@ -1,0 +1,240 @@
+<app-page-hero
+  eyebrow="Volunteer"
+  heading="This library runs on people, not budgets"
+  intro="More than 60 volunteers keep these doors open. Some give a morning a week behind the counter; others bake a cake once a month. Both matter."
+/>
+
+<!-- ── Roles ─────────────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="max-w-2xl">
+    <p class="eyebrow">Ways to help</p>
+    <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">There is more to it than shelving books</h2>
+    <p class="prose-body mt-4">
+      You do not need library experience, and you do not need to commit to a set number of hours.
+      Full training is given for anything that needs it.
+    </p>
+  </div>
+
+  <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    @for (role of roles; track role.title; let i = $index) {
+      <li class="card p-6" [appReveal]="i * 45">
+        <h3 class="font-display text-lg font-semibold">{{ role.title }}</h3>
+        <p class="text-ink-soft mt-2 text-sm leading-relaxed">{{ role.description }}</p>
+      </li>
+    }
+  </ul>
+</section>
+
+<!-- ── Why volunteer ─────────────────────────────────────────────────────── -->
+<section class="bg-sunken mt-20 section">
+  <div class="container-page grid items-center gap-10 lg:grid-cols-12">
+    <div class="lg:col-span-7">
+      <h2 class="text-3xl font-semibold">"A very rewarding experience"</h2>
+      <p class="prose-body mt-4">
+        That is how our volunteers describe it, and it is the reason most of them stay for years.
+        You meet your neighbours properly, you learn something, and you can see exactly what your
+        time achieves — it is the building you are standing in.
+      </p>
+      <p class="text-ink-soft mt-4">
+        If you are not sure it is for you, come in for a coffee and ask whoever is on the counter
+        what their week looks like. No obligation whatsoever.
+      </p>
+    </div>
+    <div class="lg:col-span-5">
+      <div class="card p-7">
+        <span class="text-ochre-600"><app-icon name="quote" [size]="28" /></span>
+        <ul class="mt-4 flex flex-col gap-3 text-sm">
+          <li class="text-ink-soft flex items-start gap-3">
+            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+              <app-icon name="check" [size]="14" />
+            </span>
+            Full training, and never thrown in at the deep end
+          </li>
+          <li class="text-ink-soft flex items-start gap-3">
+            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+              <app-icon name="check" [size]="14" />
+            </span>
+            Give as much or as little time as suits you
+          </li>
+          <li class="text-ink-soft flex items-start gap-3">
+            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+              <app-icon name="check" [size]="14" />
+            </span>
+            Plenty of roles that do not involve the counter at all
+          </li>
+          <li class="text-ink-soft flex items-start gap-3">
+            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+              <app-icon name="check" [size]="14" />
+            </span>
+            Free coffee. Obviously.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Application ───────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="mx-auto max-w-3xl">
+    <div class="card p-7 sm:p-10">
+      @if (state() === 'success') {
+        <div class="py-10 text-center" role="status">
+          <span
+            class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-success-soft text-success"
+          >
+            <app-icon name="check" [size]="32" />
+          </span>
+          <h2 class="font-display mt-5 text-2xl font-semibold">Thank you — welcome aboard</h2>
+          <p class="text-ink-soft mx-auto mt-3 max-w-md text-lg">
+            One of the trustees will get in touch to have a chat about what you would enjoy and when
+            you are free. There is no commitment until you are happy.
+          </p>
+        </div>
+      } @else {
+        <h2 class="text-3xl font-semibold">Get in touch about volunteering</h2>
+        <p class="text-ink-soft mt-2">
+          Fill this in and a trustee will contact you for an informal chat. Or simply call in and
+          ask — that works just as well.
+        </p>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="mt-8 flex flex-col gap-5" novalidate>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="name" class="field-label">
+                Your name <span aria-hidden="true">*</span>
+              </label>
+              <input
+                id="name"
+                type="text"
+                formControlName="name"
+                autocomplete="name"
+                class="field-input"
+                [attr.aria-invalid]="invalid('name')"
+                [attr.aria-describedby]="invalid('name') ? 'name-error' : null"
+              />
+              @if (invalid('name')) {
+                <p id="name-error" class="field-error">
+                  <app-icon name="info" [size]="15" />
+                  Please tell us your name.
+                </p>
+              }
+            </div>
+
+            <div>
+              <label for="email" class="field-label">Email <span aria-hidden="true">*</span></label>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                autocomplete="email"
+                class="field-input"
+                [attr.aria-invalid]="invalid('email')"
+                [attr.aria-describedby]="invalid('email') ? 'email-error' : null"
+              />
+              @if (invalid('email')) {
+                <p id="email-error" class="field-error">
+                  <app-icon name="info" [size]="15" />
+                  Please enter an email address we can reply to.
+                </p>
+              }
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="phone" class="field-label">Phone</label>
+              <input
+                id="phone"
+                type="tel"
+                formControlName="phone"
+                autocomplete="tel"
+                class="field-input sm:max-w-sm"
+              />
+              <p class="field-hint">Optional</p>
+            </div>
+          </div>
+
+          <fieldset>
+            <legend class="field-label">What sounds interesting?</legend>
+            <p class="field-hint mt-0 mb-3">
+              Tick as many as you like, or none at all if you are not sure yet.
+            </p>
+            <div class="grid gap-2 sm:grid-cols-2">
+              @for (role of roles; track role.title; let i = $index) {
+                <label
+                  class="border-line hover:border-forest-300 hover:bg-page flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors"
+                  [class]="isSelected(role.title) ? 'border-forest-500 bg-forest-50' : ''"
+                >
+                  <input
+                    type="checkbox"
+                    class="accent-forest-700 mt-0.5 h-5 w-5 shrink-0"
+                    [checked]="isSelected(role.title)"
+                    (change)="toggleRole(role.title, $any($event.target).checked)"
+                  />
+                  <span class="text-ink text-sm font-medium">{{ role.title }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+
+          <div>
+            <label for="availability" class="field-label">
+              When are you generally free? <span aria-hidden="true">*</span>
+            </label>
+            <input
+              id="availability"
+              type="text"
+              formControlName="availability"
+              class="field-input"
+              placeholder="e.g. Tuesday and Friday mornings, or one weekend a month"
+              [attr.aria-invalid]="invalid('availability')"
+              [attr.aria-describedby]="invalid('availability') ? 'availability-error' : null"
+            />
+            @if (invalid('availability')) {
+              <p id="availability-error" class="field-error">
+                <app-icon name="info" [size]="15" />
+                A rough idea is fine — it helps us match you to a role.
+              </p>
+            }
+          </div>
+
+          <div>
+            <label for="message" class="field-label">Anything else you would like to say?</label>
+            <textarea
+              id="message"
+              rows="4"
+              formControlName="message"
+              class="field-input resize-y"
+              placeholder="Optional — any skills, questions, or things we should know."
+            ></textarea>
+          </div>
+
+          @if (state() === 'error') {
+            <div class="alert-danger" role="alert">
+              <app-icon name="info" [size]="19" />
+              <p class="text-sm">
+                Sorry, we could not send that. Please try again, or ring us on
+                <a [href]="'tel:' + site.phoneHref" class="font-semibold underline">
+                  {{ site.phone }}
+                </a>
+                .
+              </p>
+            </div>
+          }
+
+          <div class="flex flex-wrap items-center gap-4">
+            <button type="submit" [disabled]="state() === 'submitting'" class="btn-primary">
+              {{ state() === 'submitting' ? 'Sending…' : 'Send my details' }}
+              @if (state() !== 'submitting') {
+                <app-icon name="arrowRight" [size]="18" />
+              }
+            </button>
+            <p class="text-ink-muted text-sm">
+              Fields marked <span aria-hidden="true">*</span
+              ><span class="sr-only">with an asterisk</span> are required.
+            </p>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</section>

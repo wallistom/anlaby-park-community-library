@@ -1,0 +1,148 @@
+<!-- The separate dark utility bar was removed: three stacked bars before any
+     content made the page feel heavy. Opening status and phone now sit inline
+     in the header itself. -->
+<header
+  class="sticky top-0 z-50 border-b transition-all duration-300"
+  [class]="scrolled() ? 'border-line bg-page/95 backdrop-blur-md' : 'border-transparent bg-page'"
+>
+  <div class="mx-auto flex max-w-7xl items-center gap-4 px-5 py-3 sm:px-8">
+    <!-- Wordmark -->
+    <a routerLink="/" class="group flex items-center gap-3" aria-label="{{ site.name }}, home">
+      <span
+        class="bg-forest-800 group-hover:bg-forest-700 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white transition-colors"
+      >
+        <app-icon name="book" [size]="22" />
+      </span>
+      <span class="leading-none">
+        <span class="font-display text-forest-950 block text-lg font-semibold sm:text-xl">
+          Anlaby Park
+        </span>
+        <span class="text-ink-soft block text-xs font-medium tracking-[0.16em] uppercase">
+          Community Library
+        </span>
+      </span>
+    </a>
+
+    <nav class="ml-auto hidden items-center gap-0.5 lg:flex" aria-label="Main">
+      @for (item of navItems; track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="!text-forest-800 bg-forest-50"
+          class="text-ink-soft hover:text-forest-900 hover:bg-sunken rounded-lg px-3 py-2 text-[0.9rem] font-medium transition-colors"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="ml-auto hidden shrink-0 items-center gap-4 lg:ml-4 lg:flex">
+      <a
+        [href]="'tel:' + site.phoneHref"
+        class="text-ink-soft hover:text-forest-900 flex items-center gap-2 text-sm font-medium transition-colors"
+      >
+        <app-icon name="phone" [size]="15" />
+        {{ site.phone }}
+      </a>
+      <a routerLink="/support" class="btn-accent btn-sm"> Donate </a>
+    </div>
+
+    <!-- Mobile controls -->
+    <button
+      type="button"
+      class="text-forest-900 hover:bg-sunken ml-auto inline-flex h-11 w-11 items-center justify-center rounded-xl lg:hidden"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="mobile-menu"
+      (click)="toggleMenu()"
+    >
+      <span class="sr-only">{{ menuOpen() ? 'Close menu' : 'Open menu' }}</span>
+      <app-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="24" />
+    </button>
+  </div>
+</header>
+
+<!-- Mobile drawer.
+
+     A full-screen overlay carrying its own header bar rather than one offset
+     beneath the site header: the dismissible notice above makes the header's
+     height variable, so any fixed offset would eventually be wrong. -->
+@if (menuOpen()) {
+  <div
+    id="mobile-menu"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menu"
+    class="bg-page fixed inset-0 z-[60] flex flex-col lg:hidden"
+  >
+    <div class="border-line flex shrink-0 items-center gap-4 border-b px-5 py-3">
+      <span class="flex items-center gap-3">
+        <span
+          class="bg-forest-800 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
+        >
+          <app-icon name="book" [size]="22" />
+        </span>
+        <span class="leading-none">
+          <span class="font-display text-forest-950 block text-lg font-semibold">Anlaby Park</span>
+          <span class="text-ink-soft block text-xs font-medium tracking-[0.16em] uppercase">
+            Community Library
+          </span>
+        </span>
+      </span>
+
+      <button
+        type="button"
+        class="text-forest-900 hover:bg-sunken ml-auto inline-flex h-11 w-11 items-center justify-center rounded-xl"
+        (click)="closeMenu()"
+      >
+        <span class="sr-only">Close menu</span>
+        <app-icon name="close" [size]="24" />
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 pt-4 pb-10">
+      <p class="text-ink-soft border-line mb-3 flex items-center gap-2 border-b pb-4 text-sm">
+        <span
+          class="inline-flex h-2 w-2 rounded-full"
+          [class]="hours.status().isOpen ? 'bg-success' : 'bg-ochre-500'"
+          aria-hidden="true"
+        ></span>
+        <span class="font-semibold">{{ hours.status().label }}</span>
+      </p>
+
+      <nav aria-label="Mobile">
+        <ul class="flex flex-col">
+          @for (item of navItems; track item.path) {
+            <li>
+              <a
+                [routerLink]="item.path"
+                routerLinkActive="!text-forest-800 !bg-forest-50"
+                class="text-ink hover:bg-sunken flex items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium"
+              >
+                {{ item.label }}
+                <app-icon name="arrowRight" [size]="18" />
+              </a>
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <a routerLink="/support" class="btn-accent mt-5 w-full">
+        <app-icon name="heart" [size]="18" />
+        Donate to the library
+      </a>
+
+      <div class="border-line mt-6 flex flex-col gap-3 border-t pt-6 text-base">
+        <a [href]="'tel:' + site.phoneHref" class="text-ink-soft flex items-center gap-3 px-1 py-1">
+          <app-icon name="phone" [size]="18" />
+          {{ site.phone }}
+        </a>
+        <a
+          [href]="'mailto:' + site.email"
+          class="text-ink-soft flex items-center gap-3 px-1 py-1 break-all"
+        >
+          <app-icon name="mail" [size]="18" />
+          <span class="break-all">{{ site.email }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+}

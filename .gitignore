@@ -1,0 +1,73 @@
+# ---------------------------------------------------------------------------
+# Secrets and personal data — keep these at the top so they are hard to miss.
+#
+# terraform.tfvars names real trustees and carries the OAuth client ID.
+# terraform.tfstate contains the full resource graph including variable values.
+# Neither belongs in version control.
+# ---------------------------------------------------------------------------
+infra/terraform.tfvars
+infra/*.auto.tfvars
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraformrc
+terraform.rc
+
+# Anything that looks like a credential
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!public/**/*.key
+credentials
+.aws/
+
+# Terraform working files
+infra/.terraform/
+infra/.terraform.lock.hcl.bak
+infra/.build/
+crash.log
+crash.*.log
+
+# Lambda build artefacts — regenerate with backend/build.sh
+backend/build/
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Angular
+/.angular/cache
+/coverage
+testem.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/extensions.json
+.history/*
+
+# System files
+.DS_Store
+Thumbs.db

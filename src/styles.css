@@ -1,0 +1,397 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Anlaby Park Community Library — design system
+
+   Two layers:
+
+     1. Raw ramps (forest / ochre / parchment) — the palette.
+     2. Semantic tokens (ink, surface, line, accent, danger, success) — what
+        the UI actually references.
+
+   Components use the semantic layer, so a contrast problem is fixed in one
+   declaration rather than in every template that happened to pick a shade.
+   That indirection exists because its absence already caused a regression:
+   secondary text drifted onto a value that failed WCAG AA in 34 places.
+
+   Every pairing used in the UI is verified by scripts/check-contrast.mjs,
+   which fails the build if any drops below AA at its rendered size.
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* --- Raw ramps ------------------------------------------------------- */
+
+  /* Brand — forest green. The library stands on The Greenway. */
+  --color-forest-50: #f0f7f3;
+  --color-forest-100: #dbeae1;
+  --color-forest-200: #b9d7c6;
+  --color-forest-300: #8dbca5;
+  --color-forest-400: #5e9b7f;
+  --color-forest-500: #3f8064;
+  --color-forest-600: #2e654e;
+  --color-forest-700: #265140;
+  --color-forest-800: #1f4234;
+  --color-forest-900: #1b372c;
+  --color-forest-950: #0d1f18;
+
+  /* Accent — ochre. Darkened through the middle so solid fills can carry
+     white text at AA; the old 600 managed only 4.02:1 behind "Donate". */
+  --color-ochre-50: #fdf8ec;
+  --color-ochre-100: #faeecb;
+  --color-ochre-200: #f4dc9a;
+  --color-ochre-300: #ebc260;
+  --color-ochre-400: #dda52c;
+  --color-ochre-500: #c4870f;
+  --color-ochre-600: #a3690c;
+  --color-ochre-700: #85510f;
+  --color-ochre-800: #6d4213;
+  --color-ochre-900: #5b3714;
+  --color-ochre-950: #331b07;
+
+  /* Neutral — warm parchment. The middle of this ramp was previously too
+     light to carry text; 400–600 are darker so there is a usable muted step. */
+  --color-parchment-50: #faf9f7;
+  --color-parchment-100: #f3f1ed;
+  --color-parchment-200: #e6e2db;
+  --color-parchment-300: #cdc7ba;
+  /* 400 is the lightest value permitted on the edge of an interactive
+     control: WCAG 1.4.11 wants 3:1 for component boundaries, and the old
+     border managed 1.60:1. */
+  --color-parchment-400: #8d8474;
+  /* 500 is the lightest permitted text on any light surface, including the
+     sunken bands — which is where the previous value fell short. */
+  --color-parchment-500: #726959;
+  --color-parchment-600: #605848;
+  --color-parchment-700: #4b453a;
+  --color-parchment-800: #38332c;
+  --color-parchment-900: #2a2620;
+  --color-parchment-950: #191714;
+
+  /* --- Semantic tokens -------------------------------------------------- */
+
+  /* Text. `muted` is the lightest text permitted anywhere on a light
+     background — nothing softer is safe at body size. */
+  --color-ink: var(--color-parchment-900);
+  --color-ink-soft: var(--color-parchment-700);
+  --color-ink-muted: var(--color-parchment-500);
+  --color-ink-inverse: #ffffff;
+
+  /* Text on the dark green bands. */
+  --color-ink-on-dark: var(--color-forest-100);
+  --color-ink-on-dark-muted: var(--color-forest-300);
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-page: var(--color-parchment-50);
+  --color-sunken: var(--color-parchment-100);
+  --color-inverse: var(--color-forest-900);
+
+  /* Lines. `line` is decorative — card edges and dividers, where no contrast
+     minimum applies. `line-strong` bounds interactive controls, so it is held
+     to 3:1. */
+  --color-line: var(--color-parchment-200);
+  --color-line-soft: var(--color-parchment-300);
+  --color-line-strong: var(--color-parchment-400);
+  --color-line-inverse: var(--color-forest-700);
+
+  /* Interactive */
+  --color-accent: var(--color-ochre-600);
+  --color-accent-hover: var(--color-ochre-700);
+  --color-accent-bright: var(--color-ochre-400);
+  --color-primary: var(--color-forest-800);
+  --color-primary-hover: var(--color-forest-700);
+
+  /* States. Previously these reached outside the system for Tailwind's
+     defaults, which is how eleven stray colours crept in. */
+  --color-danger: #9f1239;
+  --color-danger-soft: #fff1f2;
+  --color-danger-line: #fecdd3;
+  --color-success: #15803d;
+  --color-success-soft: #f0fdf4;
+  --color-success-line: #bbf7d0;
+
+  /* --- Type ------------------------------------------------------------- */
+
+  /* Literata was drawn for long-form reading rather than display. It keeps
+     the bookish character a library wants without the editorial flourish
+     Fraunces brought, which read closer to a lifestyle brand than a civic
+     institution. */
+  --font-display: 'Literata', ui-serif, Georgia, Cambria, 'Times New Roman', serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* --- Shape ------------------------------------------------------------ */
+
+  /* Three radii in use, not five: rounded-lg for chips and small controls,
+     rounded-xl for buttons and inputs, rounded-2xl for cards and panels
+     (plus rounded-full for pills). Tailwind's own scale is left alone so
+     these names keep their usual meanings. */
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-gentle: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Keeps anchored headings clear of the sticky header. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-page text-ink font-sans antialiased;
+    /* Many readers here are older: a 17px base and a generous line height
+       make long passages easier to hold on to. */
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    /* Long unbroken strings (an email, a pasted URL in an event description)
+       must wrap rather than push the page wider than the screen. */
+    overflow-wrap: break-word;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-forest-950;
+    font-optical-sizing: auto;
+    text-wrap: balance;
+    letter-spacing: -0.011em;
+  }
+
+  h1 {
+    line-height: 1.12;
+  }
+
+  h2,
+  h3 {
+    line-height: 1.22;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* One focus treatment everywhere, and it is never removed. */
+  :focus-visible {
+    @apply outline-ochre-700 rounded-sm outline-3 outline-offset-2;
+  }
+
+  ::selection {
+    @apply bg-ochre-200 text-forest-950;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Tailwind v4 cannot @apply one custom class inside another, so shared
+     declarations are written out in full rather than composed. */
+
+  /* --- Layout ----------------------------------------------------------- */
+
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  /* Standard vertical rhythm for a section. Replaces the mix of mt-16 /
+     mt-20 / mt-24 / py-20 that had accumulated across the pages. */
+  .section {
+    @apply py-16 sm:py-20;
+  }
+
+  .section-tight {
+    @apply py-12 sm:py-16;
+  }
+
+  .prose-body {
+    @apply text-ink-soft text-lg leading-relaxed;
+  }
+
+  /* Small label above a section heading. Sentence case and lightweight — the
+     uppercase tracked treatment made every section shout equally loudly. */
+  .eyebrow {
+    @apply text-ink-muted mb-2 text-sm font-medium;
+  }
+
+  /* --- Surfaces --------------------------------------------------------- */
+
+  .card {
+    @apply border-line bg-surface rounded-2xl border;
+  }
+
+  .card-interactive {
+    @apply border-line bg-surface hover:border-forest-300 rounded-2xl border transition-colors;
+  }
+
+  /* --- Buttons ---------------------------------------------------------- */
+
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .btn-accent,
+  .btn-on-dark,
+  .btn-on-dark-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-semibold transition-colors;
+    /* Comfortably clear of the 44px minimum target. */
+    min-height: 3rem;
+  }
+
+  .btn:disabled,
+  .btn-primary:disabled,
+  .btn-secondary:disabled,
+  .btn-accent:disabled,
+  .btn-on-dark:disabled,
+  .btn-on-dark-secondary:disabled {
+    @apply cursor-not-allowed opacity-55;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-hover text-ink-inverse;
+  }
+
+  /* Solid ochre. Uses the darkened 600 so white text clears AA — the old
+     value managed 4.02:1 behind the site's most prominent call to action. */
+  .btn-accent {
+    @apply bg-accent hover:bg-accent-hover text-ink-inverse;
+  }
+
+  .btn-secondary {
+    @apply border-line-strong text-ink hover:bg-sunken border;
+  }
+
+  /* For use on the dark green bands. */
+  .btn-on-dark {
+    @apply bg-ochre-400 text-forest-950 hover:bg-ochre-300;
+  }
+
+  .btn-on-dark-secondary {
+    @apply border-line-inverse text-ink-inverse hover:bg-forest-800 border;
+  }
+
+  .btn-sm {
+    @apply gap-1.5 px-4 py-2.5 text-sm;
+    min-height: 2.75rem;
+  }
+
+  /* --- Links ------------------------------------------------------------ */
+
+  .link {
+    @apply text-forest-700 font-medium underline-offset-4 hover:underline;
+  }
+
+  /* These sit on their own rather than inside a sentence, so they need a
+     real touch target — 28px was too small to hit reliably on a phone. */
+  .link-arrow {
+    @apply text-forest-700 hover:text-forest-900 inline-flex min-h-11 items-center gap-1.5 font-semibold underline-offset-4 hover:underline;
+  }
+
+  /* --- Chips ------------------------------------------------------------ */
+
+  .chip,
+  .chip-neutral,
+  .chip-accent,
+  .chip-success {
+    @apply inline-block rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .chip-neutral {
+    @apply bg-sunken text-ink-soft;
+  }
+
+  .chip-accent {
+    @apply bg-ochre-100 text-ochre-900;
+  }
+
+  .chip-success {
+    @apply bg-success-soft text-success;
+  }
+
+  /* Filter pills — Activities, and the admin inbox tabs. */
+  .pill,
+  .pill-on,
+  .pill-off {
+    @apply inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors;
+    min-height: 2.75rem;
+  }
+
+  .pill-on {
+    @apply border-forest-800 bg-forest-800 text-ink-inverse;
+  }
+
+  .pill-off {
+    @apply border-line-strong text-ink-soft hover:border-forest-400 hover:bg-surface;
+  }
+
+  /* --- Forms ------------------------------------------------------------ */
+
+  .field-label {
+    @apply text-ink mb-1.5 block text-sm font-semibold;
+  }
+
+  .field-input {
+    @apply border-line-strong text-ink bg-surface focus:border-forest-600 w-full rounded-xl border px-4 py-3 transition-colors;
+    min-height: 3rem;
+  }
+
+  /* Placeholders previously sat at 2.38:1 — decorative, not readable. */
+  .field-input::placeholder {
+    @apply text-ink-muted;
+  }
+
+  .field-input[aria-invalid='true'] {
+    @apply border-danger bg-danger-soft;
+  }
+
+  .field-error {
+    @apply text-danger mt-1.5 flex items-start gap-1.5 text-sm font-medium;
+  }
+
+  .field-hint {
+    @apply text-ink-muted mt-1.5 text-sm;
+  }
+
+  /* --- Alerts ----------------------------------------------------------- */
+
+  .alert,
+  .alert-danger {
+    @apply flex items-start gap-3 rounded-xl border p-4;
+  }
+
+  .alert-danger {
+    @apply border-danger-line bg-danger-soft text-danger;
+  }
+}
+
+/* Entrance animation used by the reveal directive. Global so it is available
+   to every lazily loaded page. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.reveal-pending {
+  opacity: 0;
+}
+
+.reveal-visible {
+  animation: reveal-up 0.6s var(--ease-gentle) both;
+}

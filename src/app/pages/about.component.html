@@ -1,0 +1,166 @@
+<app-page-hero
+  eyebrow="About the trust"
+  heading="Run by the people who use it"
+  intro="Anlaby Park Community Library is a registered charity governed by a board of trustees, all of them local residents, all of them volunteers. Nobody here is paid."
+/>
+
+<!-- ── Story ─────────────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-5">
+      <p class="eyebrow">Our story</p>
+      <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">
+        From closure list to Hull's first community library
+      </h2>
+      <p class="prose-body mt-5">
+        When the council could no longer fund it, the people of Anlaby Park did something unusual:
+        they took the library on themselves. It made us the first community-run library in Hull, and
+        we are still the only one.
+      </p>
+      <p class="text-ink-soft mt-4">
+        The arrangement is a genuine partnership. Hull City Council supplies the catalogue and the
+        professional library infrastructure; we supply the building, the volunteers, and the
+        day-to-day running of the place.
+      </p>
+    </div>
+
+    <div class="lg:col-span-7">
+      <ol class="relative flex flex-col gap-8">
+        @for (entry of timeline; track entry.title; let i = $index; let last = $last) {
+          <li class="relative flex gap-5" [appReveal]="i * 90">
+            <!-- Rail -->
+            <div class="flex flex-col items-center">
+              <span
+                class="bg-forest-800 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-semibold text-white"
+              >
+                {{ entry.year }}
+              </span>
+              @if (!last) {
+                <span class="bg-line mt-2 w-px flex-1" aria-hidden="true"></span>
+              }
+            </div>
+
+            <div class="border-line flex-1 rounded-2xl border bg-surface p-6">
+              <h3 class="font-display text-xl font-semibold">{{ entry.title }}</h3>
+              <p class="text-ink-soft mt-2 leading-relaxed">{{ entry.body }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ── Governance ────────────────────────────────────────────────────────── -->
+<section class="bg-sunken mt-20 section">
+  <div class="container-page grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-5">
+      <p class="eyebrow">Governance</p>
+      <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">What the trustees do</h2>
+      <p class="prose-body mt-5">
+        The trustees are the volunteers legally responsible for running the charity. They meet every
+        month, and minutes of those meetings are available to read in the library — just ask at the
+        counter.
+      </p>
+
+      <div class="border-line mt-8 rounded-2xl border bg-surface p-6">
+        <dl class="flex flex-col gap-4 text-sm">
+          <div>
+            <dt class="text-ink-muted">Registered charity number</dt>
+            <dd class="font-display text-forest-900 mt-0.5 text-xl font-semibold">
+              {{ site.charityNumber }}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-ink-muted">Status</dt>
+            <dd class="text-ink mt-0.5 font-medium">
+              Charitable Incorporated Organisation since {{ site.charityStatusFrom }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="lg:col-span-7">
+      <ul class="flex flex-col gap-3">
+        @for (item of responsibilities; track item) {
+          <li
+            class="border-line text-ink-soft flex items-start gap-3 rounded-xl border bg-surface px-5 py-4"
+          >
+            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+              <app-icon name="check" [size]="15" />
+            </span>
+            <span>{{ item }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── The board ─────────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="max-w-2xl">
+    <p class="eyebrow">The board</p>
+    <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">Our trustees</h2>
+    <p class="prose-body mt-4">All local residents, giving their time free of charge.</p>
+  </div>
+
+  <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    @for (trustee of trustees; track trustee.name; let i = $index) {
+      <li
+        class="border-line flex min-w-0 items-center gap-4 rounded-2xl border bg-surface p-5"
+        [appReveal]="i * 40"
+      >
+        <span
+          class="bg-forest-100 text-forest-800 font-display flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-semibold"
+          aria-hidden="true"
+        >
+          {{ trustee.name.charAt(0) }}
+        </span>
+        <div class="min-w-0">
+          <p class="font-display text-lg font-semibold">{{ trustee.name }}</p>
+          <p class="text-ink-soft text-sm">{{ trustee.role ?? 'Trustee' }}</p>
+        </div>
+      </li>
+    }
+  </ul>
+</section>
+
+<!-- ── Volunteers ────────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="bg-inverse rounded-2xl px-8 py-14 sm:px-12">
+    <div class="grid items-center gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <h2 class="text-3xl font-semibold text-white sm:text-4xl">
+          The people who actually open the doors
+        </h2>
+        <p class="text-ink-on-dark mt-5 text-lg leading-relaxed">
+          More than {{ site.volunteerCount }} Volunteer Library Assistants run the counter, shelve
+          the books, make the coffee, lead the clubs, and keep the building going. Between them they
+          give thousands of hours a year.
+        </p>
+      </div>
+      <div class="lg:col-span-5">
+        <div class="border-line-inverse rounded-2xl border p-6 text-center">
+          <p class="font-display text-ochre-300 text-6xl font-semibold">
+            {{ site.volunteerCount }}+
+          </p>
+          <p class="text-ink-on-dark mt-2 text-sm">
+            volunteer library assistants, plus the trustees and everyone who bakes, crafts, and
+            fundraises
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-cta-band
+  heading="Could you give us a couple of hours?"
+  body="Volunteering here is genuinely rewarding, and there are far more ways to help than standing behind the counter."
+  primaryLabel="See volunteer roles"
+  primaryPath="/volunteer"
+  secondaryLabel="Support us financially"
+  secondaryPath="/support"
+/>

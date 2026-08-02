@@ -1,0 +1,192 @@
+<app-page-hero
+  eyebrow="Visit us"
+  heading="Everyone is welcome, and it costs nothing to walk in"
+  intro="You do not need to be a member to come in, use the wi-fi, read the paper, or buy a coffee. Joining is free too, and takes a couple of minutes at the counter."
+/>
+
+<!-- ── Hours & location ──────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="grid gap-8 lg:grid-cols-2">
+    <div [appReveal]="0">
+      <app-hours-table />
+    </div>
+
+    <div class="card p-6 sm:p-7" [appReveal]="80">
+      <div class="flex items-center gap-3">
+        <span
+          class="bg-forest-50 text-forest-700 flex h-11 w-11 items-center justify-center rounded-xl"
+        >
+          <app-icon name="mapPin" [size]="22" />
+        </span>
+        <h2 class="font-display text-xl font-semibold">Where to find us</h2>
+      </div>
+
+      <address class="text-ink-soft mt-6 text-lg leading-relaxed not-italic">
+        {{ site.address.line1 }}<br />
+        {{ site.address.line2 }}<br />
+        {{ site.address.city }} {{ site.address.postcode }}
+      </address>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a
+          [href]="googleMapsUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-secondary btn-sm"
+        >
+          <app-icon name="externalLink" [size]="16" />
+          Google Maps
+        </a>
+        <a
+          [href]="appleMapsUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-secondary btn-sm"
+        >
+          <app-icon name="externalLink" [size]="16" />
+          Apple Maps
+        </a>
+      </div>
+
+      <div class="border-line mt-7 flex flex-col gap-3 border-t pt-6">
+        <a
+          [href]="'tel:' + site.phoneHref"
+          class="text-ink-soft hover:text-forest-900 flex min-h-11 items-center gap-3 font-medium"
+        >
+          <span class="text-forest-600"><app-icon name="phone" [size]="19" /></span>
+          {{ site.phone }}
+        </a>
+        <a
+          [href]="'mailto:' + site.email"
+          class="text-ink-soft hover:text-forest-900 flex min-h-11 items-start gap-3 font-medium break-all"
+        >
+          <span class="text-forest-600 mt-0.5"><app-icon name="mail" [size]="19" /></span>
+          <span class="break-all">{{ site.email }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Membership ────────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div
+    class="border-forest-200 bg-forest-50 grid items-center gap-8 rounded-2xl border p-8 sm:p-12 lg:grid-cols-12"
+  >
+    <div class="lg:col-span-8">
+      <p class="text-forest-700 text-xs font-semibold tracking-[0.18em] uppercase">Membership</p>
+      <h2 class="mt-2 text-3xl font-semibold">Free to join, and it opens up the whole city</h2>
+      <p class="prose-body mt-4">
+        We run in partnership with Hull City Council, so your membership here gives you the entire
+        Hull City Libraries catalogue. Request a title from any branch and we will have it delivered
+        to The Greenway for you to collect.
+      </p>
+      <p class="text-ink-soft mt-4">
+        Bring something with your name and address on it the first time you come in, and we will do
+        the rest at the counter.
+      </p>
+    </div>
+    <div class="lg:col-span-4">
+      <div class="border-forest-200 rounded-2xl border bg-surface p-6 text-center">
+        <p class="font-display text-forest-800 text-5xl font-semibold">£0</p>
+        <p class="text-ink-soft mt-2 text-sm">Membership costs nothing, and always has.</p>
+        <a
+          routerLink="/contact"
+          class="bg-forest-800 hover:bg-forest-700 mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold text-white transition-colors"
+        >
+          Ask us a question
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Everything we offer ───────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="max-w-2xl">
+    <p class="eyebrow">What's here</p>
+    <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">Everything we offer</h2>
+    <p class="prose-body mt-4">
+      A full library service, plus the practical bits and pieces people actually need — printing,
+      copying, laminating, and a computer you can sit at without booking weeks ahead.
+    </p>
+  </div>
+
+  <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    @for (facility of facilities; track facility.title; let i = $index) {
+      <li class="card p-6" [appReveal]="i * 50">
+        <span
+          class="bg-ochre-50 text-ochre-700 flex h-12 w-12 items-center justify-center rounded-xl"
+        >
+          <app-icon [name]="facility.icon" [size]="24" />
+        </span>
+        <h3 class="font-display mt-4 flex flex-wrap items-center gap-2 text-lg font-semibold">
+          {{ facility.title }}
+          @if (facility.note) {
+            <span class="bg-sunken text-ink-soft rounded-full px-2.5 py-0.5 text-xs font-medium">
+              {{ facility.note }}
+            </span>
+          }
+        </h3>
+        <p class="text-ink-soft mt-2 text-sm leading-relaxed">{{ facility.description }}</p>
+      </li>
+    }
+  </ul>
+</section>
+
+<!-- ── Accessibility ─────────────────────────────────────────────────────── -->
+<section class="container-page mt-20">
+  <div class="card p-8 sm:p-12">
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <span
+          class="bg-forest-50 text-forest-700 flex h-12 w-12 items-center justify-center rounded-xl"
+        >
+          <app-icon name="accessible" [size]="24" />
+        </span>
+        <h2 class="mt-4 text-3xl font-semibold">Getting in and getting around</h2>
+        <p class="prose-body mt-4">
+          If there is something that would make a visit easier, ring us before you come. We would
+          far rather sort it out in advance than have you turn up and struggle.
+        </p>
+      </div>
+
+      <div class="lg:col-span-7">
+        <ul class="flex flex-col gap-3">
+          @for (note of accessNotes; track note) {
+            <li class="text-ink-soft flex items-start gap-3">
+              <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+                <app-icon name="check" [size]="15" />
+              </span>
+              <span>{{ note }}</span>
+            </li>
+          }
+        </ul>
+
+        <div class="border-line mt-8 border-t pt-6">
+          <h3 class="font-display text-lg font-semibold">Can't get to us?</h3>
+          <p class="text-ink-soft mt-2">
+            We run an outreach service taking books out to residents of Lees Rest Homes. If getting
+            here is difficult, ring
+            <a
+              [href]="'tel:' + site.phoneHref"
+              class="text-forest-700 font-semibold hover:underline"
+            >
+              {{ site.phone }}
+            </a>
+            and we will see what we can arrange.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-cta-band
+  heading="Come and see the place"
+  body="No appointment, no membership card needed, and nobody will mind if you just want to sit down for half an hour."
+  primaryLabel="Find us on the map"
+  primaryPath="/contact"
+  secondaryLabel="See what's on"
+  secondaryPath="/whats-on"
+/>
