@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '../shared/icon.component';
-import { OPENING_HOURS, SITE } from '../core/site.data';
+import { ADDRESS_ONE_LINE, SITE } from '../core/site.data';
 
 @Component({
   selector: 'app-footer',
@@ -11,7 +11,7 @@ import { OPENING_HOURS, SITE } from '../core/site.data';
 })
 export class FooterComponent {
   protected readonly site = SITE;
-  protected readonly openingHours = OPENING_HOURS;
+  protected readonly addressOneLine = ADDRESS_ONE_LINE;
   protected readonly year = new Date().getFullYear();
 
   protected readonly exploreLinks = [
