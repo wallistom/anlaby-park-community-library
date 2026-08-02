@@ -39,20 +39,27 @@ data "aws_iam_policy_document" "github_assume_role" {
       values   = ["sts.amazonaws.com"]
     }
 
-    # Scoped to this repository. A fork, or a pull request from elsewhere,
-    # cannot assume this role.
+    # Scoped by the `repository` and `environment` claims rather than by `sub`.
     #
-    # Both subject forms are listed because a job that declares an
-    # `environment:` gets an environment-scoped subject rather than a
-    # branch-scoped one. The deploy job uses `environment: production`, so it
-    # presents the second form; the first covers a plain push to main.
+    # GitHub now issues an immutable subject with numeric owner and repository
+    # IDs embedded in it, e.g.
+    #   repo:owner@100294355/name@1319905089:environment:production
+    # so matching `sub` against "owner/name" silently fails. These two claims
+    # carry the plain values and are stable.
+    #
+    # Requiring `environment` also means only a job that declares
+    # `environment: production` can assume the role — an incidental push
+    # workflow cannot.
     condition {
-      test     = "StringLike"
-      variable = "token.actions.githubusercontent.com:sub"
-      values = [
-        "repo:${var.github_repository}:ref:refs/heads/main",
-        "repo:${var.github_repository}:environment:production",
-      ]
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:repository"
+      values   = [var.github_repository]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:environment"
+      values   = ["production"]
     }
   }
 }
