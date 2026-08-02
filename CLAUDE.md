@@ -1,0 +1,226 @@
+# CLAUDE.md
+
+Working notes for this repository. The README explains **what** the project is and how to
+deploy it; this file records the **decisions, conventions, and traps** that are not obvious
+from reading the code.
+
+---
+
+## What this is
+
+A replacement for [anlabyparkcommunitylibrary.com](https://anlabyparkcommunitylibrary.com/) —
+a real registered charity (no. 1155677) in west Hull, run by volunteer trustees. It is live at
+**https://d2d5pvqwty4462.cloudfront.net**.
+
+This is not a demo. The forms write real enquiries from real people into DynamoDB, and the
+trustees will administer it themselves. Treat the content, the personal data, and the running
+costs accordingly.
+
+---
+
+## Who uses it
+
+Two audiences, and they pull in different directions:
+
+- **The public** — skews elderly, often on older phones or the library's own computers over
+  modest connections. This is why the base font is 17px, tap targets are ≥44px, the initial
+  bundle is ~103 kB, and every page works with the API unreachable.
+- **Trustees** — volunteers, middle-aged, not technical. They can fill in forms and click
+  buttons. They cannot be expected to touch AWS, Terraform, or a terminal. Anything they need
+  to change routinely must be editable through `/admin`.
+
+---
+
+## Commands
+
+```bash
+npm start                  # dev server on :4200
+npm run build              # contrast gate THEN ng build — the gate can fail the build
+npm run check:contrast     # WCAG audit on its own
+
+cd backend && python3 -m unittest discover -s tests -t .   # 50 tests
+cd backend && ./build.sh                                   # rebuild the Lambda layer
+
+cd infra && terraform plan     # state is in S3; no init flags needed
+```
+
+Formatting is Prettier, enforced in CI: `npx prettier --write "src/**/*.{ts,html,css}"`.
+
+---
+
+## Stack and layout
+
+Angular 20 + Tailwind v4 · Python 3.12 Lambdas · DynamoDB · Terraform · S3 + CloudFront, all in
+`eu-west-2` (London — the privacy policy states UK-only storage, so keep it there).
+
+```
+src/app/core/       site.data.ts (single source of truth for facts), services, guards
+src/app/shared/     icon, page-hero, hours-table, cta-band, directives
+src/app/pages/      10 public pages
+src/app/admin/      sign-in, manage-events, enquiries
+backend/src/        one directory per resource; one file per endpoint
+infra/              Terraform for the whole estate
+scripts/            check-contrast.mjs — the build gate
+```
+
+---
+
+## Conventions that matter
+
+### Colour goes through semantic tokens, never raw ramps
+
+`styles.css` defines raw ramps (`forest`, `ochre`, `parchment`) and then a semantic layer.
+**Templates use only the semantic names**: `text-ink`, `text-ink-soft`, `text-ink-muted`,
+`bg-surface`, `bg-page`, `bg-sunken`, `bg-inverse`, `border-line`, `border-line-strong`,
+`text-danger`, `text-success`, and so on.
+
+This exists because it was absent once and the palette silently regressed: secondary text drifted
+onto a value failing WCAG AA in 34 separate templates. Fixing it now means editing one
+declaration.
+
+### Contrast is enforced, not asserted
+
+`npm run build` runs `scripts/check-contrast.mjs` first and **fails the build** on any pairing
+below AA at its rendered size (4.5:1 body, 3:1 large text and interactive-control edges).
+
+If you add a new colour pairing, add it to the `PAIRS` array in that script. A comment claiming
+good contrast is not a check — an earlier version of the README claimed AA while the Donate
+button sat at 4.02:1.
+
+### Use the component classes
+
+`btn-primary`, `btn-secondary`, `btn-accent`, `btn-on-dark`, `btn-sm`, `card`,
+`card-interactive`, `chip-*`, `pill-on`/`pill-off`, `field-input`, `field-label`, `field-error`,
+`alert-danger`, `link`, `link-arrow`, `eyebrow`, `section`, `container-page`, `prose-body`.
+
+Don't re-implement these with utilities inline. Three radii only: `rounded-lg` (chips),
+`rounded-xl` (buttons, inputs), `rounded-2xl` (cards) — plus `rounded-full` for pills.
+
+### Motion
+
+Tokens: `--duration-micro` 150ms, `--duration-quick` 220ms, `--duration-page` 280ms.
+
+Rules learned the hard way:
+
+- **`opacity` and `transform` only.** Never animate layout properties.
+- **Hover transforms belong inside `@media (hover: hover)`.** On touch, `:hover` latches after a
+  tap and the effect sticks.
+- **Don't animate a page-level translate.** It competes with the scroll reveal *and* makes the
+  page a containing block, trapping the `position: fixed` mobile drawer.
+- **No hover motion on non-interactive elements.** It implies an affordance that isn't there.
+- The base `prefers-reduced-motion` rule collapses all durations, so individual rules don't need
+  their own handling.
+
+**If you add an animation class, attach it to an element and verify it fires.** Three animations
+once shipped as dead CSS because they were written but never applied. Check with
+`getComputedStyle(el).animationName`.
+
+---
+
+## Traps that have already cost time
+
+- **Tailwind v4 cannot `@apply` a custom class inside another.** Composed classes are written out
+  in full in `styles.css`. Don't try to DRY them up.
+- **`truncate` inside a grid sets the column's min-content to the full string.** One long trustee
+  name blew out the whole About grid. Use `min-w-0` or let text wrap.
+- **Long unbroken strings.** The email address is 345px wide. Every render of it needs
+  `break-all`; the body carries `overflow-wrap: break-word` as a net for user-typed content.
+- **Chrome won't resize below ~400px on macOS.** To test 320px, load the page in an iframe of
+  that width — media queries respond to iframe width, so breakpoints behave correctly.
+- **The mobile drawer must not use a fixed top offset.** The dismissible notice makes the header
+  height variable. It is a full-screen overlay with its own header bar.
+- **GitHub OIDC subjects are immutable and contain numeric IDs**
+  (`repo:owner@100294355/name@1319905089:environment:production`). Matching `owner/name` never
+  works. AWS separately *requires* a `sub` condition, so it is matched loosely and tightened by
+  exact `repository` and `environment` claims.
+
+---
+
+## Hard rules
+
+### Never commit
+
+- `infra/terraform.tfvars` — names real trustees. Personal data belonging to the charity.
+- `infra/terraform.tfstate` — the whole resource graph including variable values. State lives in
+  S3; there is no local copy.
+
+The Google **client ID is committed deliberately** in `src/environments/`. An OAuth client ID for
+a web app is public by design, the ID-token flow uses no client secret, and it is already served
+in the site's JavaScript. It is not a leak.
+
+### Content accuracy
+
+Every fact on this site — hours, address, phone, charity number, trustee names and roles, the
+£18,000 running cost, the 2013–14 history — comes from the existing site. **Do not invent
+detail.** Where something was never published, the site says so and carries a `TODO(content)`
+rather than a plausible guess.
+
+`src/app/core/site.data.ts` is the single source of truth. Change a fact there, not in a
+template.
+
+### Days and times live in events, not in code
+
+`site.data.ts` describes what each club *is*. When it meets comes from recurring events the
+trustees publish in `/admin`. A hardcoded timetable would rot, and the printed one already
+disagrees with the website about Monday/Thursday closing (5.00 vs 5.30pm — unresolved).
+
+### Imagery
+
+No stock photography, and no AI-generated imagery. The site shows the library's own building and
+rooms or nothing. `public/images/` holds two 512×512 photos carried over from the old site —
+which is why the hero is a contained framed composition rather than full-bleed. Larger originals
+dropped in under the same filenames are the only change needed.
+
+Context: the old WordPress site still has `crystal-spires`, `fantasy-ruins`, and
+`fantasy-jungle-ruins` demo posts live in its sitemap. Generated imagery is the visual signature
+of the thing being replaced.
+
+---
+
+## Deploying
+
+Push a branch → PR → CI (formatting, contrast, build, backend tests, `terraform validate`) →
+merge to `main` → the Deploy workflow publishes and invalidates CloudFront.
+
+**Infrastructure is deliberately not applied by CI.** Terraform changes are rare and sometimes
+destructive; they stay a deliberate `terraform apply`. Content and UI changes are one merge from
+live.
+
+Deploys authenticate by GitHub OIDC. There are **no AWS keys anywhere**. The role can sync the
+website bucket and invalidate the cache; it cannot read DynamoDB, change Lambdas, or touch state.
+
+Repository variables (not secrets): `AWS_DEPLOY_ROLE`, `WEBSITE_BUCKET`,
+`CLOUDFRONT_DISTRIBUTION_ID` — all from `terraform output`.
+
+---
+
+## Design principles applied here
+
+- **Restraint over decoration.** The site was cut down once for being too busy — the dark utility
+  bar, duplicated sections, gradient blobs, and card shadows all went. Add weight only with a
+  reason.
+- **Nothing half-present.** A newsletter signup was removed entirely because it collected
+  addresses under a promise of monthly news with no way to send anything. For a charity, an
+  unfulfillable promise attached to personal data is worse than a missing feature.
+- **One source of truth.** Duplicated blocks were removed: the hours table appeared three times,
+  the home offerings list shadowed `FACILITIES`, and undated event cards appeared on two pages.
+- **The site must work without the API.** Every page that reads data has a fallback that is
+  genuinely useful, not an error.
+
+---
+
+## Outstanding
+
+Marked in source with `TODO(content)` / `TODO(legal)`:
+
+- Room hire rate card (`room-hire.component.html`) — the old site kept it in a PDF.
+- PayPal fundraiser URL (`support.component.ts`).
+- Building-works notice (`SITE_NOTICE` in `site.data.ts`) — confirm it is current; set
+  `active: false` when the works finish.
+- Privacy policy — should be reviewed by whoever handles data protection, and given a retention
+  period.
+- Opening-hours discrepancy between the website and the printed timetable.
+
+Also unresolved, and worth raising with the user rather than fixing silently: the AWS account and
+Google OAuth client are under a personal identity, while the privacy policy names the charity as
+data controller. Moving them to charity-owned accounts is the correct fix.
