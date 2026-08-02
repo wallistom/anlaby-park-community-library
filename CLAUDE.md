@@ -150,10 +150,19 @@ in the site's JavaScript. It is not a leak.
 
 ### Content accuracy
 
-Every fact on this site — hours, address, phone, charity number, trustee names and roles, the
-£18,000 running cost, the 2013–14 history — comes from the existing site. **Do not invent
-detail.** Where something was never published, the site says so and carries a `TODO(content)`
-rather than a plausible guess.
+Every fact on this site was scraped from the old site, **which is out of date and contradicts
+itself** — it gives the trustee board as ten, eleven and twelve members in different places, and
+the printed April 2025 timetable disagrees with the website on Monday/Thursday closing times and
+shows a Wednesday group on a day the website calls closed.
+
+Treat all of it as unverified. Two rules follow:
+
+- **Reproduce, never derive.** Publishing the hours table is fine — it is what the source said.
+  Counting it and writing "open five days a week" is not: it turns one possible error into
+  several and implies someone checked. A claim like that shipped to production once and was
+  wrong by a day.
+- **Where the source published nothing, say so** rather than guessing. See the `TODO(content)`
+  markers.
 
 `src/app/core/site.data.ts` is the single source of truth. Change a fact there, not in a
 template.
