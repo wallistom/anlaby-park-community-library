@@ -51,7 +51,7 @@ export class SupportComponent {
   ];
 
   protected readonly costs = [
-    { label: 'Heating, lighting, and water', detail: 'The building is open six days a week.' },
+    { label: 'Heating, lighting, and water', detail: 'The building is open five days a week.' },
     {
       label: 'Insurance and compliance',
       detail: 'Required of us as a charity and a public space.',

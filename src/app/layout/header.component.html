@@ -39,33 +39,7 @@
       }
     </nav>
 
-    <!-- One actions row, revealed progressively. The status pill is hidden at
-         exactly lg: that is the width where the nav, the pill and Donate all
-         appear together and no longer fit, so it returns at xl. -->
-    <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3 lg:ml-0">
-      <!-- Whether the library is open is the question people arrive with, so
-           it belongs in the chrome rather than only on the home page. Live,
-           and links through to the full hours. -->
-      <a
-        routerLink="/visit"
-        class="border-line hover:border-forest-300 hover:bg-sunken hidden min-h-11 items-center gap-2 rounded-full border py-1.5 pr-3.5 pl-3 text-sm font-medium transition-colors sm:flex lg:hidden xl:flex"
-      >
-        <span
-          class="inline-flex h-2 w-2 shrink-0 rounded-full"
-          [class]="hours.status().isOpen ? 'bg-success' : 'bg-ochre-500'"
-          aria-hidden="true"
-        ></span>
-        <span class="text-ink whitespace-nowrap">{{ hours.status().label }}</span>
-      </a>
-
-      <a
-        [href]="'tel:' + site.phoneHref"
-        class="text-ink-soft hover:text-forest-900 hidden min-h-11 items-center gap-2 text-sm font-medium whitespace-nowrap transition-colors xl:flex"
-      >
-        <app-icon name="phone" [size]="15" />
-        {{ site.phone }}
-      </a>
-
+    <div class="ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
       <a routerLink="/support" class="btn-accent btn-sm hidden lg:inline-flex">Donate</a>
 
       <button
@@ -123,19 +97,6 @@
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 pt-4 pb-10">
-      <a
-        routerLink="/visit"
-        class="border-line text-ink mb-3 flex min-h-11 items-center gap-2 rounded-xl border px-4 py-3 text-sm"
-      >
-        <span
-          class="inline-flex h-2 w-2 rounded-full"
-          [class]="hours.status().isOpen ? 'bg-success' : 'bg-ochre-500'"
-          aria-hidden="true"
-        ></span>
-        <span class="font-semibold">{{ hours.status().label }}</span>
-        <span class="text-ink-muted ml-auto">All hours</span>
-      </a>
-
       <nav aria-label="Mobile">
         <ul class="flex flex-col">
           @for (item of navItems; track item.path) {

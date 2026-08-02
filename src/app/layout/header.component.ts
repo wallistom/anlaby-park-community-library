@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
 import { IconComponent } from '../shared/icon.component';
-import { OpeningHoursService } from '../core/opening-hours.service';
 import { SITE } from '../core/site.data';
 
 interface NavItem {
@@ -28,7 +27,6 @@ const NAV_ITEMS: NavItem[] = [
 })
 export class HeaderComponent {
   private readonly router = inject(Router);
-  protected readonly hours = inject(OpeningHoursService);
 
   protected readonly site = SITE;
   protected readonly navItems = NAV_ITEMS;
