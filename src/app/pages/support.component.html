@@ -69,12 +69,12 @@
       @for (option of givingOptions; track option.title; let i = $index) {
         <li [appReveal]="i * 70">
           <div
-            class="flex h-full flex-col rounded-2xl border bg-surface p-7"
+            class="relative flex h-full flex-col rounded-2xl border bg-surface p-7"
             [class]="option.preferred ? 'border-ochre-400 ring-ochre-200 ring-2' : 'border-line'"
           >
             @if (option.preferred) {
               <span
-                class="bg-ochre-100 text-ochre-900 mb-4 w-fit rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
+                class="bg-ochre-100 text-ochre-900 absolute top-5 right-5 rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
               >
                 Most helpful
               </span>

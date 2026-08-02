@@ -137,13 +137,13 @@
            name. Below sm that would leave 45px, so the grid is replaced by the
            day list further down rather than degrading into untappable dots. -->
       <div class="mt-8 hidden sm:block">
-        <div class="text-ink-muted grid grid-cols-7 gap-2 text-center text-xs font-semibold">
+        <div class="text-ink-muted grid grid-cols-7 gap-1.5 text-center text-xs font-semibold">
           @for (heading of weekdayHeadings; track heading) {
-            <div class="pb-2">{{ heading }}</div>
+            <div class="pb-1.5">{{ heading }}</div>
           }
         </div>
 
-        <div class="grid grid-cols-7 gap-2">
+        <div class="grid grid-cols-7 gap-1.5">
           @for (day of month(); track day.iso) {
             <button
               type="button"
@@ -154,7 +154,7 @@
                 (day.date | date: 'EEEE d MMMM') +
                 (day.events.length ? ', ' + day.events.length + ' on' : ', nothing on')
               "
-              class="flex min-h-[5.5rem] flex-col rounded-xl border p-2 text-left transition-colors"
+              class="flex min-h-[4.5rem] flex-col rounded-lg border p-1.5 text-left transition-colors"
               [class]="
                 !day.inCurrentMonth
                   ? 'border-transparent'
@@ -177,16 +177,16 @@
               </span>
 
               @if (day.inCurrentMonth && day.events.length) {
-                <span class="mt-1 flex flex-col gap-1">
+                <span class="mt-1 flex flex-col gap-0.5">
                   @for (event of day.events.slice(0, 2); track event.occurrenceId) {
                     <span
-                      class="bg-forest-100 text-forest-900 truncate rounded px-1.5 py-0.5 text-[0.7rem] leading-snug font-medium"
+                      class="bg-forest-100 text-forest-900 truncate rounded px-1.5 py-px text-[0.7rem] leading-tight font-medium"
                     >
                       {{ event.title }}
                     </span>
                   }
                   @if (day.events.length > 2) {
-                    <span class="text-ink-muted text-[0.7rem] font-medium">
+                    <span class="text-ink-muted text-[0.7rem] leading-tight font-medium">
                       +{{ day.events.length - 2 }} more
                     </span>
                   }
