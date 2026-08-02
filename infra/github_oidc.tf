@@ -39,12 +39,20 @@ data "aws_iam_policy_document" "github_assume_role" {
       values   = ["sts.amazonaws.com"]
     }
 
-    # Scoped to this repository, and only to pushes on the default branch —
-    # a fork or a pull request from elsewhere cannot assume this role.
+    # Scoped to this repository. A fork, or a pull request from elsewhere,
+    # cannot assume this role.
+    #
+    # Both subject forms are listed because a job that declares an
+    # `environment:` gets an environment-scoped subject rather than a
+    # branch-scoped one. The deploy job uses `environment: production`, so it
+    # presents the second form; the first covers a plain push to main.
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repository}:ref:refs/heads/main"]
+      values = [
+        "repo:${var.github_repository}:ref:refs/heads/main",
+        "repo:${var.github_repository}:environment:production",
+      ]
     }
   }
 }
