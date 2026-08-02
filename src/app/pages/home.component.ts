@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { IconComponent } from '../shared/icon.component';
 import { HoursTableComponent } from '../shared/hours-table.component';
 import { RevealDirective } from '../shared/reveal.directive';
+import { ImageFadeDirective } from '../shared/image-fade.directive';
 import { OpeningHoursService } from '../core/opening-hours.service';
 import { EventsService } from '../core/events.service';
 import { FACILITIES, SITE } from '../core/site.data';
@@ -11,7 +12,14 @@ import { FACILITIES, SITE } from '../core/site.data';
 @Component({
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, DatePipe, IconComponent, HoursTableComponent, RevealDirective],
+  imports: [
+    RouterLink,
+    DatePipe,
+    IconComponent,
+    HoursTableComponent,
+    RevealDirective,
+    ImageFadeDirective,
+  ],
   templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {
