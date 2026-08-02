@@ -1,62 +1,84 @@
-<!-- The separate dark utility bar was removed: three stacked bars before any
-     content made the page feel heavy. Opening status and phone now sit inline
-     in the header itself. -->
 <header
   class="sticky top-0 z-50 border-b transition-all duration-300"
   [class]="scrolled() ? 'border-line bg-page/95 backdrop-blur-md' : 'border-transparent bg-page'"
 >
-  <div class="mx-auto flex max-w-7xl items-center gap-4 px-5 py-3 sm:px-8">
-    <!-- Wordmark -->
-    <a routerLink="/" class="group flex items-center gap-3" aria-label="{{ site.name }}, home">
+  <div class="mx-auto flex max-w-7xl items-center gap-3 px-5 py-3 sm:px-8 lg:gap-6">
+    <!-- The mark and the name are one link, so it is a single target rather
+         than two adjacent ones. -->
+    <a
+      routerLink="/"
+      class="group flex shrink-0 items-center gap-3"
+      aria-label="{{ site.name }}, home"
+    >
       <span
         class="bg-forest-800 group-hover:bg-forest-700 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white transition-colors"
       >
         <app-icon name="book" [size]="22" />
       </span>
-      <span class="leading-none">
+      <span class="leading-tight">
         <span class="font-display text-forest-950 block text-lg font-semibold sm:text-xl">
           Anlaby Park
         </span>
-        <span class="text-ink-soft block text-xs font-medium tracking-[0.16em] uppercase">
+        <span class="text-ink-muted block text-[0.68rem] font-semibold tracking-[0.14em] uppercase">
           Community Library
         </span>
       </span>
     </a>
 
-    <nav class="ml-auto hidden items-center gap-0.5 lg:flex" aria-label="Main">
+    <!-- Nav takes the slack in the middle, so the header stays balanced rather
+         than the links crowding the right-hand actions. -->
+    <nav class="hidden flex-1 items-center justify-center gap-0.5 lg:flex" aria-label="Main">
       @for (item of navItems; track item.path) {
         <a
           [routerLink]="item.path"
-          routerLinkActive="!text-forest-800 bg-forest-50"
-          class="text-ink-soft hover:text-forest-900 hover:bg-sunken rounded-lg px-3 py-2 text-[0.9rem] font-medium transition-colors"
+          routerLinkActive="!text-forest-900 !bg-forest-50"
+          class="text-ink-soft hover:text-forest-900 hover:bg-sunken rounded-lg px-3 py-2 text-[0.9rem] font-medium whitespace-nowrap transition-colors"
         >
           {{ item.label }}
         </a>
       }
     </nav>
 
-    <div class="ml-auto hidden shrink-0 items-center gap-4 lg:ml-4 lg:flex">
+    <!-- One actions row, revealed progressively. The status pill is hidden at
+         exactly lg: that is the width where the nav, the pill and Donate all
+         appear together and no longer fit, so it returns at xl. -->
+    <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3 lg:ml-0">
+      <!-- Whether the library is open is the question people arrive with, so
+           it belongs in the chrome rather than only on the home page. Live,
+           and links through to the full hours. -->
+      <a
+        routerLink="/visit"
+        class="border-line hover:border-forest-300 hover:bg-sunken hidden min-h-11 items-center gap-2 rounded-full border py-1.5 pr-3.5 pl-3 text-sm font-medium transition-colors sm:flex lg:hidden xl:flex"
+      >
+        <span
+          class="inline-flex h-2 w-2 shrink-0 rounded-full"
+          [class]="hours.status().isOpen ? 'bg-success' : 'bg-ochre-500'"
+          aria-hidden="true"
+        ></span>
+        <span class="text-ink whitespace-nowrap">{{ hours.status().label }}</span>
+      </a>
+
       <a
         [href]="'tel:' + site.phoneHref"
-        class="text-ink-soft hover:text-forest-900 flex items-center gap-2 text-sm font-medium transition-colors"
+        class="text-ink-soft hover:text-forest-900 hidden min-h-11 items-center gap-2 text-sm font-medium whitespace-nowrap transition-colors xl:flex"
       >
         <app-icon name="phone" [size]="15" />
         {{ site.phone }}
       </a>
-      <a routerLink="/support" class="btn-accent btn-sm"> Donate </a>
-    </div>
 
-    <!-- Mobile controls -->
-    <button
-      type="button"
-      class="text-forest-900 hover:bg-sunken ml-auto inline-flex h-11 w-11 items-center justify-center rounded-xl lg:hidden"
-      [attr.aria-expanded]="menuOpen()"
-      aria-controls="mobile-menu"
-      (click)="toggleMenu()"
-    >
-      <span class="sr-only">{{ menuOpen() ? 'Close menu' : 'Open menu' }}</span>
-      <app-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="24" />
-    </button>
+      <a routerLink="/support" class="btn-accent btn-sm hidden lg:inline-flex">Donate</a>
+
+      <button
+        type="button"
+        class="text-forest-900 hover:bg-sunken inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl lg:hidden"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="mobile-menu"
+        (click)="toggleMenu()"
+      >
+        <span class="sr-only">{{ menuOpen() ? 'Close menu' : 'Open menu' }}</span>
+        <app-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="24" />
+      </button>
+    </div>
   </div>
 </header>
 
@@ -80,9 +102,11 @@
         >
           <app-icon name="book" [size]="22" />
         </span>
-        <span class="leading-none">
+        <span class="leading-tight">
           <span class="font-display text-forest-950 block text-lg font-semibold">Anlaby Park</span>
-          <span class="text-ink-soft block text-xs font-medium tracking-[0.16em] uppercase">
+          <span
+            class="text-ink-muted block text-[0.68rem] font-semibold tracking-[0.14em] uppercase"
+          >
             Community Library
           </span>
         </span>
@@ -99,14 +123,18 @@
     </div>
 
     <div class="flex-1 overflow-y-auto px-5 pt-4 pb-10">
-      <p class="text-ink-soft border-line mb-3 flex items-center gap-2 border-b pb-4 text-sm">
+      <a
+        routerLink="/visit"
+        class="border-line text-ink mb-3 flex min-h-11 items-center gap-2 rounded-xl border px-4 py-3 text-sm"
+      >
         <span
           class="inline-flex h-2 w-2 rounded-full"
           [class]="hours.status().isOpen ? 'bg-success' : 'bg-ochre-500'"
           aria-hidden="true"
         ></span>
         <span class="font-semibold">{{ hours.status().label }}</span>
-      </p>
+        <span class="text-ink-muted ml-auto">All hours</span>
+      </a>
 
       <nav aria-label="Mobile">
         <ul class="flex flex-col">
@@ -131,13 +159,16 @@
       </a>
 
       <div class="border-line mt-6 flex flex-col gap-3 border-t pt-6 text-base">
-        <a [href]="'tel:' + site.phoneHref" class="text-ink-soft flex items-center gap-3 px-1 py-1">
+        <a
+          [href]="'tel:' + site.phoneHref"
+          class="text-ink-soft flex min-h-11 items-center gap-3 px-1 py-1"
+        >
           <app-icon name="phone" [size]="18" />
           {{ site.phone }}
         </a>
         <a
           [href]="'mailto:' + site.email"
-          class="text-ink-soft flex items-center gap-3 px-1 py-1 break-all"
+          class="text-ink-soft flex min-h-11 items-center gap-3 px-1 py-1"
         >
           <app-icon name="mail" [size]="18" />
           <span class="break-all">{{ site.email }}</span>
