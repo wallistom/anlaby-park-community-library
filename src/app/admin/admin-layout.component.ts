@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { IconComponent, IconName } from '../shared/icon.component';
 import { AuthService } from '../core/auth.service';
+import { OpeningHoursService } from '../core/opening-hours.service';
 import { SITE } from '../core/site.data';
 
 @Component({
@@ -73,12 +74,18 @@ import { SITE } from '../core/site.data';
 export class AdminLayoutComponent {
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly hours = inject(OpeningHoursService);
 
   protected readonly site = SITE;
   protected readonly navItems: { label: string; path: string; icon: IconName }[] = [
     { label: 'Events', path: '/admin/events', icon: 'calendar' },
     { label: 'Enquiries', path: '/admin/enquiries', icon: 'inbox' },
+    { label: 'Hours', path: '/admin/hours', icon: 'clock' },
   ];
+
+  constructor() {
+    this.hours.load();
+  }
 
   protected signOut(): void {
     this.auth.signOut();

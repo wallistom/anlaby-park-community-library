@@ -83,3 +83,22 @@ resource "aws_dynamodb_table" "messages" {
   }
 }
 
+
+# A single item holds the weekly pattern, the dated exceptions and the site
+# notice. One row rather than a table of exceptions because there is one
+# library, the whole thing is read on every page load, and saving it atomically
+# means two trustees can never leave the hours half-updated.
+resource "aws_dynamodb_table" "settings" {
+  name         = "${local.name_prefix}-settings"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "settingId"
+
+  attribute {
+    name = "settingId"
+    type = "S"
+  }
+
+  point_in_time_recovery {
+    enabled = true
+  }
+}

@@ -182,6 +182,22 @@ Date maths lives in `src/app/core/calendar.ts` and deliberately avoids
 `toISOString()`, which shifts to UTC and would move every event a day back during
 British Summer Time.
 
+### Opening hours are a pattern plus exceptions
+
+`opening-hours.model.ts` holds a weekly pattern and a list of dated exceptions.
+Resolution is **exception → weekday pattern → closed**, and exceptions are sorted
+narrowest-range-first so a single day inside a longer closure wins (open for the
+book sale during the Christmas break).
+
+Trustees edit all of it at `/admin/hours`, including the site banner. Nothing
+about hours should be hardcoded again — `DEFAULT_SETTINGS` in `site.data.ts`
+exists only as an offline fallback so the site is never blank when the API is
+unreachable.
+
+`scripts/check-hours.mjs` asserts the resolver in CI. It compiles the module
+with `tsc` rather than stripping types with regexes, which breaks on function
+signatures.
+
 ### Days and times live in events, not in code
 
 `site.data.ts` describes what each club *is*. When it meets comes from recurring events the

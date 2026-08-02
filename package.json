@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "npm run check:contrast && ng build",
+    "build": "npm run check:contrast && npm run check:hours && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "check:contrast": "node scripts/check-contrast.mjs"
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check:hours": "node scripts/check-hours.mjs"
   },
   "prettier": {
     "printWidth": 100,

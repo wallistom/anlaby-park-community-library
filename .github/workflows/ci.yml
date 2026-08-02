@@ -33,6 +33,11 @@ jobs:
       - name: Colour contrast
         run: npm run check:contrast
 
+      # The resolver decides whether the site claims to be open on a day the
+      # library is shut, so it is checked rather than trusted.
+      - name: Opening hours resolver
+        run: npm run check:hours
+
       - name: Build
         run: npx ng build
 
