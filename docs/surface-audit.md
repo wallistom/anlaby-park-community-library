@@ -144,9 +144,15 @@ console.log(out.join('\n'));
 `blendingCards=0` everywhere, and `minBandStep` at or above 1.09.
 
 Anything flagged is a real collision — a fill sitting on its own neighbour in
-the ladder. The fix is in `CLAUDE.md` under the surface-ladder rule; it is
-almost always "move the callout to `bg-sunken`" or "put the section carrying a
-white card on `bg-sunken`".
+the ladder. The fix is almost always "move the callout to `bg-sunken`", or "put
+the section carrying a white card on `bg-sunken`".
+
+The three light surfaces are spaced deliberately: white to page 1.10:1, page to
+band 1.12:1, white to band 1.23:1. Never put a pale fill on a surface next to it
+in that ladder — `bg-blue-50` on `bg-page` is 1.01:1, which is invisible — and
+never put a white card on a white section. Deepening `page` or `sunken` forces
+`ink-muted` and `line-strong` darker to hold 4.5:1 and 3:1 against the new band,
+so re-solve both before changing either.
 
 ## Notes
 

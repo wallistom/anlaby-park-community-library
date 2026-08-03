@@ -90,12 +90,10 @@ site's JavaScript. It is not a leak.
 
 ## Also worth reading
 
-- **[CLAUDE.md](CLAUDE.md)** — conventions, design decisions, and the traps that have already cost
-  time. Read this before changing colour, motion, or the calendar.
 - **[docs/running-costs.md](docs/running-costs.md)** — what the site costs to run, written for the
   trustees. Roughly 5p a month.
 - **[docs/surface-audit.md](docs/surface-audit.md)** — the rendered-DOM check for surfaces blending
   into each other.
 
-Outstanding content decisions that need the trustees are marked `TODO(content)` in the source and
-listed at the end of `CLAUDE.md`.
+Outstanding content decisions that need the trustees are marked `TODO(content)` and `TODO(legal)` in
+the source.
