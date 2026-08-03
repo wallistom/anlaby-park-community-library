@@ -33,14 +33,29 @@ import { SITE } from '../core/site.data';
           to the Secretary.
         </p>
 
-        <!-- Google renders its own button into this element. Hidden once an
-             account is signed in but refused, so the only thing on offer is
-             signing out and trying a different one. -->
+        <!-- Google renders its own button into this element. Hidden while the
+             account is being checked, and once it has been refused, so the only
+             thing on offer is signing out and trying a different one. -->
         <div
           class="mt-8 flex justify-center"
-          [hidden]="refused() || unavailable()"
+          [hidden]="refused() || unavailable() || checking()"
           #googleButton
         ></div>
+
+        @if (checking()) {
+          <!-- Verifying the account takes a round trip. Without this the button
+               vanishes and nothing replaces it, which reads as a failure. -->
+          <p
+            class="text-ink-soft mt-8 flex items-center justify-center gap-3 text-sm"
+            aria-live="polite"
+          >
+            <span
+              class="border-line-strong border-t-navy-800 h-5 w-5 animate-spin rounded-full border-2"
+              aria-hidden="true"
+            ></span>
+            Checking your account…
+          </p>
+        }
 
         @if (refused()) {
           <!-- Naming the account matters: the usual cause is being signed in to
@@ -87,7 +102,7 @@ import { SITE } from '../core/site.data';
           </div>
         }
 
-        @if (!refused() && !unavailable()) {
+        @if (!refused() && !unavailable() && !checking()) {
           <p class="text-ink-muted mt-8 text-center text-xs">
             Only approved accounts can get in. If yours is not working, speak to the Secretary.
           </p>
@@ -108,6 +123,11 @@ export class SignInComponent implements AfterViewInit {
   /** Signed in, but the API will not have them. */
   protected readonly refused = computed(
     () => this.auth.isSignedIn() && this.auth.accessState() === 'denied',
+  );
+
+  /** Signed in, and the API is being asked whether they are a trustee. */
+  protected readonly checking = computed(
+    () => this.auth.isSignedIn() && this.auth.accessState() === 'checking',
   );
 
   /** Signed in, but the check could not be completed. */

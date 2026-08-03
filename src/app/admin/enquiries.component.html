@@ -44,7 +44,19 @@
 }
 
 @if (loading()) {
-  <p class="text-ink-muted mt-8" aria-live="polite">Loading…</p>
+  <!-- Shaped like the real rows — status chip, name, date — so the list does
+       not jump when the enquiries arrive. -->
+  <div class="mt-6 h-5 w-56 skeleton"></div>
+  <ul class="mt-4 flex flex-col gap-3" aria-hidden="true">
+    @for (row of [1, 2, 3, 4, 5]; track row) {
+      <li class="card flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
+        <span class="skeleton h-6 w-20 rounded-full"></span>
+        <span class="skeleton h-5 w-44"></span>
+        <span class="skeleton ml-auto h-4 w-28"></span>
+      </li>
+    }
+  </ul>
+  <p class="sr-only" aria-live="polite">Loading enquiries</p>
 } @else {
   <p class="text-ink-muted mt-6 text-sm" aria-live="polite">
     {{ rows().length }} in total, {{ newCount() }} not yet picked up.

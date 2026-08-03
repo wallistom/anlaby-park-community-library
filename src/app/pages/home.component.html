@@ -84,16 +84,16 @@
       <ul class="mt-8 flex flex-col gap-3" aria-hidden="true">
         @for (row of [1, 2, 3, 4]; track row) {
           <li class="border-line flex flex-col gap-2 border-t pt-4 sm:flex-row sm:gap-6">
-            <div class="bg-line h-5 w-40 shrink-0 animate-pulse rounded"></div>
+            <div class="skeleton h-5 w-40 shrink-0"></div>
             <div class="flex min-w-0 flex-1 flex-col gap-2">
               <div class="flex items-center gap-3">
-                <div class="bg-line h-4 w-16 shrink-0 animate-pulse rounded"></div>
-                <div class="bg-line h-5 w-44 animate-pulse rounded"></div>
+                <div class="skeleton h-4 w-16 shrink-0"></div>
+                <div class="skeleton h-5 w-44"></div>
               </div>
               @if (row === 2) {
                 <div class="flex items-center gap-3">
-                  <div class="bg-line h-4 w-16 shrink-0 animate-pulse rounded"></div>
-                  <div class="bg-line h-5 w-32 animate-pulse rounded"></div>
+                  <div class="skeleton h-4 w-16 shrink-0"></div>
+                  <div class="skeleton h-5 w-32"></div>
                 </div>
               }
             </div>

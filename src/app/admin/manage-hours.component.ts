@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../shared/icon.component';
 import { ApiService } from '../core/api.service';
@@ -42,12 +49,25 @@ export class ManageHoursComponent {
   protected readonly error = signal<string | null>(null);
   protected readonly todayIso = toIso(new Date());
 
-  /** Working copies, so nothing changes on the public site until Save. */
+  protected readonly loadState = this.hours.loadState;
+  protected readonly ready = computed(() => this.loadState() === 'ready');
+
+  /**
+   * Working copies, so nothing changes on the public site until Save.
+   *
+   * Seeded from the compiled-in defaults and re-seeded once the saved settings
+   * arrive — see the effect in the constructor. Without that, opening this
+   * screen before the API answered would show the defaults, and saving would
+   * write them over whatever the trustees had actually configured.
+   */
   protected readonly pattern = signal<PatternRow[]>(this.readPattern());
   protected readonly exceptions = signal<OpeningException[]>(
     structuredClone(this.hours.settings().exceptions),
   );
   protected readonly notice = signal<SiteNotice>({ ...this.hours.settings().notice });
+
+  /** Guards against re-seeding over edits the trustee has already made. */
+  private seeded = false;
 
   /** Past exceptions are kept but shown separately, so the list stays useful. */
   protected readonly upcomingExceptions = computed(() =>
@@ -61,6 +81,24 @@ export class ManageHoursComponent {
       .filter((e) => e.to < this.todayIso)
       .sort((a, b) => b.from.localeCompare(a.from)),
   );
+
+  constructor() {
+    // Re-seed the working copies once the saved settings arrive. The fields
+    // above are initialised from whatever the service holds at construction,
+    // which is the compiled-in fallback if the request has not come back yet.
+    //
+    // Only once: after that the trustee may have started editing, and their
+    // work must not be replaced by a late response.
+    effect(() => {
+      if (this.seeded || this.hours.loadState() !== 'ready') {
+        return;
+      }
+      this.seeded = true;
+      this.pattern.set(this.readPattern());
+      this.exceptions.set(structuredClone(this.hours.settings().exceptions));
+      this.notice.set({ ...this.hours.settings().notice });
+    });
+  }
 
   protected preview(day: PatternRow): string {
     return day.closed ? 'Closed' : `${formatTime(day.opensAt)} – ${formatTime(day.closesAt)}`;
