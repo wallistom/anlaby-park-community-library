@@ -69,7 +69,7 @@ scripts/            check-contrast.mjs — the build gate
 
 ### Colour goes through semantic tokens, never raw ramps
 
-`styles.css` defines raw ramps (`forest`, `ochre`, `parchment`) and then a semantic layer.
+`styles.css` defines raw ramps (`blue`, `navy`, `orange`, `stone`) and then a semantic layer.
 **Templates use only the semantic names**: `text-ink`, `text-ink-soft`, `text-ink-muted`,
 `bg-surface`, `bg-page`, `bg-sunken`, `bg-inverse`, `border-line`, `border-line-strong`,
 `text-danger`, `text-success`, and so on.

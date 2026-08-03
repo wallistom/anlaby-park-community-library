@@ -11,10 +11,10 @@
       <div class="flex flex-col gap-4">
         <a
           [href]="'tel:' + site.phoneHref"
-          class="group border-line hover:border-forest-300 flex items-center gap-4 rounded-2xl border bg-surface p-5 transition-colors"
+          class="group border-line hover:border-blue-300 flex items-center gap-4 rounded-2xl border bg-surface p-5 transition-colors"
         >
           <span
-            class="bg-forest-50 text-forest-700 group-hover:bg-forest-100 flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
+            class="bg-blue-50 text-blue-700 group-hover:bg-blue-100 flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
           >
             <app-icon name="phone" [size]="22" />
           </span>
@@ -26,10 +26,10 @@
 
         <a
           [href]="'mailto:' + site.email"
-          class="group border-line hover:border-forest-300 flex items-center gap-4 rounded-2xl border bg-surface p-5 transition-colors"
+          class="group border-line hover:border-blue-300 flex items-center gap-4 rounded-2xl border bg-surface p-5 transition-colors"
         >
           <span
-            class="bg-forest-50 text-forest-700 group-hover:bg-forest-100 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors"
+            class="bg-blue-50 text-blue-700 group-hover:bg-blue-100 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors"
           >
             <app-icon name="mail" [size]="22" />
           </span>
@@ -42,7 +42,7 @@
         <div class="card p-5">
           <div class="flex items-start gap-4">
             <span
-              class="bg-forest-50 text-forest-700 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+              class="bg-blue-50 text-blue-700 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
             >
               <app-icon name="mapPin" [size]="22" />
             </span>
@@ -68,7 +68,7 @@
 
         <a routerLink="/visit" class="card-interactive group flex items-center gap-4 p-5">
           <span
-            class="bg-forest-50 text-forest-700 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+            class="bg-blue-50 text-blue-700 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
           >
             <app-icon name="clock" [size]="22" />
           </span>
@@ -76,7 +76,7 @@
             <span class="text-ink-muted block text-sm">Opening hours</span>
             <span class="font-display block text-lg font-semibold">{{ hours.status().label }}</span>
           </span>
-          <span class="text-forest-700 ml-auto"><app-icon name="arrowRight" [size]="18" /></span>
+          <span class="text-blue-700 ml-auto"><app-icon name="arrowRight" [size]="18" /></span>
         </a>
 
         <div class="flex gap-3">
@@ -84,7 +84,7 @@
             [href]="site.social.facebook"
             target="_blank"
             rel="noopener noreferrer"
-            class="border-line hover:border-forest-300 text-ink-soft hover:text-forest-900 flex flex-1 items-center justify-center gap-2 rounded-xl border bg-surface px-4 py-3 font-semibold transition-colors"
+            class="border-line hover:border-blue-300 text-ink-soft hover:text-navy-900 flex flex-1 items-center justify-center gap-2 rounded-xl border bg-surface px-4 py-3 font-semibold transition-colors"
           >
             <app-icon name="facebook" [size]="18" />
             Facebook
@@ -93,7 +93,7 @@
             [href]="site.social.x"
             target="_blank"
             rel="noopener noreferrer"
-            class="border-line hover:border-forest-300 text-ink-soft hover:text-forest-900 flex flex-1 items-center justify-center gap-2 rounded-xl border bg-surface px-4 py-3 font-semibold transition-colors"
+            class="border-line hover:border-blue-300 text-ink-soft hover:text-navy-900 flex flex-1 items-center justify-center gap-2 rounded-xl border bg-surface px-4 py-3 font-semibold transition-colors"
           >
             <app-icon name="x" [size]="18" />
             X
@@ -119,7 +119,7 @@
             </p>
             <a
               [href]="'tel:' + site.phoneHref"
-              class="text-forest-700 mt-6 inline-flex items-center gap-2 font-semibold hover:underline"
+              class="text-blue-700 mt-6 inline-flex items-center gap-2 font-semibold hover:underline"
             >
               <app-icon name="phone" [size]="17" />
               {{ site.phone }}

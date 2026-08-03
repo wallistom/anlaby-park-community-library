@@ -245,8 +245,8 @@ fails if any pairing the UI uses drops below WCAG AA at its rendered size — 4.
 of this file claimed AA while four pairings did not meet it, including the Donate button at 4.02:1.
 A comment asserting good contrast is not a check.
 
-**Colour goes through semantic tokens.** `styles.css` defines the raw ramps (forest, ochre,
-parchment) and then a semantic layer — `ink`, `ink-muted`, `surface`, `line-strong`, `accent`,
+**Colour goes through semantic tokens.** `styles.css` defines the raw ramps (blue, navy, orange,
+stone — sampled from the library's own artwork) and then a semantic layer — `ink`, `ink-muted`, `surface`, `line-strong`, `accent`,
 `danger`, `success` — and components reference only the semantic names. Fixing a contrast problem is
 one declaration, not thirty-four templates. That indirection is the direct fix for how the earlier
 regression spread.

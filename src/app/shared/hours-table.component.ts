@@ -11,7 +11,7 @@ import { IconComponent } from './icon.component';
     <div class="card p-6 sm:p-7" [class.bg-surface]="true">
       <div class="flex items-center gap-3">
         <span
-          class="bg-forest-50 text-forest-700 flex h-11 w-11 items-center justify-center rounded-xl"
+          class="bg-blue-50 text-blue-700 flex h-11 w-11 items-center justify-center rounded-xl"
         >
           <app-icon name="clock" [size]="22" />
         </span>
@@ -19,11 +19,11 @@ import { IconComponent } from './icon.component';
           <h2 class="font-display text-xl font-semibold">Opening hours</h2>
           <p
             class="flex items-center gap-1.5 text-sm font-medium"
-            [class]="hours.status().isOpen ? 'text-success' : 'text-ochre-700'"
+            [class]="hours.status().isOpen ? 'text-success' : 'text-orange-700'"
           >
             <span
               class="inline-flex h-2 w-2 rounded-full"
-              [class]="hours.status().isOpen ? 'bg-success' : 'bg-ochre-600'"
+              [class]="hours.status().isOpen ? 'bg-success' : 'bg-orange-600'"
               aria-hidden="true"
             ></span>
             {{ hours.status().label }}
@@ -37,7 +37,7 @@ import { IconComponent } from './icon.component';
             class="flex items-baseline justify-between gap-4 rounded-lg px-3 py-2.5"
             [class]="
               day.dayIndex === hours.todayIndex()
-                ? 'bg-forest-50 text-forest-900 font-semibold'
+                ? 'bg-blue-50 text-navy-900 font-semibold'
                 : 'text-ink-soft'
             "
           >
@@ -45,7 +45,7 @@ import { IconComponent } from './icon.component';
               {{ day.name }}
               @if (day.dayIndex === hours.todayIndex()) {
                 <span
-                  class="bg-forest-700 rounded-full px-2.5 py-0.5 text-[0.7rem] tracking-wide text-white uppercase"
+                  class="bg-blue-700 rounded-full px-2.5 py-0.5 text-[0.7rem] tracking-wide text-white uppercase"
                 >
                   Today
                 </span>

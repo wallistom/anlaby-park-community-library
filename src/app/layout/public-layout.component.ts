@@ -13,17 +13,17 @@ import { OpeningHoursService } from '../core/opening-hours.service';
   template: `
     <a
       href="#main-content"
-      class="bg-inverse focus:ring-ochre-400 sr-only rounded-br-xl px-5 py-3 font-semibold text-white focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-[60]"
+      class="bg-inverse focus:ring-orange-400 sr-only rounded-br-xl px-5 py-3 font-semibold text-white focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-[60]"
     >
       Skip to main content
     </a>
 
     @if (notice().active && noticeVisible()) {
-      <div class="bg-ochre-100 text-ochre-950 border-ochre-200 border-b">
+      <div class="bg-orange-100 text-orange-950 border-orange-200 border-b">
         <div
           class="mx-auto flex max-w-7xl items-start gap-3 px-5 py-3 text-sm sm:items-center sm:px-8"
         >
-          <span class="text-ochre-700 mt-0.5 sm:mt-0"><app-icon name="info" [size]="18" /></span>
+          <span class="text-orange-700 mt-0.5 sm:mt-0"><app-icon name="info" [size]="18" /></span>
           <p class="flex-1">
             <strong class="font-semibold">{{ notice().title }}.</strong>
             {{ notice().body }}
@@ -33,7 +33,7 @@ import { OpeningHoursService } from '../core/opening-hours.service';
           </p>
           <button
             type="button"
-            class="hover:bg-ochre-200 -my-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg"
+            class="hover:bg-orange-200 -my-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg"
             (click)="noticeVisible.set(false)"
           >
             <span class="sr-only">Dismiss this notice</span>

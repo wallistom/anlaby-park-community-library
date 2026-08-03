@@ -1,64 +1,69 @@
-<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
-<section class="container-page pt-14 pb-20 sm:pt-20">
-  <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-    <div>
-      <p class="text-ink-soft flex items-center gap-2 text-sm font-medium">
-        <span
-          class="inline-flex h-2 w-2 rounded-full"
-          [class]="hours.status().isOpen ? 'bg-success' : 'bg-ochre-500'"
-          aria-hidden="true"
-        ></span>
-        {{ hours.status().label }}
-      </p>
+<!-- ── Hero ──────────────────────────────────────────────────────────────────
+     A pale blue band rather than the page wash. The header is white, and with
+     the hero on the same wash as the rest of the page the two ran together
+     with nothing to mark where the chrome ended and the page began. -->
+<section class="border-line bg-blue-50 border-b">
+  <div class="container-page pt-14 pb-20 sm:pt-20">
+    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <p class="text-ink-soft flex items-center gap-2 text-sm font-medium">
+          <span
+            class="inline-flex h-2 w-2 rounded-full"
+            [class]="hours.status().isOpen ? 'bg-success' : 'bg-orange-600'"
+            aria-hidden="true"
+          ></span>
+          {{ hours.status().label }}
+        </p>
 
-      <h1 class="mt-5 text-4xl font-semibold sm:text-5xl">Books, coffee, and company</h1>
+        <h1 class="mt-5 text-4xl font-semibold sm:text-5xl">Books, coffee, and company</h1>
 
-      <p class="prose-body mt-6">
-        In 2013 this building was earmarked for closure, so local people took it on themselves.
-        Today we are Hull's first and only community-run library — free to join, open to everyone,
-        and kept going by more than {{ site.volunteerCount }} volunteers.
-      </p>
+        <p class="prose-body mt-6">
+          In 2013 this building was earmarked for closure, so local people took it on themselves.
+          Today we are Hull's first and only community-run library — free to join, open to everyone,
+          and kept going by more than {{ site.volunteerCount }} volunteers.
+        </p>
 
-      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-        <a routerLink="/visit" class="btn-primary">
-          Plan your visit
-          <app-icon name="arrowRight" [size]="18" />
-        </a>
-        <a
-          routerLink="/activities"
-          class="border-line-strong hover:bg-sunken inline-flex items-center justify-center rounded-xl border px-6 py-3.5 font-semibold transition-colors"
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a routerLink="/visit" class="btn-primary">
+            Plan your visit
+            <app-icon name="arrowRight" [size]="18" />
+          </a>
+          <a
+            routerLink="/activities"
+            class="border-line-strong hover:bg-sunken inline-flex items-center justify-center rounded-xl border px-6 py-3.5 font-semibold transition-colors"
+          >
+            Clubs &amp; activities
+          </a>
+        </div>
+      </div>
+
+      <!-- The building, presented as a photograph rather than a decoration: a
+           printed edge, a soft shadow, and a plate naming the place. The source
+           is only 512px, so it is held to a contained width where it still reads
+           sharply instead of being stretched across the viewport. -->
+      <figure class="relative mx-auto w-full max-w-xl lg:mx-0">
+        <div class="ring-navy-950/5 overflow-hidden rounded-2xl shadow-xl ring-1">
+          <img
+            appImageFade
+            src="images/library-exterior.jpg"
+            alt="The library seen from The Greenway at dusk: a white single-storey building with a pitched roof, its name board above the entrance, lit windows, and a ramped path up to the door."
+            width="512"
+            height="512"
+            fetchpriority="high"
+            class="aspect-[4/3] w-full object-cover"
+          />
+        </div>
+
+        <figcaption
+          class="border-line/70 bg-surface/95 absolute bottom-4 left-4 flex items-center gap-2.5 rounded-xl border py-2.5 pr-4 pl-3 backdrop-blur-sm"
         >
-          Clubs &amp; activities
-        </a>
-      </div>
+          <span class="text-blue-700"><app-icon name="mapPin" [size]="17" /></span>
+          <span class="text-ink text-sm font-semibold">
+            {{ site.address.line1 }}, {{ site.address.city }}
+          </span>
+        </figcaption>
+      </figure>
     </div>
-
-    <!-- The building, presented as a photograph rather than a decoration: a
-         printed edge, a soft shadow, and a plate naming the place. The source
-         is only 512px, so it is held to a contained width where it still reads
-         sharply instead of being stretched across the viewport. -->
-    <figure class="relative mx-auto w-full max-w-xl lg:mx-0">
-      <div class="ring-forest-950/5 overflow-hidden rounded-2xl shadow-xl ring-1">
-        <img
-          appImageFade
-          src="images/library-exterior.jpg"
-          alt="The library seen from The Greenway at dusk: a white single-storey building with a pitched roof, its name board above the entrance, lit windows, and a ramped path up to the door."
-          width="512"
-          height="512"
-          fetchpriority="high"
-          class="aspect-[4/3] w-full object-cover"
-        />
-      </div>
-
-      <figcaption
-        class="border-line/70 bg-surface/95 absolute bottom-4 left-4 flex items-center gap-2.5 rounded-xl border py-2.5 pr-4 pl-3 backdrop-blur-sm"
-      >
-        <span class="text-forest-700"><app-icon name="mapPin" [size]="17" /></span>
-        <span class="text-ink text-sm font-semibold">
-          {{ site.address.line1 }}, {{ site.address.city }}
-        </span>
-      </figcaption>
-    </figure>
   </div>
 </section>
 
@@ -104,7 +109,7 @@
           <li
             class="border-line flex flex-col gap-2 border-t pt-4 sm:flex-row sm:items-baseline sm:gap-6"
           >
-            <p class="text-forest-800 shrink-0 font-semibold sm:w-44">
+            <p class="text-navy-800 shrink-0 font-semibold sm:w-44">
               {{ day.isToday ? 'Today' : (day.date | date: 'EEEE d MMMM') }}
             </p>
             <ul class="flex min-w-0 flex-col gap-2">
@@ -142,7 +147,7 @@
   <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
     <div class="order-2 lg:order-1">
       <div
-        class="ring-forest-950/5 mx-auto w-full max-w-xl overflow-hidden rounded-2xl shadow-xl ring-1 lg:mx-0"
+        class="ring-navy-950/5 mx-auto w-full max-w-xl overflow-hidden rounded-2xl shadow-xl ring-1 lg:mx-0"
       >
         <img
           appImageFade
@@ -167,7 +172,7 @@
       <ul class="mt-7 flex flex-col gap-2.5">
         @for (item of offerings; track item.title) {
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="text-forest-600 mt-1"><app-icon name="check" [size]="16" /></span>
+            <span class="text-blue-600 mt-1"><app-icon name="check" [size]="16" /></span>
             <span>{{ item.title }}</span>
           </li>
         }
@@ -193,7 +198,7 @@
 
       <address class="mt-8 flex flex-col gap-4 text-base not-italic">
         <p class="text-ink-soft flex items-start gap-3">
-          <span class="text-forest-600 mt-0.5"><app-icon name="mapPin" [size]="19" /></span>
+          <span class="text-blue-600 mt-0.5"><app-icon name="mapPin" [size]="19" /></span>
           <span>
             {{ site.address.line1 }}, {{ site.address.line2 }}<br />
             {{ site.address.city }} {{ site.address.postcode }}
@@ -201,9 +206,9 @@
         </p>
         <a
           [href]="'tel:' + site.phoneHref"
-          class="text-ink-soft hover:text-forest-900 flex items-center gap-3"
+          class="text-ink-soft hover:text-navy-900 flex items-center gap-3"
         >
-          <span class="text-forest-600"><app-icon name="phone" [size]="19" /></span>
+          <span class="text-blue-600"><app-icon name="phone" [size]="19" /></span>
           {{ site.phone }}
         </a>
       </address>

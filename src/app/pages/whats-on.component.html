@@ -37,7 +37,7 @@
       </button>
 
       <p
-        class="font-display text-forest-950 min-w-0 flex-1 text-center font-semibold sm:min-w-[11rem] sm:text-lg"
+        class="font-display text-navy-950 min-w-0 flex-1 text-center font-semibold sm:min-w-[11rem] sm:text-lg"
         aria-live="polite"
       >
         {{ view() === 'week' ? weekLabel() : monthLabel() }}
@@ -70,7 +70,7 @@
         @for (day of week(); track day.iso) {
           <li
             class="overflow-hidden rounded-2xl border"
-            [class]="day.isToday ? 'border-forest-300 bg-forest-50' : 'border-line bg-surface'"
+            [class]="day.isToday ? 'border-blue-300 bg-blue-50' : 'border-line bg-surface'"
           >
             <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-5 pt-4">
               <h2 class="font-display text-lg font-semibold">
@@ -81,7 +81,7 @@
               }
               <span
                 class="ml-auto text-sm"
-                [class]="day.closureReason ? 'text-ochre-800' : 'text-ink-muted'"
+                [class]="day.closureReason ? 'text-orange-800' : 'text-ink-muted'"
               >
                 @if (day.closureReason) {
                   {{ day.closureReason }} · {{ day.hours }}
@@ -95,7 +95,7 @@
               <ul class="flex flex-col px-5 pb-4">
                 @for (event of day.events; track event.occurrenceId) {
                   <li class="border-line flex flex-col gap-1 border-t py-3 sm:flex-row sm:gap-5">
-                    <p class="text-forest-800 shrink-0 font-semibold tabular-nums sm:w-44">
+                    <p class="text-navy-800 shrink-0 font-semibold tabular-nums sm:w-44">
                       @if (event.startTime) {
                         {{ event.startTime | libraryTime }}
                         @if (event.endTime) {
@@ -166,18 +166,18 @@
                 !day.inCurrentMonth
                   ? 'border-transparent'
                   : selectedIso() === day.iso
-                    ? 'border-forest-600 bg-forest-50 ring-forest-600 ring-2'
+                    ? 'border-blue-600 bg-blue-50 ring-blue-600 ring-2'
                     : day.isToday
-                      ? 'border-forest-300 bg-forest-50'
+                      ? 'border-blue-300 bg-blue-50'
                       : day.events.length
-                        ? 'border-line bg-surface hover:border-forest-300 cursor-pointer'
+                        ? 'border-line bg-surface hover:border-blue-300 cursor-pointer'
                         : 'border-line cursor-default'
               "
             >
               <span
                 class="text-sm font-semibold tabular-nums"
                 [class]="
-                  !day.inCurrentMonth ? 'text-ink-muted' : day.isToday ? 'text-forest-800' : ''
+                  !day.inCurrentMonth ? 'text-ink-muted' : day.isToday ? 'text-navy-800' : ''
                 "
               >
                 {{ day.date | date: 'd' }}
@@ -190,8 +190,8 @@
                       class="truncate rounded px-1.5 py-px text-[0.7rem] leading-tight font-medium"
                       [class]="
                         event.recurrence === 'none'
-                          ? 'bg-ochre-100 text-ochre-900'
-                          : 'bg-forest-100 text-forest-900'
+                          ? 'bg-orange-100 text-orange-900'
+                          : 'bg-blue-100 text-navy-900'
                       "
                     >
                       {{ event.title }}
@@ -217,7 +217,7 @@
               <ul class="mt-3 flex flex-col">
                 @for (event of day.events; track event.occurrenceId) {
                   <li class="border-line flex flex-col gap-1 border-t py-3 sm:flex-row sm:gap-5">
-                    <p class="text-forest-800 shrink-0 font-semibold tabular-nums sm:w-44">
+                    <p class="text-navy-800 shrink-0 font-semibold tabular-nums sm:w-44">
                       {{ event.startTime ? (event.startTime | libraryTime) : 'All day' }}
                     </p>
                     <div class="min-w-0">
@@ -244,11 +244,11 @@
         @if (monthHasOneOff()) {
           <p class="text-ink-muted mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
             <span class="flex items-center gap-2">
-              <span class="bg-forest-100 inline-block h-3 w-6 rounded" aria-hidden="true"></span>
+              <span class="bg-blue-100 inline-block h-3 w-6 rounded" aria-hidden="true"></span>
               Weekly club
             </span>
             <span class="flex items-center gap-2">
-              <span class="bg-ochre-100 inline-block h-3 w-6 rounded" aria-hidden="true"></span>
+              <span class="bg-orange-100 inline-block h-3 w-6 rounded" aria-hidden="true"></span>
               One-off event
             </span>
           </p>
@@ -262,7 +262,7 @@
             @for (day of monthDaysWithEvents(); track day.iso) {
               <li
                 class="rounded-2xl border p-5"
-                [class]="day.isToday ? 'border-forest-300 bg-forest-50' : 'border-line bg-surface'"
+                [class]="day.isToday ? 'border-blue-300 bg-blue-50' : 'border-line bg-surface'"
               >
                 <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <h2 class="font-display text-lg font-semibold">
@@ -275,7 +275,7 @@
                 <ul class="mt-2 flex flex-col">
                   @for (event of day.events; track event.occurrenceId) {
                     <li class="border-line border-t py-3">
-                      <p class="text-forest-800 font-semibold tabular-nums">
+                      <p class="text-navy-800 font-semibold tabular-nums">
                         {{ event.startTime ? (event.startTime | libraryTime) : 'All day' }}
                       </p>
                       <h3 class="mt-0.5 font-semibold">{{ event.title }}</h3>

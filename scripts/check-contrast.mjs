@@ -63,44 +63,60 @@ const PAIRS = [
   ['ink-muted', 'page', 'eyebrows, hints, counts', 'normal'],
   ['ink-muted', 'surface', 'field hints, placeholders', 'normal'],
   ['ink-muted', 'sunken', 'hints on sunken bands', 'normal'],
-  ['forest-950', 'page', 'headings', 'large'],
-  ['forest-950', 'surface', 'headings on cards', 'large'],
-  ['forest-700', 'surface', 'inline links', 'normal'],
-  ['forest-700', 'page', 'inline links on page', 'normal'],
-  ['forest-700', 'sunken', 'links on sunken bands', 'normal'],
+  ['navy-950', 'page', 'headings', 'large'],
+  ['navy-950', 'surface', 'headings on cards', 'large'],
+  ['blue-700', 'surface', 'inline links', 'normal'],
+  ['blue-700', 'page', 'inline links on page', 'normal'],
+  ['blue-700', 'sunken', 'links on sunken bands', 'normal'],
   ['danger', 'surface', 'form errors', 'normal'],
   ['danger', 'danger-soft', 'error alert text', 'normal'],
   ['success', 'success-soft', 'success chip', 'normal'],
 
   // Text on dark surfaces
-  ['ink-inverse', 'inverse', 'text on green bands', 'normal'],
-  ['ink-on-dark', 'inverse', 'body on green bands', 'normal'],
-  ['ink-on-dark-muted', 'inverse', 'labels on green bands', 'normal'],
-  ['ochre-300', 'inverse', 'figures on green bands', 'large'],
+  ['ink-inverse', 'inverse', 'text on navy bands', 'normal'],
+  ['ink-on-dark', 'inverse', 'body on navy bands', 'normal'],
+  ['ink-on-dark-muted', 'inverse', 'labels on navy bands', 'normal'],
+  ['orange-300', 'inverse', 'figures on navy bands', 'large'],
 
   // Solid fills carrying text
   ['ink-inverse', 'accent', 'Donate button', 'normal'],
   ['ink-inverse', 'accent-hover', 'Donate button, hover', 'normal'],
   ['ink-inverse', 'primary', 'primary button', 'normal'],
   ['ink-inverse', 'primary-hover', 'primary button, hover', 'normal'],
-  ['forest-950', 'accent-bright', 'button on dark bands', 'normal'],
-  ['ink-inverse', 'forest-800', 'active nav pill', 'normal'],
-  ['ochre-900', 'ochre-100', 'accent chip', 'normal'],
+  ['navy-950', 'accent-bright', 'button on dark bands', 'normal'],
+  ['ink-inverse', 'navy-800', 'active nav pill', 'normal'],
+  ['orange-900', 'orange-100', 'accent chip', 'normal'],
+  ['ink-inverse', 'blue-700', 'badge on brand blue', 'normal'],
 
-  // Footer newsletter sits on the darkest green, not the band colour.
-  ['ink-inverse', 'forest-950', 'newsletter input text', 'normal'],
-  ['ink-on-dark-muted', 'forest-950', 'newsletter placeholder', 'normal'],
-  ['forest-950', 'ochre-500', 'newsletter sign-up button', 'normal'],
-  ['ink-on-dark', 'forest-950', 'footer body on darkest green', 'normal'],
+  // Pale blue panels and icon tiles. These carry real text, not just glyphs.
+  ['navy-800', 'blue-50', 'date chip numerals', 'normal'],
+  ['navy-800', 'blue-100', 'trustee initials', 'normal'],
+  ['ink-soft', 'blue-50', 'prose in blue panels', 'normal'],
+  ['ink-muted', 'blue-50', 'hints in blue panels', 'normal'],
+  ['blue-700', 'blue-50', 'links in blue panels', 'normal'],
+
+  // Footer newsletter sits on the darkest navy, not the band colour.
+  ['ink-inverse', 'navy-950', 'newsletter input text', 'normal'],
+  ['ink-on-dark-muted', 'navy-950', 'newsletter placeholder', 'normal'],
+  ['navy-950', 'orange-500', 'newsletter sign-up button', 'normal'],
+  ['ink-on-dark', 'navy-950', 'footer body on darkest navy', 'normal'],
 ];
 
 /** Non-text contrast (borders, focus rings, state dots) needs 3:1. */
 const NON_TEXT = [
   ['line-strong', 'surface', 'input borders'],
   ['line-strong', 'page', 'input borders on page'],
-  ['ochre-700', 'surface', 'focus ring'],
-  ['ochre-700', 'page', 'focus ring on page'],
-  ['forest-800', 'page', 'active pill fill'],
+  ['orange-700', 'surface', 'focus ring'],
+  ['orange-700', 'page', 'focus ring on page'],
+  ['navy-800', 'page', 'active pill fill'],
+  ['blue-700', 'blue-50', 'icon glyphs in tiles'],
+  ['blue-600', 'blue-50', 'icon glyphs in tiles'],
+
+  // The hero is a pale blue band, so it is the darkest light surface an
+  // interactive border or a status dot has to hold up against.
+  ['line-strong', 'blue-50', 'secondary button border in the hero'],
+  ['success', 'blue-50', 'open-status dot'],
+  ['orange-600', 'blue-50', 'closed-status dot'],
 ];
 
 let failures = 0;

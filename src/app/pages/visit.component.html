@@ -14,7 +14,7 @@
     <div class="card p-6 sm:p-7" [appReveal]="80">
       <div class="flex items-center gap-3">
         <span
-          class="bg-forest-50 text-forest-700 flex h-11 w-11 items-center justify-center rounded-xl"
+          class="bg-blue-50 text-blue-700 flex h-11 w-11 items-center justify-center rounded-xl"
         >
           <app-icon name="mapPin" [size]="22" />
         </span>
@@ -22,7 +22,7 @@
       </div>
 
       <figure class="mt-6">
-        <div class="ring-forest-950/5 overflow-hidden rounded-xl ring-1">
+        <div class="ring-navy-950/5 overflow-hidden rounded-xl ring-1">
           <img
             appImageFade
             src="images/library-exterior.jpg"
@@ -68,16 +68,16 @@
       <div class="border-line mt-7 flex flex-col gap-3 border-t pt-6">
         <a
           [href]="'tel:' + site.phoneHref"
-          class="text-ink-soft hover:text-forest-900 flex min-h-11 items-center gap-3 font-medium"
+          class="text-ink-soft hover:text-navy-900 flex min-h-11 items-center gap-3 font-medium"
         >
-          <span class="text-forest-600"><app-icon name="phone" [size]="19" /></span>
+          <span class="text-blue-600"><app-icon name="phone" [size]="19" /></span>
           {{ site.phone }}
         </a>
         <a
           [href]="'mailto:' + site.email"
-          class="text-ink-soft hover:text-forest-900 flex min-h-11 items-start gap-3 font-medium break-all"
+          class="text-ink-soft hover:text-navy-900 flex min-h-11 items-start gap-3 font-medium break-all"
         >
-          <span class="text-forest-600 mt-0.5"><app-icon name="mail" [size]="19" /></span>
+          <span class="text-blue-600 mt-0.5"><app-icon name="mail" [size]="19" /></span>
           <span class="break-all">{{ site.email }}</span>
         </a>
       </div>
@@ -88,10 +88,10 @@
 <!-- ── Membership ────────────────────────────────────────────────────────── -->
 <section class="container-page mt-20">
   <div
-    class="border-forest-200 bg-forest-50 grid items-center gap-8 rounded-2xl border p-8 sm:p-12 lg:grid-cols-12"
+    class="border-blue-200 bg-blue-50 grid items-center gap-8 rounded-2xl border p-8 sm:p-12 lg:grid-cols-12"
   >
     <div class="lg:col-span-8">
-      <p class="text-forest-700 text-xs font-semibold tracking-[0.18em] uppercase">Membership</p>
+      <p class="text-blue-700 text-xs font-semibold tracking-[0.18em] uppercase">Membership</p>
       <h2 class="mt-2 text-3xl font-semibold">Free to join, and it opens up the whole city</h2>
       <p class="prose-body mt-4">
         We run in partnership with Hull City Council, so your membership here gives you the entire
@@ -104,12 +104,12 @@
       </p>
     </div>
     <div class="lg:col-span-4">
-      <div class="border-forest-200 rounded-2xl border bg-surface p-6 text-center">
-        <p class="font-display text-forest-800 text-5xl font-semibold">£0</p>
+      <div class="border-blue-200 rounded-2xl border bg-surface p-6 text-center">
+        <p class="font-display text-navy-800 text-5xl font-semibold">£0</p>
         <p class="text-ink-soft mt-2 text-sm">Membership costs nothing, and always has.</p>
         <a
           routerLink="/contact"
-          class="bg-forest-800 hover:bg-forest-700 mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold text-white transition-colors"
+          class="bg-navy-800 hover:bg-blue-700 mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold text-white transition-colors"
         >
           Ask us a question
         </a>
@@ -133,7 +133,7 @@
     @for (facility of facilities; track facility.title; let i = $index) {
       <li class="card p-6" [appReveal]="i * 50">
         <span
-          class="bg-ochre-50 text-ochre-700 flex h-12 w-12 items-center justify-center rounded-xl"
+          class="bg-orange-50 text-orange-700 flex h-12 w-12 items-center justify-center rounded-xl"
         >
           <app-icon [name]="facility.icon" [size]="24" />
         </span>
@@ -157,7 +157,7 @@
     <div class="grid gap-10 lg:grid-cols-12">
       <div class="lg:col-span-5">
         <span
-          class="bg-forest-50 text-forest-700 flex h-12 w-12 items-center justify-center rounded-xl"
+          class="bg-blue-50 text-blue-700 flex h-12 w-12 items-center justify-center rounded-xl"
         >
           <app-icon name="accessible" [size]="24" />
         </span>
@@ -172,7 +172,7 @@
         <ul class="flex flex-col gap-3">
           @for (note of accessNotes; track note) {
             <li class="text-ink-soft flex items-start gap-3">
-              <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+              <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
                 <app-icon name="check" [size]="15" />
               </span>
               <span>{{ note }}</span>
@@ -185,10 +185,7 @@
           <p class="text-ink-soft mt-2">
             We run an outreach service taking books out to residents of Lees Rest Homes. If getting
             here is difficult, ring
-            <a
-              [href]="'tel:' + site.phoneHref"
-              class="text-forest-700 font-semibold hover:underline"
-            >
+            <a [href]="'tel:' + site.phoneHref" class="text-blue-700 font-semibold hover:underline">
               {{ site.phone }}
             </a>
             and we will see what we can arrange.

@@ -31,7 +31,7 @@
             <!-- Rail -->
             <div class="flex flex-col items-center">
               <span
-                class="bg-forest-800 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-semibold text-white"
+                class="bg-navy-800 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-semibold text-white"
               >
                 {{ entry.year }}
               </span>
@@ -67,7 +67,7 @@
         <dl class="flex flex-col gap-4 text-sm">
           <div>
             <dt class="text-ink-muted">Registered charity number</dt>
-            <dd class="font-display text-forest-900 mt-0.5 text-xl font-semibold">
+            <dd class="font-display text-navy-900 mt-0.5 text-xl font-semibold">
               {{ site.charityNumber }}
             </dd>
           </div>
@@ -87,7 +87,7 @@
           <li
             class="border-line text-ink-soft flex items-start gap-3 rounded-xl border bg-surface px-5 py-4"
           >
-            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
               <app-icon name="check" [size]="15" />
             </span>
             <span>{{ item }}</span>
@@ -113,7 +113,7 @@
         [appReveal]="i * 40"
       >
         <span
-          class="bg-forest-100 text-forest-800 font-display flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-semibold"
+          class="bg-blue-100 text-navy-800 font-display flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-semibold"
           aria-hidden="true"
         >
           {{ trustee.name.charAt(0) }}
@@ -143,7 +143,7 @@
       </div>
       <div class="lg:col-span-5">
         <div class="border-line-inverse rounded-2xl border p-6 text-center">
-          <p class="font-display text-ochre-300 text-6xl font-semibold">
+          <p class="font-display text-orange-300 text-6xl font-semibold">
             {{ site.volunteerCount }}+
           </p>
           <p class="text-ink-on-dark mt-2 text-sm">

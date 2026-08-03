@@ -19,8 +19,8 @@
           class="ml-2 rounded-full px-2 py-0.5 text-xs"
           [class]="
             activeTab() === tab.value
-              ? 'bg-ochre-400 text-forest-950'
-              : 'bg-ochre-100 text-ochre-900'
+              ? 'bg-orange-400 text-navy-950'
+              : 'bg-orange-100 text-orange-900'
           "
         >
           {{ newCounts()[tab.value] }}
@@ -64,9 +64,9 @@
               class="rounded-full px-3 py-1 text-xs font-semibold"
               [class]="
                 row.status === 'new'
-                  ? 'bg-ochre-100 text-ochre-900'
+                  ? 'bg-orange-100 text-orange-900'
                   : row.status === 'in_progress'
-                    ? 'bg-forest-100 text-forest-900'
+                    ? 'bg-blue-100 text-navy-900'
                     : 'bg-line text-ink-soft'
               "
             >
@@ -97,7 +97,7 @@
                     <dd class="mt-0.5">
                       <a
                         [href]="'mailto:' + row.email"
-                        class="text-forest-700 font-medium break-all hover:underline"
+                        class="text-blue-700 font-medium break-all hover:underline"
                       >
                         {{ row.email }}
                       </a>
@@ -109,7 +109,7 @@
                       <dd class="mt-0.5">
                         <a
                           [href]="'tel:' + row.phone"
-                          class="text-forest-700 font-medium hover:underline"
+                          class="text-blue-700 font-medium hover:underline"
                         >
                           {{ row.phone }}
                         </a>
@@ -156,7 +156,7 @@
                     type="button"
                     (click)="setStatus(row, 'closed')"
                     [disabled]="row.status === 'closed'"
-                    class="bg-forest-800 hover:bg-forest-700 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-40"
+                    class="bg-navy-800 hover:bg-blue-700 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-40"
                   >
                     Mark as done
                   </button>
@@ -172,7 +172,7 @@
       class="border-line-strong mt-4 rounded-2xl border border-dashed bg-surface/60 px-6 py-16 text-center"
     >
       <span
-        class="bg-forest-50 text-forest-600 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+        class="bg-blue-50 text-blue-600 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
       >
         <app-icon name="inbox" [size]="26" />
       </span>

@@ -21,7 +21,7 @@ import { SITE } from '../core/site.data';
     <div class="mx-auto max-w-md py-10">
       <div class="card p-8 sm:p-10">
         <span
-          class="bg-forest-50 text-forest-700 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+          class="bg-blue-50 text-blue-700 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
         >
           <app-icon name="key" [size]="26" />
         </span>
