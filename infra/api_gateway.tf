@@ -97,6 +97,7 @@ locals {
     "GET /settings"        = { function = "get_settings", protected = false }
 
     # Trustees only
+    "GET /admin/me"                           = { function = "whoami", protected = true }
     "GET /admin/events"                       = { function = "list_all_events", protected = true }
     "POST /admin/events"                      = { function = "create_event", protected = true }
     "PUT /admin/events/{eventId}"             = { function = "update_event", protected = true }

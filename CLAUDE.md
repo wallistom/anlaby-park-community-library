@@ -248,6 +248,12 @@ merge to `main` → the Deploy workflow publishes and invalidates CloudFront.
 destructive; they stay a deliberate `terraform apply`. Content and UI changes are one merge from
 live.
 
+**Apply infrastructure before merging frontend code that depends on it.** The admin route guard
+calls `GET /admin/me`, and it fails closed — if the frontend ships first, that route 404s and
+every trustee is locked out of the admin area. The sign-in page distinguishes this case ("we
+could not check your account") from a genuine refusal, so it is diagnosable rather than
+mysterious, but the ordering is still the fix.
+
 Deploys authenticate by GitHub OIDC. There are **no AWS keys anywhere**. The role can sync the
 website bucket and invalidate the cache; it cannot read DynamoDB, change Lambdas, or touch state.
 
