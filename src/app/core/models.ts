@@ -139,3 +139,25 @@ export interface ContactMessage {
   status: EnquiryStatus;
   submittedAt: string;
 }
+
+/**
+ * A sign-in account with access to the admin area.
+ *
+ * Distinct from `Trustee`, which is a board member listed on the About page —
+ * the two overlap in practice but are not the same thing, and conflating them
+ * would put a private email address next to a public name.
+ *
+ * Only covers accounts the charity manages itself. The break-glass accounts
+ * held in Terraform never appear here — they are not the charity's to change.
+ */
+export interface TrusteeAccount {
+  /** The Google address they sign in with. Always lowercase. */
+  email: string;
+  name: string;
+  /** ISO timestamp. */
+  addedAt: string;
+  /** Address of the trustee who added them. */
+  addedBy: string;
+  /** True for the signed-in trustee, who cannot remove themselves. */
+  isYou: boolean;
+}
