@@ -133,6 +133,24 @@ Rules learned the hard way:
 - The base `prefers-reduced-motion` rule collapses all durations, so individual rules don't need
   their own handling.
 
+### Loading states
+
+Use the `.skeleton` class, sized at the call site so the placeholder is shaped like the thing it
+stands in for — a skeleton that does not match its content just moves the jolt later. Put it inside
+a container marked `aria-hidden`, with a visually hidden `aria-live` message alongside: a screen
+reader should hear "loading", not a list of empty boxes.
+
+Two traps this area has already produced:
+
+- **Never let a form act on fallback data.** `manage-hours` seeded its fields from
+  `hours.settings()` at construction, which is the compiled-in default until the API answers. A
+  trustee who opened the page quickly saw defaults, and Save wrote them over the real configuration.
+  The screen now waits for `loadState() === 'ready'`, and _both_ Save buttons are disabled until
+  then — the one in the page header sits outside the form and was missed the first time.
+- **An async `canActivate` renders nothing.** The admin guard calls the API, so a deep link showed a
+  blank page until it resolved. `App` puts a progress bar across the top after 150ms — shorter than
+  that and it is a flicker, which is worse than nothing.
+
 **If you add an animation class, attach it to an element and verify it fires.** Three animations
 once shipped as dead CSS because they were written but never applied. Check with
 `getComputedStyle(el).animationName`.
@@ -309,6 +327,11 @@ Repository variables (not secrets): `AWS_DEPLOY_ROLE`, `WEBSITE_BUCKET`,
 
 Marked in source with `TODO(content)` / `TODO(legal)`:
 
+- The weekly timetable — nothing to change in code. Trustees add each club under **Trustee area →
+  Events** with a frequency and an end date, and it appears on What's On. The April 2025 printed
+  timetable listed Craft Group (Mondays), Baby Bounce and Bridge Club (Tuesdays), Art Group
+  (Wednesdays), Age UK's Brunch Bunch (Thursdays), and two Book Clubs on the second Thursday —
+  worth checking against current practice before entering them, given the source is unreliable.
 - Room hire rate card (`room-hire.component.html`) — the old site kept it in a PDF.
 - PayPal fundraiser URL (`support.component.ts`).
 - Building-works notice (`SITE_NOTICE` in `site.data.ts`) — confirm it is current; set

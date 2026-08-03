@@ -92,10 +92,10 @@ import { TrusteeAccount } from '../core/models';
       <ul class="mt-4 flex flex-col gap-3" aria-hidden="true">
         @for (row of [1, 2, 3]; track row) {
           <li class="card flex items-center gap-4 p-5">
-            <div class="bg-line h-10 w-10 shrink-0 animate-pulse rounded-full"></div>
+            <div class="skeleton h-10 w-10 shrink-0 -full"></div>
             <div class="flex flex-1 flex-col gap-2">
-              <div class="bg-line h-4 w-40 animate-pulse rounded"></div>
-              <div class="bg-line h-3 w-56 animate-pulse rounded"></div>
+              <div class="skeleton h-4 w-40 "></div>
+              <div class="skeleton h-3 w-56 "></div>
             </div>
           </li>
         }

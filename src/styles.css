@@ -270,6 +270,17 @@
     @apply border-line bg-surface hover:border-blue-300 rounded-2xl border transition-colors;
   }
 
+  /* One placeholder block. Size it at the call site with height and width
+     utilities so a skeleton can be shaped like the thing it stands in for —
+     a skeleton that does not match its content just moves the jolt later.
+
+     Always inside a container marked aria-hidden, with a visually hidden
+     aria-live message alongside: a screen reader should hear "loading", not
+     a list of empty boxes. */
+  .skeleton {
+    @apply bg-line animate-pulse rounded;
+  }
+
   /* --- Buttons ---------------------------------------------------------- */
 
   .btn,
@@ -436,6 +447,23 @@
 
 router-outlet + * {
   animation: page-enter var(--duration-page) var(--ease-out-soft) both;
+}
+
+/* Navigation progress bar. It cannot know how long the guard will take, so it
+   eases towards the right and stops short rather than pretending to finish — a
+   bar that completes and then keeps waiting is a lie. */
+@keyframes route-progress {
+  from {
+    transform: scaleX(0.05);
+  }
+  to {
+    transform: scaleX(0.9);
+  }
+}
+
+.route-progress {
+  transform-origin: left;
+  animation: route-progress 4s var(--ease-out-soft) both;
 }
 
 /* --- Scroll reveal ------------------------------------------------------ */

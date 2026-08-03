@@ -22,6 +22,16 @@ export interface OpenStatus {
   reason?: string;
 }
 
+/**
+ * Whether the saved settings have actually arrived.
+ *
+ * Public pages ignore this — they fall back to the compiled-in defaults so the
+ * site is never blank. The admin form must not: editing a form seeded with
+ * defaults and pressing Save would write those defaults over whatever the
+ * trustees had actually saved.
+ */
+export type SettingsLoadState = 'idle' | 'loading' | 'ready' | 'failed';
+
 export interface WeekRow {
   dayIndex: number;
   name: string;
@@ -43,6 +53,11 @@ export class OpeningHoursService {
   private readonly now = signal(new Date());
   private readonly stored = signal<LibrarySettings>(DEFAULT_SETTINGS);
   private loadStarted = false;
+
+  private readonly loadStatus = signal<SettingsLoadState>('idle');
+
+  /** For screens that must not act on the fallback defaults. */
+  readonly loadState = this.loadStatus.asReadonly();
 
   /** Exceptions sorted narrowest-first, so a single day beats a range. */
   readonly settings = computed<LibrarySettings>(() => {
@@ -140,6 +155,7 @@ export class OpeningHoursService {
       return;
     }
     this.loadStarted = true;
+    this.loadStatus.set('loading');
     this.http.get<Partial<LibrarySettings>>(`${environment.apiBaseUrl}/settings`).subscribe({
       next: (value) => {
         if (value?.pattern?.length) {
@@ -149,9 +165,14 @@ export class OpeningHoursService {
             notice: value.notice ?? DEFAULT_SETTINGS.notice,
           });
         }
+        // An empty body means nothing has been saved yet, which is a real
+        // answer: the defaults genuinely are the current state.
+        this.loadStatus.set('ready');
       },
       error: () => {
-        /* keep the defaults */
+        // Public pages keep the defaults and carry on. The admin form checks
+        // this and refuses to edit rather than risk overwriting.
+        this.loadStatus.set('failed');
       },
     });
   }
@@ -159,6 +180,7 @@ export class OpeningHoursService {
   /** Applies settings saved in the admin area without a refetch. */
   apply(settings: LibrarySettings): void {
     this.stored.set(settings);
+    this.loadStatus.set('ready');
   }
 
   /** Hours for a given date, exceptions included — used by the calendar. */
