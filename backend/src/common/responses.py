@@ -49,6 +49,10 @@ def bad_request(message: str) -> dict[str, Any]:
     return _response(400, {"error": message})
 
 
+def forbidden(message: str = "Not allowed") -> dict[str, Any]:
+    return _response(403, {"error": message})
+
+
 def not_found(message: str = "Not found") -> dict[str, Any]:
     return _response(404, {"error": message})
 

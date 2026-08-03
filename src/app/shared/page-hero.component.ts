@@ -15,7 +15,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   selector: 'app-page-hero',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section class="border-line bg-blue-50 border-b">
+    <section class="border-line bg-sunken border-b">
       <div class="container-page py-14 sm:py-16">
         @if (eyebrow()) {
           <p class="eyebrow">{{ eyebrow() }}</p>
