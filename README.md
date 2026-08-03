@@ -14,10 +14,10 @@ This replaces it with an Angular front end and a serverless back end the trustee
 
 ## What's here
 
-| Path       | What it is                                                       |
-| ---------- | ---------------------------------------------------------------- |
-| `src/`     | Angular 20 application, Tailwind CSS v4                          |
-| `backend/` | Python Lambda handlers, one per endpoint, plus their tests       |
+| Path       | What it is                                                        |
+| ---------- | ----------------------------------------------------------------- |
+| `src/`     | Angular 20 application, Tailwind CSS v4                           |
+| `backend/` | Python Lambda handlers, one per endpoint, plus their tests        |
 | `infra/`   | Terraform: DynamoDB, Lambda, API Gateway, S3 + CloudFront hosting |
 
 ### Pages
@@ -138,10 +138,10 @@ merge away from live.
 CI needs nothing. Deploy needs three repository **variables** (Settings →
 Secrets and variables → Actions → Variables). None of them are secret:
 
-| Variable | Where it comes from |
-| --- | --- |
-| `AWS_DEPLOY_ROLE` | `terraform output github_deploy_role_arn` |
-| `WEBSITE_BUCKET` | `terraform output website_bucket` |
+| Variable                     | Where it comes from                           |
+| ---------------------------- | --------------------------------------------- |
+| `AWS_DEPLOY_ROLE`            | `terraform output github_deploy_role_arn`     |
+| `WEBSITE_BUCKET`             | `terraform output website_bucket`             |
 | `CLOUDFRONT_DISTRIBUTION_ID` | `terraform output cloudfront_distribution_id` |
 
 There are **no AWS access keys anywhere**. GitHub exchanges a short-lived OIDC
@@ -183,7 +183,7 @@ aws dynamodb create-table --table-name apcl-tfstate-lock --region eu-west-2 \
 - **`infra/terraform.tfstate`** — the full resource graph, including the values
   of every variable.
 
-The Google client ID *is* committed, in `src/environments/`. That is deliberate
+The Google client ID _is_ committed, in `src/environments/`. That is deliberate
 and not a leak: an OAuth client ID for a web application is public by design,
 the ID-token flow uses no client secret, and it is already served in the site's
 JavaScript to every visitor.
@@ -222,7 +222,7 @@ drifting — a series starting on the 31st lands on the 30th in September and ba
 October.
 
 **No timetable in the codebase.** Days and times live only in the events data. `site.data.ts`
-describes what each club *is*; when it meets comes from the admin area, so there is one source of
+describes what each club _is_; when it meets comes from the admin area, so there is one source of
 truth rather than a hardcoded list that quietly goes stale.
 
 **Nothing is here that does not earn its place.** A round of deliberate removal took out a newsletter

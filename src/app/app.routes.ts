@@ -105,6 +105,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./admin/enquiries.component').then((m) => m.EnquiriesComponent),
       },
+      {
+        path: 'trustees',
+        canActivate: [adminGuard],
+        title: 'Who can sign in — Trustee area',
+        loadComponent: () => import('./admin/trustees.component').then((m) => m.TrusteesComponent),
+      },
     ],
   },
   {

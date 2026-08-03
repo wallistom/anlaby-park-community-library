@@ -90,6 +90,7 @@ export class AdminLayoutComponent {
     { label: 'Events', path: '/admin/events', icon: 'calendar' },
     { label: 'Enquiries', path: '/admin/enquiries', icon: 'inbox' },
     { label: 'Hours', path: '/admin/hours', icon: 'clock' },
+    { label: 'Access', path: '/admin/trustees', icon: 'key' },
   ];
 
   constructor() {
