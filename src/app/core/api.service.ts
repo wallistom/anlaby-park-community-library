@@ -9,6 +9,7 @@ import {
   EventOccurrence,
   HireEnquiry,
   LibraryEvent,
+  TrusteeAccount,
   VolunteerApplication,
 } from './models';
 
@@ -99,5 +100,19 @@ export class ApiService {
     status: EnquiryStatus,
   ): Observable<void> {
     return this.http.patch<void>(`${this.base}/admin/${kind}/${id}`, { status });
+  }
+
+  // --- Trustees -----------------------------------------------------------
+
+  listTrustees(): Observable<TrusteeAccount[]> {
+    return this.http.get<TrusteeAccount[]>(`${this.base}/admin/trustees`);
+  }
+
+  addTrustee(input: { email: string; name: string }): Observable<TrusteeAccount> {
+    return this.http.post<TrusteeAccount>(`${this.base}/admin/trustees`, input);
+  }
+
+  removeTrustee(email: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/admin/trustees/${encodeURIComponent(email)}`);
   }
 }

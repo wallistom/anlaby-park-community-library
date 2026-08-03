@@ -128,6 +128,28 @@ locals {
       actions   = []
     }
 
+    # --- Trustees ---------------------------------------------------------
+    list_trustees = {
+      handler   = "trustees.list.handler"
+      env       = { TRUSTEES_TABLE = aws_dynamodb_table.trustees.name }
+      resources = [aws_dynamodb_table.trustees.arn]
+      actions   = ["dynamodb:Scan"]
+    }
+    create_trustee = {
+      handler   = "trustees.create.handler"
+      env       = { TRUSTEES_TABLE = aws_dynamodb_table.trustees.name }
+      resources = [aws_dynamodb_table.trustees.arn]
+      # Scan as well as PutItem: it checks for a duplicate and the cap first.
+      actions = ["dynamodb:Scan", "dynamodb:PutItem"]
+    }
+    delete_trustee = {
+      handler   = "trustees.delete.handler"
+      env       = { TRUSTEES_TABLE = aws_dynamodb_table.trustees.name }
+      resources = [aws_dynamodb_table.trustees.arn]
+      # Scan as well: it refuses to remove the last one.
+      actions = ["dynamodb:Scan", "dynamodb:DeleteItem"]
+    }
+
     # --- Messages ---------------------------------------------------------
     create_message = {
       handler   = "messages.create.handler"
@@ -236,6 +258,20 @@ resource "aws_iam_role_policy_attachment" "authorizer_logs" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy" "authorizer_trustees" {
+  name = "trustees-read"
+  role = aws_iam_role.authorizer.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["dynamodb:Scan"]
+      Resource = aws_dynamodb_table.trustees.arn
+    }]
+  })
+}
+
 resource "aws_cloudwatch_log_group" "authorizer" {
   name              = "/aws/lambda/${local.name_prefix}-authorizer"
   retention_in_days = var.log_retention_days
@@ -257,6 +293,7 @@ resource "aws_lambda_function" "authorizer" {
     variables = {
       GOOGLE_CLIENT_ID       = var.google_client_id
       ALLOWED_TRUSTEE_EMAILS = join(",", var.allowed_trustee_emails)
+      TRUSTEES_TABLE         = aws_dynamodb_table.trustees.name
     }
   }
 
