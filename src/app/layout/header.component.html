@@ -1,6 +1,8 @@
 <header
   class="sticky top-0 z-50 border-b transition-all duration-300"
-  [class]="scrolled() ? 'border-line bg-page/95 backdrop-blur-md' : 'border-transparent bg-page'"
+  [class]="
+    scrolled() ? 'border-line bg-surface/95 shadow-sm backdrop-blur-md' : 'border-line bg-surface'
+  "
 >
   <div
     class="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-3 sm:px-8 lg:gap-6"
@@ -13,12 +15,12 @@
       aria-label="{{ site.name }}, home"
     >
       <span
-        class="bg-forest-800 group-hover:bg-forest-700 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white transition-colors"
+        class="bg-navy-800 group-hover:bg-blue-700 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white transition-colors"
       >
         <app-icon name="book" [size]="22" />
       </span>
       <span class="leading-tight">
-        <span class="font-display text-forest-950 block text-lg font-semibold sm:text-xl">
+        <span class="font-display text-navy-950 block text-lg font-semibold sm:text-xl">
           Anlaby Park
         </span>
         <span class="text-ink-muted block text-[0.68rem] font-semibold tracking-[0.14em] uppercase">
@@ -33,8 +35,8 @@
       @for (item of navItems; track item.path) {
         <a
           [routerLink]="item.path"
-          routerLinkActive="!text-forest-900 !bg-forest-50"
-          class="text-ink-soft hover:text-forest-900 hover:bg-sunken rounded-lg px-3 py-2 text-[0.9rem] font-medium whitespace-nowrap transition-colors"
+          routerLinkActive="!text-navy-900 !bg-blue-50"
+          class="text-ink-soft hover:text-navy-900 hover:bg-sunken rounded-lg px-3 py-2 text-[0.9rem] font-medium whitespace-nowrap transition-colors"
         >
           {{ item.label }}
         </a>
@@ -46,7 +48,7 @@
 
       <button
         type="button"
-        class="text-forest-900 hover:bg-sunken inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl lg:hidden"
+        class="text-navy-900 hover:bg-sunken inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl lg:hidden"
         [attr.aria-expanded]="menuOpen()"
         aria-controls="mobile-menu"
         (click)="toggleMenu()"
@@ -69,17 +71,17 @@
     role="dialog"
     aria-modal="true"
     aria-label="Menu"
-    class="drawer-enter bg-page fixed inset-0 z-[60] flex flex-col lg:hidden"
+    class="drawer-enter bg-surface fixed inset-0 z-[60] flex flex-col lg:hidden"
   >
     <div class="border-line flex shrink-0 items-center gap-4 border-b px-5 py-3">
       <span class="flex items-center gap-3">
         <span
-          class="bg-forest-800 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
+          class="bg-navy-800 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
         >
           <app-icon name="book" [size]="22" />
         </span>
         <span class="leading-tight">
-          <span class="font-display text-forest-950 block text-lg font-semibold">Anlaby Park</span>
+          <span class="font-display text-navy-950 block text-lg font-semibold">Anlaby Park</span>
           <span
             class="text-ink-muted block text-[0.68rem] font-semibold tracking-[0.14em] uppercase"
           >
@@ -90,7 +92,7 @@
 
       <button
         type="button"
-        class="text-forest-900 hover:bg-sunken ml-auto inline-flex h-11 w-11 items-center justify-center rounded-xl"
+        class="text-navy-900 hover:bg-sunken ml-auto inline-flex h-11 w-11 items-center justify-center rounded-xl"
         (click)="closeMenu()"
       >
         <span class="sr-only">Close menu</span>
@@ -105,7 +107,7 @@
             <li>
               <a
                 [routerLink]="item.path"
-                routerLinkActive="!text-forest-800 !bg-forest-50"
+                routerLinkActive="!text-navy-800 !bg-blue-50"
                 class="text-ink hover:bg-sunken flex items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium"
               >
                 {{ item.label }}

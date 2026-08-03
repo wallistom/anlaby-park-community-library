@@ -5,7 +5,8 @@
 
    Two layers:
 
-     1. Raw ramps (forest / ochre / parchment) — the palette.
+     1. Raw ramps (blue / navy / orange / stone) — the palette, taken from
+        the library's own artwork.
      2. Semantic tokens (ink, surface, line, accent, danger, success) — what
         the UI actually references.
 
@@ -19,90 +20,114 @@
 --------------------------------------------------------------------------- */
 
 @theme {
-  /* --- Raw ramps ------------------------------------------------------- */
+  /* --- Raw ramps -------------------------------------------------------
 
-  /* Brand — forest green. The library stands on The Greenway. */
-  --color-forest-50: #f0f7f3;
-  --color-forest-100: #dbeae1;
-  --color-forest-200: #b9d7c6;
-  --color-forest-300: #8dbca5;
-  --color-forest-400: #5e9b7f;
-  --color-forest-500: #3f8064;
-  --color-forest-600: #2e654e;
-  --color-forest-700: #265140;
-  --color-forest-800: #1f4234;
-  --color-forest-900: #1b372c;
-  --color-forest-950: #0d1f18;
+     Sampled from the library's own published artwork rather than invented.
+     The anchors are exact:
 
-  /* Accent — ochre. Darkened through the middle so solid fills can carry
-     white text at AA; the old 600 managed only 4.02:1 behind "Donate". */
-  --color-ochre-50: #fdf8ec;
-  --color-ochre-100: #faeecb;
-  --color-ochre-200: #f4dc9a;
-  --color-ochre-300: #ebc260;
-  --color-ochre-400: #dda52c;
-  --color-ochre-500: #c4870f;
-  --color-ochre-600: #a3690c;
-  --color-ochre-700: #85510f;
-  --color-ochre-800: #6d4213;
-  --color-ochre-900: #5b3714;
-  --color-ochre-950: #331b07;
+       blue   #086fba  the banner and bunting
+       navy   #223f69  the wordmark and headings
+       orange #ff7500  the window squares in the roof mark
 
-  /* Neutral — warm parchment. The middle of this ramp was previously too
-     light to carry text; 400–600 are darker so there is a usable muted step. */
-  --color-parchment-50: #faf9f7;
-  --color-parchment-100: #f3f1ed;
-  --color-parchment-200: #e6e2db;
-  --color-parchment-300: #cdc7ba;
-  /* 400 is the lightest value permitted on the edge of an interactive
-     control: WCAG 1.4.11 wants 3:1 for component boundaries, and the old
-     border managed 1.60:1. */
-  --color-parchment-400: #8d8474;
-  /* 500 is the lightest permitted text on any light surface, including the
-     sunken bands — which is where the previous value fell short. */
-  --color-parchment-500: #726959;
-  --color-parchment-600: #605848;
-  --color-parchment-700: #4b453a;
-  --color-parchment-800: #38332c;
-  --color-parchment-900: #2a2620;
-  --color-parchment-950: #191714;
+     Their pale green wash (#f2fded) is deliberately not used — see the
+     surface tokens below.
+
+     An earlier version of this file used a forest-green palette chosen on a
+     narrative rationale — the library stands on The Greenway — which had the
+     obvious flaw of not being the charity's actual identity. */
+
+  /* Brand blue. 600 is the published value, and it happens to carry white
+     text at 5.26:1, so it can be used for fills as well as accents. */
+  --color-blue-50: #edf4fa;
+  --color-blue-100: #d2e5f2;
+  --color-blue-200: #9cc5e3;
+  --color-blue-300: #5ea1d2;
+  --color-blue-400: #3a90cb;
+  --color-blue-500: #2d84c4;
+  --color-blue-600: #086fba;
+  --color-blue-700: #065e9e;
+  --color-blue-800: #054d82;
+  --color-blue-900: #04406c;
+  --color-blue-950: #032b48;
+
+  /* Brand navy. 800 is the published value. */
+  --color-navy-50: #eef1f6;
+  --color-navy-100: #d7dde8;
+  --color-navy-200: #b0bccf;
+  --color-navy-300: #7e8eab;
+  --color-navy-400: #536c93;
+  --color-navy-500: #3a5480;
+  --color-navy-600: #2b4874;
+  --color-navy-700: #274468;
+  --color-navy-800: #223f69;
+  --color-navy-900: #1c3559;
+  --color-navy-950: #14253f;
+
+  /* Brand orange. 500 is the published value; it cannot carry white text
+     (2.69:1), so anything with a label on it uses 700 instead. */
+  --color-orange-50: #fff4ea;
+  --color-orange-100: #ffe3cc;
+  --color-orange-200: #ffcba3;
+  --color-orange-300: #ffa961;
+  --color-orange-400: #ff8c2b;
+  --color-orange-500: #ff7500;
+  --color-orange-600: #e06600;
+  --color-orange-700: #c15800;
+  --color-orange-800: #984500;
+  --color-orange-900: #7a3800;
+  --color-orange-950: #4a2200;
+
+  /* Neutrals, pulled cool toward the brand navy. Every grey, band and border
+     therefore sits with the blue rather than against it, which is what keeps
+     the palette to two hues plus the orange accent. */
+  --color-stone-50: #f6f8fb;
+  --color-stone-100: #eaeff6;
+  --color-stone-200: #dbe2ec;
+  --color-stone-300: #c0cad9;
+  --color-stone-400: #818a9b;
+  --color-stone-500: #636d7d;
+  --color-stone-600: #4e5766;
+  --color-stone-700: #3c4552;
+  --color-stone-800: #2c333d;
+  --color-stone-900: #1d2229;
+  --color-stone-950: #121519;
 
   /* --- Semantic tokens -------------------------------------------------- */
 
-  /* Text. `muted` is the lightest text permitted anywhere on a light
-     background — nothing softer is safe at body size. */
-  --color-ink: var(--color-parchment-900);
-  --color-ink-soft: var(--color-parchment-700);
-  --color-ink-muted: var(--color-parchment-500);
+  --color-ink: var(--color-stone-900);
+  --color-ink-soft: var(--color-stone-700);
+  --color-ink-muted: var(--color-stone-500);
   --color-ink-inverse: #ffffff;
 
-  /* Text on the dark green bands. */
-  --color-ink-on-dark: var(--color-forest-100);
-  --color-ink-on-dark-muted: var(--color-forest-300);
+  --color-ink-on-dark: var(--color-navy-100);
+  --color-ink-on-dark-muted: var(--color-navy-200);
 
-  /* Surfaces */
+  /* Surfaces. Blue and white, with orange as the single accent.
+
+     Their artwork washes the background pale green (#f2fded), but on a screen
+     that green fights the blue rather than supporting it — the page ends up
+     reading as two competing hues. The wash here is white pulled towards the
+     brand blue instead: enough tint to separate a white card from the page
+     (1.07:1, marginally more than the green gave) without introducing a second
+     colour. */
   --color-surface: #ffffff;
-  --color-page: var(--color-parchment-50);
-  --color-sunken: var(--color-parchment-100);
-  --color-inverse: var(--color-forest-900);
+  --color-page: #f4f8fd;
+  --color-sunken: var(--color-stone-100);
+  --color-inverse: var(--color-navy-800);
 
-  /* Lines. `line` is decorative — card edges and dividers, where no contrast
-     minimum applies. `line-strong` bounds interactive controls, so it is held
-     to 3:1. */
-  --color-line: var(--color-parchment-200);
-  --color-line-soft: var(--color-parchment-300);
-  --color-line-strong: var(--color-parchment-400);
-  --color-line-inverse: var(--color-forest-700);
+  --color-line: var(--color-stone-200);
+  --color-line-soft: var(--color-stone-300);
+  --color-line-strong: var(--color-stone-400);
+  --color-line-inverse: var(--color-navy-600);
 
-  /* Interactive */
-  --color-accent: var(--color-ochre-600);
-  --color-accent-hover: var(--color-ochre-700);
-  --color-accent-bright: var(--color-ochre-400);
-  --color-primary: var(--color-forest-800);
-  --color-primary-hover: var(--color-forest-700);
+  /* Orange is the accent, as it is in their artwork — used sparingly and
+     never as a large field. */
+  --color-accent: var(--color-orange-700);
+  --color-accent-hover: var(--color-orange-800);
+  --color-accent-bright: var(--color-orange-500);
+  --color-primary: var(--color-navy-800);
+  --color-primary-hover: var(--color-navy-900);
 
-  /* States. Previously these reached outside the system for Tailwind's
-     defaults, which is how eleven stray colours crept in. */
   --color-danger: #9f1239;
   --color-danger-soft: #fff1f2;
   --color-danger-line: #fecdd3;
@@ -112,32 +137,23 @@
 
   /* --- Type ------------------------------------------------------------- */
 
-  /* Literata was drawn for long-form reading rather than display. It keeps
-     the bookish character a library wants without the editorial flourish
-     Fraunces brought, which read closer to a lifestyle brand than a civic
-     institution. */
+  /* Their wordmark is a classic serif in caps, so a serif for headings is
+     already their register. */
   --font-display: 'Literata', ui-serif, Georgia, Cambria, 'Times New Roman', serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* --- Shape ------------------------------------------------------------ */
 
-  /* Three radii in use, not five: rounded-lg for chips and small controls,
-     rounded-xl for buttons and inputs, rounded-2xl for cards and panels
-     (plus rounded-full for pills). Tailwind's own scale is left alone so
-     these names keep their usual meanings. */
+  /* Three radii in use: rounded-lg for chips, rounded-xl for buttons and
+     inputs, rounded-2xl for cards, plus rounded-full for pills. */
 
-  /* --- Motion -----------------------------------------------------------
-
-     Deliberately restrained. Movement is small (2–8px) and quick, and only
-     ever `transform` or `opacity` so it stays on the compositor. Nothing here
-     should be noticeable as an effect — it should only make the interface feel
-     less abrupt. Every rule below is disabled by prefers-reduced-motion. */
+  /* --- Motion ----------------------------------------------------------- */
   --ease-gentle: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
 
-  --duration-micro: 150ms; /* hover, press */
-  --duration-quick: 220ms; /* drawers, disclosure */
-  --duration-page: 280ms; /* route changes */
+  --duration-micro: 150ms;
+  --duration-quick: 220ms;
+  --duration-page: 280ms;
 }
 
 @layer base {
@@ -163,7 +179,7 @@
   h2,
   h3,
   h4 {
-    @apply font-display text-forest-950;
+    @apply font-display text-navy-950;
     font-optical-sizing: auto;
     text-wrap: balance;
     letter-spacing: -0.011em;
@@ -184,11 +200,11 @@
 
   /* One focus treatment everywhere, and it is never removed. */
   :focus-visible {
-    @apply outline-ochre-700 rounded-sm outline-3 outline-offset-2;
+    @apply outline-orange-700 rounded-sm outline-3 outline-offset-2;
   }
 
   ::selection {
-    @apply bg-ochre-200 text-forest-950;
+    @apply bg-orange-200 text-navy-950;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -243,7 +259,7 @@
   }
 
   .card-interactive {
-    @apply border-line bg-surface hover:border-forest-300 rounded-2xl border transition-colors;
+    @apply border-line bg-surface hover:border-blue-300 rounded-2xl border transition-colors;
   }
 
   /* --- Buttons ---------------------------------------------------------- */
@@ -284,11 +300,11 @@
 
   /* For use on the dark green bands. */
   .btn-on-dark {
-    @apply bg-ochre-400 text-forest-950 hover:bg-ochre-300;
+    @apply bg-orange-400 text-navy-950 hover:bg-orange-300;
   }
 
   .btn-on-dark-secondary {
-    @apply border-line-inverse text-ink-inverse hover:bg-forest-800 border;
+    @apply border-line-inverse text-ink-inverse hover:bg-navy-800 border;
   }
 
   .btn-sm {
@@ -299,13 +315,13 @@
   /* --- Links ------------------------------------------------------------ */
 
   .link {
-    @apply text-forest-700 font-medium underline-offset-4 hover:underline;
+    @apply text-blue-700 font-medium underline-offset-4 hover:underline;
   }
 
   /* These sit on their own rather than inside a sentence, so they need a
      real touch target — 28px was too small to hit reliably on a phone. */
   .link-arrow {
-    @apply text-forest-700 hover:text-forest-900 inline-flex min-h-11 items-center gap-1.5 font-semibold underline-offset-4 hover:underline;
+    @apply text-blue-700 hover:text-navy-900 inline-flex min-h-11 items-center gap-1.5 font-semibold underline-offset-4 hover:underline;
   }
 
   /* --- Chips ------------------------------------------------------------ */
@@ -322,7 +338,7 @@
   }
 
   .chip-accent {
-    @apply bg-ochre-100 text-ochre-900;
+    @apply bg-orange-100 text-orange-900;
   }
 
   .chip-success {
@@ -338,11 +354,11 @@
   }
 
   .pill-on {
-    @apply border-forest-800 bg-forest-800 text-ink-inverse;
+    @apply border-navy-800 bg-navy-800 text-ink-inverse;
   }
 
   .pill-off {
-    @apply border-line-strong text-ink-soft hover:border-forest-400 hover:bg-surface;
+    @apply border-line-strong text-ink-soft hover:border-blue-400 hover:bg-surface;
   }
 
   /* --- Forms ------------------------------------------------------------ */
@@ -352,7 +368,7 @@
   }
 
   .field-input {
-    @apply border-line-strong text-ink bg-surface focus:border-forest-600 w-full rounded-xl border px-4 py-3 transition-colors;
+    @apply border-line-strong text-ink bg-surface focus:border-blue-600 w-full rounded-xl border px-4 py-3 transition-colors;
     min-height: 3rem;
   }
 

@@ -39,7 +39,7 @@
         <label class="flex min-h-11 w-44 items-center gap-3">
           <input
             type="checkbox"
-            class="accent-forest-700 h-5 w-5 shrink-0"
+            class="accent-blue-700 h-5 w-5 shrink-0"
             [checked]="!day.closed"
             (change)="setClosed(day.dayIndex, !$any($event.target).checked)"
           />
@@ -141,7 +141,7 @@
             <label class="flex min-h-11 items-center gap-3">
               <input
                 type="checkbox"
-                class="accent-forest-700 h-5 w-5 shrink-0"
+                class="accent-blue-700 h-5 w-5 shrink-0"
                 [checked]="entry.closed"
                 (change)="
                   updateException(entry.exceptionId, { closed: $any($event.target).checked })
@@ -234,7 +234,7 @@
   <label class="mt-5 flex min-h-11 items-center gap-3">
     <input
       type="checkbox"
-      class="accent-forest-700 h-5 w-5 shrink-0"
+      class="accent-blue-700 h-5 w-5 shrink-0"
       [checked]="notice().active"
       (change)="setNotice({ active: $any($event.target).checked })"
     />

@@ -15,7 +15,7 @@
         <div>
           <p class="text-ink-on-dark-muted text-sm font-medium">Our annual running costs</p>
           <p
-            class="font-display text-ochre-300 mt-3 text-5xl font-semibold sm:text-6xl md:text-7xl"
+            class="font-display text-orange-300 mt-3 text-5xl font-semibold sm:text-6xl md:text-7xl"
           >
             £{{ annualCost }}
           </p>
@@ -38,7 +38,7 @@
             class="border-line flex items-start gap-3 rounded-xl border bg-surface px-5 py-4"
             [appReveal]="i * 50"
           >
-            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
               <app-icon name="check" [size]="14" />
             </span>
             <span>
@@ -69,11 +69,11 @@
         <li [appReveal]="i * 70">
           <div
             class="relative flex h-full flex-col rounded-2xl border bg-surface p-7"
-            [class]="option.preferred ? 'border-ochre-400 ring-ochre-200 ring-2' : 'border-line'"
+            [class]="option.preferred ? 'border-orange-400 ring-orange-200 ring-2' : 'border-line'"
           >
             @if (option.preferred) {
               <span
-                class="bg-ochre-100 text-ochre-900 absolute top-5 right-5 rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
+                class="bg-orange-100 text-orange-900 absolute top-5 right-5 rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
               >
                 Most helpful
               </span>
@@ -81,7 +81,7 @@
             <span
               class="flex h-12 w-12 items-center justify-center rounded-xl"
               [class]="
-                option.preferred ? 'bg-ochre-100 text-ochre-700' : 'bg-forest-50 text-forest-700'
+                option.preferred ? 'bg-orange-100 text-orange-700' : 'bg-blue-50 text-blue-700'
               "
             >
               <app-icon [name]="option.icon" [size]="24" />
@@ -98,14 +98,14 @@
 
     <div class="border-line mt-8 rounded-2xl border bg-surface p-7">
       <h3 class="font-display flex items-center gap-2 text-lg font-semibold">
-        <span class="text-forest-700"><app-icon name="info" [size]="20" /></span>
+        <span class="text-blue-700"><app-icon name="info" [size]="20" /></span>
         Setting up a standing order
       </h3>
       <p class="text-ink-soft mt-3 leading-relaxed">
         Our standing order form comes in two parts: page one goes to your own bank to set the
         payment up, and page two comes back to our Treasurer so we know to expect it. Ask at the
         counter, or email
-        <a [href]="'mailto:' + site.email" class="text-forest-700 font-semibold hover:underline">
+        <a [href]="'mailto:' + site.email" class="text-blue-700 font-semibold hover:underline">
           <span class="break-all">{{ site.email }}</span>
         </a>
         and we will send one over.

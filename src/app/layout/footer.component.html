@@ -15,20 +15,20 @@
         <address class="mt-5 text-sm not-italic">
           <p class="text-ink-on-dark">{{ addressOneLine }}</p>
           <p class="mt-1">
-            <a routerLink="/visit" class="text-ochre-300 font-semibold hover:underline">
+            <a routerLink="/visit" class="text-orange-300 font-semibold hover:underline">
               See our opening hours
             </a>
           </p>
           <p class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
             <a
               [href]="'tel:' + site.phoneHref"
-              class="hover:text-ochre-300 font-semibold text-white transition-colors"
+              class="hover:text-orange-300 font-semibold text-white transition-colors"
             >
               {{ site.phone }}
             </a>
             <a
               [href]="'mailto:' + site.email"
-              class="text-ink-on-dark hover:text-ochre-300 break-all transition-colors"
+              class="text-ink-on-dark hover:text-orange-300 break-all transition-colors"
             >
               {{ site.email }}
             </a>
@@ -40,7 +40,7 @@
             [href]="site.social.facebook"
             target="_blank"
             rel="noopener noreferrer"
-            class="border-line-inverse hover:border-ochre-400 hover:text-ochre-300 text-ink-on-dark flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
+            class="border-line-inverse hover:border-orange-400 hover:text-orange-300 text-ink-on-dark flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
           >
             <span class="sr-only">Follow us on Facebook (opens in a new tab)</span>
             <app-icon name="facebook" [size]="18" />
@@ -49,7 +49,7 @@
             [href]="site.social.x"
             target="_blank"
             rel="noopener noreferrer"
-            class="border-line-inverse hover:border-ochre-400 hover:text-ochre-300 text-ink-on-dark flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
+            class="border-line-inverse hover:border-orange-400 hover:text-orange-300 text-ink-on-dark flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
           >
             <span class="sr-only">Follow us on X (opens in a new tab)</span>
             <app-icon name="x" [size]="18" />
@@ -68,7 +68,7 @@
               <li>
                 <a
                   [routerLink]="link.path"
-                  class="text-ink-on-dark hover:text-ochre-300 inline-flex min-h-9 items-center text-sm transition-colors"
+                  class="text-ink-on-dark hover:text-orange-300 inline-flex min-h-9 items-center text-sm transition-colors"
                 >
                   {{ link.label }}
                 </a>
@@ -85,7 +85,7 @@
               <li>
                 <a
                   [routerLink]="link.path"
-                  class="text-ink-on-dark hover:text-ochre-300 inline-flex min-h-9 items-center text-sm transition-colors"
+                  class="text-ink-on-dark hover:text-orange-300 inline-flex min-h-9 items-center text-sm transition-colors"
                 >
                   {{ link.label }}
                 </a>
