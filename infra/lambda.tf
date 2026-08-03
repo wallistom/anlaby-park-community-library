@@ -117,6 +117,17 @@ locals {
       actions   = ["dynamodb:PutItem"]
     }
 
+    # --- Admin ------------------------------------------------------------
+    # Confirms the caller is a trustee, so the frontend can refuse to render the
+    # admin screens for an account the API would reject anyway. Reads nothing,
+    # so it gets no table access at all.
+    whoami = {
+      handler   = "admin.whoami.handler"
+      env       = {}
+      resources = []
+      actions   = []
+    }
+
     # --- Messages ---------------------------------------------------------
     create_message = {
       handler   = "messages.create.handler"
@@ -165,7 +176,9 @@ resource "aws_iam_role_policy_attachment" "function_logs" {
 }
 
 resource "aws_iam_role_policy" "function_dynamodb" {
-  for_each = local.functions
+  # Skipped for functions that touch no table: an empty Action/Resource list is
+  # not a valid policy document.
+  for_each = { for name, fn in local.functions : name => fn if length(fn.actions) > 0 }
 
   name = "dynamodb-access"
   role = aws_iam_role.function[each.key].id

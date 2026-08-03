@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { IconComponent, IconName } from '../shared/icon.component';
 import { AuthService } from '../core/auth.service';
@@ -27,7 +27,10 @@ import { SITE } from '../core/site.data';
             </span>
           </a>
 
-          @if (auth.isSignedIn()) {
+          <!-- Gated on being a verified trustee, not merely signed in: a
+               refused account would otherwise see the full admin navigation
+               and only find out it was not welcome by clicking it. -->
+          @if (isTrustee()) {
             <nav class="order-3 flex w-full gap-1 sm:order-none sm:w-auto" aria-label="Admin">
               @for (item of navItems; track item.path) {
                 <a
@@ -77,6 +80,12 @@ export class AdminLayoutComponent {
   private readonly hours = inject(OpeningHoursService);
 
   protected readonly site = SITE;
+
+  /** Signed in *and* on the allowlist, as confirmed by the API. */
+  protected readonly isTrustee = computed(
+    () => this.auth.isSignedIn() && this.auth.accessState() === 'allowed',
+  );
+
   protected readonly navItems: { label: string; path: string; icon: IconName }[] = [
     { label: 'Events', path: '/admin/events', icon: 'calendar' },
     { label: 'Enquiries', path: '/admin/enquiries', icon: 'inbox' },
