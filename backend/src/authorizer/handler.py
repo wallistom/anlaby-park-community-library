@@ -4,6 +4,21 @@ Verifies the Google ID token properly — signature, issuer, audience, and expir
 — then checks the verified email against the trustee allowlist. Both checks
 matter: a valid Google token only proves the caller owns *some* Google account,
 not that they are a trustee.
+
+The allowlist is the union of two sources:
+
+  * the trustees table, which trustees maintain themselves at /admin/trustees;
+  * ALLOWED_TRUSTEE_EMAILS, a break-glass list held in Terraform.
+
+The second exists so the site cannot be locked out of itself. If the table is
+emptied by accident, or DynamoDB is unreachable, whoever operates the
+infrastructure can still sign in and put it right. It is deliberately not
+editable from the admin area.
+
+The table is read on every invocation rather than cached here. API Gateway
+already caches this authoriser's verdict for five minutes, so invocations are
+rare, and a scan of a table this small costs half a read unit. Caching twice
+would only make removing somebody slower and harder to reason about.
 """
 
 from __future__ import annotations
@@ -11,6 +26,8 @@ from __future__ import annotations
 import os
 from typing import Any
 
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 
@@ -20,9 +37,35 @@ _request = google_requests.Request()
 GOOGLE_ISSUERS = {"accounts.google.com", "https://accounts.google.com"}
 
 
-def _allowed_emails() -> set[str]:
+def _break_glass_emails() -> set[str]:
     raw = os.environ.get("ALLOWED_TRUSTEE_EMAILS", "")
     return {entry.strip().lower() for entry in raw.split(",") if entry.strip()}
+
+
+def _table_emails() -> set[str]:
+    """Trustees the charity manages itself.
+
+    A read failure returns nothing rather than raising: the break-glass list
+    still applies, so the operator can get in and fix whatever broke. It never
+    widens access, only narrows it.
+    """
+    name = os.environ.get("TRUSTEES_TABLE")
+    if not name:
+        return set()
+    try:
+        table = boto3.resource("dynamodb").Table(name)
+        result = table.scan(ProjectionExpression="email")
+    except (BotoCoreError, ClientError):
+        return set()
+    return {
+        (item.get("email") or "").strip().lower()
+        for item in result.get("Items", [])
+        if item.get("email")
+    }
+
+
+def _allowed_emails() -> set[str]:
+    return _break_glass_emails() | _table_emails()
 
 
 def _deny() -> dict[str, Any]:

@@ -102,3 +102,21 @@ resource "aws_dynamodb_table" "settings" {
     enabled = true
   }
 }
+
+# Trustees the charity manages itself, through /admin/trustees. The break-glass
+# accounts in var.allowed_trustee_emails are separate and stay in Terraform, so
+# the site can always be recovered if this table is emptied by accident.
+resource "aws_dynamodb_table" "trustees" {
+  name         = "${local.name_prefix}-trustees"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "email"
+
+  attribute {
+    name = "email"
+    type = "S"
+  }
+
+  point_in_time_recovery {
+    enabled = true
+  }
+}

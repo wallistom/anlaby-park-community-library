@@ -98,6 +98,9 @@ locals {
 
     # Trustees only
     "GET /admin/me"                           = { function = "whoami", protected = true }
+    "GET /admin/trustees"                     = { function = "list_trustees", protected = true }
+    "POST /admin/trustees"                    = { function = "create_trustee", protected = true }
+    "DELETE /admin/trustees/{email}"          = { function = "delete_trustee", protected = true }
     "GET /admin/events"                       = { function = "list_all_events", protected = true }
     "POST /admin/events"                      = { function = "create_event", protected = true }
     "PUT /admin/events/{eventId}"             = { function = "update_event", protected = true }

@@ -127,7 +127,7 @@ Rules learned the hard way:
 - **`opacity` and `transform` only.** Never animate layout properties.
 - **Hover transforms belong inside `@media (hover: hover)`.** On touch, `:hover` latches after a
   tap and the effect sticks.
-- **Don't animate a page-level translate.** It competes with the scroll reveal *and* makes the
+- **Don't animate a page-level translate.** It competes with the scroll reveal _and_ makes the
   page a containing block, trapping the `position: fixed` mobile drawer.
 - **No hover motion on non-interactive elements.** It implies an affordance that isn't there.
 - The base `prefers-reduced-motion` rule collapses all durations, so individual rules don't need
@@ -153,7 +153,7 @@ once shipped as dead CSS because they were written but never applied. Check with
   height variable. It is a full-screen overlay with its own header bar.
 - **GitHub OIDC subjects are immutable and contain numeric IDs**
   (`repo:owner@100294355/name@1319905089:environment:production`). Matching `owner/name` never
-  works. AWS separately *requires* a `sub` condition, so it is matched loosely and tightened by
+  works. AWS separately _requires_ a `sub` condition, so it is matched loosely and tightened by
   exact `repository` and `environment` claims.
 
 ---
@@ -220,9 +220,37 @@ unreachable.
 with `tsc` rather than stripping types with regexes, which breaks on function
 signatures.
 
+### Who can sign in is data, not configuration
+
+The allowlist is the union of two sources, and the split is deliberate:
+
+- **The `trustees` table** — maintained by trustees themselves at `/admin/trustees`. This is the
+  normal route. A volunteer board should not need an engineer to add a new trustee.
+- **`var.allowed_trustee_emails`** — a break-glass list in Terraform, deliberately _not_ editable
+  from the admin area. It exists so the site cannot be locked out of itself: if the table is
+  emptied by accident or DynamoDB is unreachable, whoever runs the infrastructure can still get
+  in.
+
+The authoriser reads the table on every invocation and does **not** cache it. API Gateway already
+caches the authoriser's verdict for 300s, so invocations are rare and a scan of a table this small
+costs half a read unit. Caching in both places would only make removal slower and harder to reason
+about.
+
+That 300s is the one thing to know: **removing somebody takes up to five minutes to bite.** Fine
+for a volunteer leaving the board, not fine for a compromised account — for that, pull them from
+the break-glass list and apply, or drop the authoriser's TTL.
+
+Two removals are refused, and neither is a security control — the break-glass list means recovery
+is always possible. They exist so recovery is never _needed_, because it requires an engineer:
+you cannot remove yourself, and you cannot remove the last remaining trustee.
+
+`Trustee` in `models.ts` is a board member on the About page. `TrusteeAccount` is a sign-in
+account. They overlap in practice but are not the same thing, and conflating them would put a
+private address next to a public name.
+
 ### Days and times live in events, not in code
 
-`site.data.ts` describes what each club *is*. When it meets comes from recurring events the
+`site.data.ts` describes what each club _is_. When it meets comes from recurring events the
 trustees publish in `/admin`. A hardcoded timetable would rot, and the printed one already
 disagrees with the website about Monday/Thursday closing (5.00 vs 5.30pm — unresolved).
 
