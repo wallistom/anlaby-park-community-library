@@ -34,6 +34,17 @@ from google.oauth2 import id_token
 # Reused across invocations so warm containers avoid re-fetching Google's keys.
 _request = google_requests.Request()
 
+# Built on first use, then reused. Not at import: that would make the module
+# require a configured region merely to be imported.
+_dynamodb = None
+
+
+def _table():
+    global _dynamodb
+    if _dynamodb is None:
+        _dynamodb = boto3.resource("dynamodb")
+    return _dynamodb.Table(os.environ["TRUSTEES_TABLE"])
+
 GOOGLE_ISSUERS = {"accounts.google.com", "https://accounts.google.com"}
 
 
@@ -49,12 +60,10 @@ def _table_emails() -> set[str]:
     still applies, so the operator can get in and fix whatever broke. It never
     widens access, only narrows it.
     """
-    name = os.environ.get("TRUSTEES_TABLE")
-    if not name:
+    if not os.environ.get("TRUSTEES_TABLE"):
         return set()
     try:
-        table = boto3.resource("dynamodb").Table(name)
-        result = table.scan(ProjectionExpression="email")
+        result = _table().scan(ProjectionExpression="email")
     except (BotoCoreError, ClientError):
         return set()
     return {
