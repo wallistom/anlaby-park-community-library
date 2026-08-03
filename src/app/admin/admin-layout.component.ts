@@ -11,11 +11,11 @@ import { SITE } from '../core/site.data';
   imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent],
   template: `
     <div class="bg-sunken flex min-h-screen flex-col">
-      <header class="bg-forest-950 text-white">
+      <header class="bg-navy-950 text-white">
         <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-5 py-3.5 sm:px-8">
           <a routerLink="/" class="flex min-h-11 items-center gap-3">
             <span
-              class="bg-ochre-500 text-forest-950 flex h-9 w-9 items-center justify-center rounded-lg"
+              class="bg-orange-500 text-navy-950 flex h-9 w-9 items-center justify-center rounded-lg"
             >
               <app-icon name="book" [size]="18" />
             </span>
@@ -32,8 +32,8 @@ import { SITE } from '../core/site.data';
               @for (item of navItems; track item.path) {
                 <a
                   [routerLink]="item.path"
-                  routerLinkActive="!bg-forest-800 !text-white"
-                  class="text-ink-on-dark-muted hover:bg-forest-900 flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                  routerLinkActive="!bg-navy-800 !text-white"
+                  class="text-ink-on-dark-muted hover:bg-navy-900 flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
                 >
                   <app-icon [name]="item.icon" [size]="16" />
                   {{ item.label }}
@@ -48,7 +48,7 @@ import { SITE } from '../core/site.data';
               <button
                 type="button"
                 (click)="signOut()"
-                class="border-line-inverse hover:bg-forest-900 flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
+                class="border-line-inverse hover:bg-navy-900 flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
               >
                 <app-icon name="logOut" [size]="16" />
                 Sign out

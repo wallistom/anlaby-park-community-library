@@ -3,16 +3,19 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 /**
  * Standard banner at the top of every interior page.
  *
- * Deliberately light rather than a full-bleed dark band: a saturated green
- * block on every page made the site feel heavier than a community library
- * should. Dark green is now reserved for the footer and the support call to
- * action, where it carries meaning.
+ * A pale blue band rather than a full-bleed dark one: a saturated block on
+ * every page made the site feel heavier than a community library should. Navy
+ * is reserved for the footer and the support call to action, where it carries
+ * meaning.
+ *
+ * It must not be white. The header is white, so a white banner beneath it left
+ * nothing to mark where the chrome ended and the page began.
  */
 @Component({
   selector: 'app-page-hero',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section class="border-line border-b bg-surface">
+    <section class="border-line bg-blue-50 border-b">
       <div class="container-page py-14 sm:py-16">
         @if (eyebrow()) {
           <p class="eyebrow">{{ eyebrow() }}</p>

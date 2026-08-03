@@ -42,28 +42,28 @@
     </div>
     <div class="lg:col-span-5">
       <div class="card p-7">
-        <span class="text-ochre-600"><app-icon name="quote" [size]="28" /></span>
+        <span class="text-orange-600"><app-icon name="quote" [size]="28" /></span>
         <ul class="mt-4 flex flex-col gap-3 text-sm">
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
               <app-icon name="check" [size]="14" />
             </span>
             Full training, and never thrown in at the deep end
           </li>
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
               <app-icon name="check" [size]="14" />
             </span>
             Give as much or as little time as suits you
           </li>
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
               <app-icon name="check" [size]="14" />
             </span>
             Plenty of roles that do not involve the counter at all
           </li>
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-forest-100 text-forest-700 mt-0.5 rounded-full p-1">
+            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
               <app-icon name="check" [size]="14" />
             </span>
             Free coffee. Obviously.
@@ -161,12 +161,12 @@
             <div class="grid gap-2 sm:grid-cols-2">
               @for (role of roles; track role.title; let i = $index) {
                 <label
-                  class="border-line hover:border-forest-300 hover:bg-page flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors"
-                  [class]="isSelected(role.title) ? 'border-forest-500 bg-forest-50' : ''"
+                  class="border-line hover:border-blue-300 hover:bg-page flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors"
+                  [class]="isSelected(role.title) ? 'border-blue-500 bg-blue-50' : ''"
                 >
                   <input
                     type="checkbox"
-                    class="accent-forest-700 mt-0.5 h-5 w-5 shrink-0"
+                    class="accent-blue-700 mt-0.5 h-5 w-5 shrink-0"
                     [checked]="isSelected(role.title)"
                     (change)="toggleRole(role.title, $any($event.target).checked)"
                   />
