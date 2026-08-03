@@ -65,6 +65,7 @@ const PAIRS = [
   ['ink-muted', 'sunken', 'hints on sunken bands', 'normal'],
   ['navy-950', 'page', 'headings', 'large'],
   ['navy-950', 'surface', 'headings on cards', 'large'],
+  ['navy-950', 'sunken', 'hero headings on the band', 'large'],
   ['blue-700', 'surface', 'inline links', 'normal'],
   ['blue-700', 'page', 'inline links on page', 'normal'],
   ['blue-700', 'sunken', 'links on sunken bands', 'normal'],
@@ -85,7 +86,8 @@ const PAIRS = [
   ['ink-inverse', 'primary-hover', 'primary button, hover', 'normal'],
   ['navy-950', 'accent-bright', 'button on dark bands', 'normal'],
   ['ink-inverse', 'navy-800', 'active nav pill', 'normal'],
-  ['orange-900', 'orange-100', 'accent chip', 'normal'],
+  ['orange-900', 'orange-100', 'accent chip and the hire-charges callout', 'normal'],
+  ['orange-950', 'orange-100', 'callout heading', 'large'],
   ['ink-inverse', 'blue-700', 'badge on brand blue', 'normal'],
 
   // Pale blue panels and icon tiles. These carry real text, not just glyphs.
@@ -112,11 +114,12 @@ const NON_TEXT = [
   ['blue-700', 'blue-50', 'icon glyphs in tiles'],
   ['blue-600', 'blue-50', 'icon glyphs in tiles'],
 
-  // The hero is a pale blue band, so it is the darkest light surface an
+  // The hero sits on the band colour, the darkest light surface an
   // interactive border or a status dot has to hold up against.
-  ['line-strong', 'blue-50', 'secondary button border in the hero'],
-  ['success', 'blue-50', 'open-status dot'],
-  ['orange-600', 'blue-50', 'closed-status dot'],
+  ['line-strong', 'sunken', 'secondary button border in the hero'],
+  ['success', 'sunken', 'open-status dot'],
+  ['orange-700', 'sunken', 'closed-status dot'],
+  ['line-strong', 'blue-50', 'borders on pale blue fills'],
 ];
 
 let failures = 0;

@@ -84,8 +84,8 @@
   --color-stone-100: #eaeff6;
   --color-stone-200: #dbe2ec;
   --color-stone-300: #c0cad9;
-  --color-stone-400: #818a9b;
-  --color-stone-500: #636d7d;
+  --color-stone-400: #7c8596;
+  --color-stone-500: #5f6979;
   --color-stone-600: #4e5766;
   --color-stone-700: #3c4552;
   --color-stone-800: #2c333d;
@@ -111,8 +111,16 @@
      (1.07:1, marginally more than the green gave) without introducing a second
      colour. */
   --color-surface: #ffffff;
-  --color-page: #f4f8fd;
-  --color-sunken: var(--color-stone-100);
+  --color-page: #eff5fc;
+  /* The band colour, and deliberately a step away from the page rather than
+     a neighbour of it. Page, sunken and blue-50 were once within 1.08:1 of
+     each other while doing three different jobs, so every band edge on the
+     site dissolved.
+
+     The three light surfaces are now spaced so every step is visible on its
+     own: white to page 1.10:1, page to band 1.12:1, white to band 1.23:1.
+     Cards no longer depend entirely on their border to be seen. */
+  --color-sunken: #dce9f7;
   --color-inverse: var(--color-navy-800);
 
   --color-line: var(--color-stone-200);

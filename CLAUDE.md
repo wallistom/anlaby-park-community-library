@@ -78,6 +78,28 @@ This exists because it was absent once and the palette silently regressed: secon
 onto a value failing WCAG AA in 34 separate templates. Fixing it now means editing one
 declaration.
 
+### The surface ladder has exactly three light steps, and they must stay apart
+
+`surface` (white) → `page` → `sunken`, at 1.10:1 and 1.12:1, with white 1.23:1 from the band.
+
+Those gaps are the whole reason the site reads as separate zones. It went wrong once already:
+`page`, `sunken`, and `blue-50` all sat within 1.08:1 of each other while doing three different
+jobs, so every band edge dissolved and 16 cards on About were 1.06:1 from what they sat on.
+
+Two rules follow:
+
+- **Never put a pale fill on a surface next to it in the ladder.** `bg-blue-50` on `bg-page` is
+  1.01:1 — invisible. Pale callouts belong on `bg-sunken`, or on white where `blue-50` has a real
+  1.11:1 step. Same for `bg-orange-50`, which is 1.01:1 on the page.
+- **A white card must not sit on a white section.** Put the section on `bg-sunken`.
+
+Deepening `page` or `sunken` forces `ink-muted` and `line-strong` darker to hold 4.5:1 and 3:1
+against the new band. Re-solve both before changing either, and check `ink-muted` stays clearly
+lighter than `ink-soft` or the text hierarchy collapses.
+
+The audit that catches all of this is a rendered-DOM check, not a static one — see
+`docs/surface-audit.md`.
+
 ### Contrast is enforced, not asserted
 
 `npm run build` runs `scripts/check-contrast.mjs` first and **fails the build** on any pairing

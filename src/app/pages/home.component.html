@@ -2,14 +2,14 @@
      A pale blue band rather than the page wash. The header is white, and with
      the hero on the same wash as the rest of the page the two ran together
      with nothing to mark where the chrome ended and the page began. -->
-<section class="border-line bg-blue-50 border-b">
+<section class="border-line bg-sunken border-b">
   <div class="container-page pt-14 pb-20 sm:pt-20">
     <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
       <div>
         <p class="text-ink-soft flex items-center gap-2 text-sm font-medium">
           <span
             class="inline-flex h-2 w-2 rounded-full"
-            [class]="hours.status().isOpen ? 'bg-success' : 'bg-orange-600'"
+            [class]="hours.status().isOpen ? 'bg-success' : 'bg-orange-700'"
             aria-hidden="true"
           ></span>
           {{ hours.status().label }}
@@ -30,7 +30,7 @@
           </a>
           <a
             routerLink="/activities"
-            class="border-line-strong hover:bg-sunken inline-flex items-center justify-center rounded-xl border px-6 py-3.5 font-semibold transition-colors"
+            class="border-line-strong hover:bg-surface inline-flex items-center justify-center rounded-xl border px-6 py-3.5 font-semibold transition-colors"
           >
             Clubs &amp; activities
           </a>
@@ -186,8 +186,11 @@
   </div>
 </section>
 
-<!-- ── Visit ─────────────────────────────────────────────────────────────── -->
-<section class="border-line border-y bg-surface section">
+<!-- ── Visit ───────────────────────────────────────────────────────────────
+     On the band rather than white: the opening-hours card inside it is white,
+     and on a white section the two were the same colour with only a border
+     between them. -->
+<section class="border-line bg-sunken section border-y">
   <div class="container-page grid gap-12 lg:grid-cols-2 lg:gap-16">
     <div>
       <h2 class="text-3xl font-semibold">Come and find us</h2>
