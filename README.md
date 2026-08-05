@@ -3,8 +3,8 @@
 A rebuild of [anlabyparkcommunitylibrary.com](https://anlabyparkcommunitylibrary.com/) — a registered
 charity (no. 1155677) running Hull's first and only community-run library.
 
-Live at **https://d2d5pvqwty4462.cloudfront.net**. Not a demo: the forms write real enquiries from
-real people, and the trustees administer it themselves.
+Deployed at **https://d2d5pvqwty4462.cloudfront.net**. Built independently and offered to the
+charity — not currently adopted, and no trustee accounts are in use.
 
 Angular 20 + Tailwind v4 · Python 3.12 Lambdas · DynamoDB · Terraform · S3 + CloudFront, all in
 `eu-west-2`.
