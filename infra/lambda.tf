@@ -1,12 +1,3 @@
-# ---------------------------------------------------------------------------
-# Lambda functions
-#
-# One function per endpoint. They share a single source archive but each has
-# its own handler entrypoint, its own IAM role, and permission for only the
-# tables and actions it actually uses — so a flaw in the public contact form
-# cannot read the volunteer table.
-# ---------------------------------------------------------------------------
-
 data "archive_file" "source" {
   type        = "zip"
   source_dir  = "${path.module}/../backend/src"
@@ -29,9 +20,7 @@ resource "aws_lambda_layer_version" "dependencies" {
 }
 
 locals {
-  # Every endpoint, with the least privilege it can do its job with.
   functions = {
-    # --- Events -----------------------------------------------------------
     list_public_events = {
       handler   = "events.list_public.handler"
       env       = { EVENTS_TABLE = aws_dynamodb_table.events.name }
@@ -63,7 +52,6 @@ locals {
       actions   = ["dynamodb:DeleteItem"]
     }
 
-    # --- Room hire --------------------------------------------------------
     create_hire_enquiry = {
       handler   = "hire_enquiries.create.handler"
       env       = { HIRE_ENQUIRIES_TABLE = aws_dynamodb_table.hire_enquiries.name }
@@ -83,7 +71,6 @@ locals {
       actions   = ["dynamodb:UpdateItem"]
     }
 
-    # --- Volunteers -------------------------------------------------------
     create_volunteer_application = {
       handler   = "volunteers.create.handler"
       env       = { VOLUNTEERS_TABLE = aws_dynamodb_table.volunteers.name }
@@ -103,7 +90,6 @@ locals {
       actions   = ["dynamodb:UpdateItem"]
     }
 
-    # --- Settings ---------------------------------------------------------
     get_settings = {
       handler   = "settings.get.handler"
       env       = { SETTINGS_TABLE = aws_dynamodb_table.settings.name }
@@ -117,10 +103,6 @@ locals {
       actions   = ["dynamodb:PutItem"]
     }
 
-    # --- Admin ------------------------------------------------------------
-    # Confirms the caller is a trustee, so the frontend can refuse to render the
-    # admin screens for an account the API would reject anyway. Reads nothing,
-    # so it gets no table access at all.
     whoami = {
       handler   = "admin.whoami.handler"
       env       = {}
@@ -128,7 +110,6 @@ locals {
       actions   = []
     }
 
-    # --- Trustees ---------------------------------------------------------
     list_trustees = {
       handler   = "trustees.list.handler"
       env       = { TRUSTEES_TABLE = aws_dynamodb_table.trustees.name }
@@ -139,18 +120,15 @@ locals {
       handler   = "trustees.create.handler"
       env       = { TRUSTEES_TABLE = aws_dynamodb_table.trustees.name }
       resources = [aws_dynamodb_table.trustees.arn]
-      # Scan as well as PutItem: it checks for a duplicate and the cap first.
-      actions = ["dynamodb:Scan", "dynamodb:PutItem"]
+      actions   = ["dynamodb:Scan", "dynamodb:PutItem"]
     }
     delete_trustee = {
       handler   = "trustees.delete.handler"
       env       = { TRUSTEES_TABLE = aws_dynamodb_table.trustees.name }
       resources = [aws_dynamodb_table.trustees.arn]
-      # Scan as well: it refuses to remove the last one.
-      actions = ["dynamodb:Scan", "dynamodb:DeleteItem"]
+      actions   = ["dynamodb:Scan", "dynamodb:DeleteItem"]
     }
 
-    # --- Messages ---------------------------------------------------------
     create_message = {
       handler   = "messages.create.handler"
       env       = { MESSAGES_TABLE = aws_dynamodb_table.messages.name }
@@ -169,7 +147,6 @@ locals {
       resources = [aws_dynamodb_table.messages.arn]
       actions   = ["dynamodb:UpdateItem"]
     }
-
   }
 }
 
@@ -198,8 +175,6 @@ resource "aws_iam_role_policy_attachment" "function_logs" {
 }
 
 resource "aws_iam_role_policy" "function_dynamodb" {
-  # Skipped for functions that touch no table: an empty Action/Resource list is
-  # not a valid policy document.
   for_each = { for name, fn in local.functions : name => fn if length(fn.actions) > 0 }
 
   name = "dynamodb-access"
@@ -243,10 +218,6 @@ resource "aws_lambda_function" "function" {
   # Without this the function creates its own log group with no retention.
   depends_on = [aws_cloudwatch_log_group.function]
 }
-
-# ---------------------------------------------------------------------------
-# Authoriser — verifies Google ID tokens for the /admin/* routes
-# ---------------------------------------------------------------------------
 
 resource "aws_iam_role" "authorizer" {
   name               = "${local.name_prefix}-authorizer"

@@ -1,5 +1,3 @@
-"""Shared HTTP response helpers for the API Gateway HTTP API handlers."""
-
 from __future__ import annotations
 
 import json
@@ -8,22 +6,13 @@ from typing import Any
 
 
 class _DecimalEncoder(json.JSONEncoder):
-    """DynamoDB returns numbers as ``Decimal``, which ``json`` cannot encode."""
-
     def default(self, o: Any) -> Any:
         if isinstance(o, Decimal):
-            # Attendee counts and the like are whole numbers; keep them integral
-            # so the frontend does not receive "10.0".
             return int(o) if o == o.to_integral_value() else float(o)
         return super().default(o)
 
 
 def _response(status_code: int, body: Any | None = None) -> dict[str, Any]:
-    """Builds a proxy response.
-
-    CORS headers are added by the API Gateway CORS configuration rather than
-    here, so handlers never have to think about them.
-    """
     response: dict[str, Any] = {
         "statusCode": status_code,
         "headers": {"Content-Type": "application/json"},

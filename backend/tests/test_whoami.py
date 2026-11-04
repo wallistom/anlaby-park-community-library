@@ -1,13 +1,9 @@
-"""GET /admin/me.
-
-The handler is trivial, but the frontend's route guard now depends on it: a 200
-is what lets the trustee screens render at all. These pin the two things that
-matter — a trustee gets their verified identity back, and a request that
-somehow arrives without one is refused rather than treated as authorised.
-"""
-
 import json
+import sys
 import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from admin import whoami
 

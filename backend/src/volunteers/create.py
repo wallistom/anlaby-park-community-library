@@ -1,5 +1,3 @@
-"""POST /volunteers — public volunteer enquiry."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -35,7 +33,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         db.table("VOLUNTEERS_TABLE").put_item(Item=item)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not send your details.")
 
     return responses.created({"applicationId": item["applicationId"]})

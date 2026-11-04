@@ -1,21 +1,3 @@
-"""DELETE /admin/trustees/{email} — take away admin access.
-
-Two things are refused, both to stop the charity locking itself out of its own
-website:
-
-  * removing yourself — the common way to end up with nobody who can get in;
-  * removing the last remaining trustee.
-
-Neither is a security control. The break-glass list in Terraform means the site
-can always be recovered; these exist so recovery is never needed in the first
-place, because it requires whoever runs the infrastructure.
-
-Removal is not instant. API Gateway caches this authoriser's verdict for five
-minutes, so somebody already signed in may keep working for a few more minutes.
-That is fine for a volunteer leaving the board. It is not fine if an account is
-compromised, and the admin screen says so.
-"""
-
 from __future__ import annotations
 
 from typing import Any
@@ -46,7 +28,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         existing = table.scan(ProjectionExpression="email")
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not check the trustee list.")
 
     emails = {(item.get("email") or "").lower() for item in existing.get("Items", [])}
@@ -59,7 +41,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         table.delete_item(Key={"email": email})
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not remove that person.")
 
     return responses.no_content()

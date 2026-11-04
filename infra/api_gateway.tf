@@ -1,17 +1,4 @@
-# ---------------------------------------------------------------------------
-# API Gateway (HTTP API)
-#
-# An HTTP API rather than a REST API: it is cheaper, has CORS built in, and
-# supports the simple-response Lambda authoriser we use for the trustee routes.
-# ---------------------------------------------------------------------------
-
 locals {
-  # The CloudFront domain is only known after apply, so it is appended here
-  # rather than being something you have to paste into terraform.tfvars and
-  # apply a second time.
-  #
-  # If you delete hosting.tf to host the frontend elsewhere, drop the
-  # concat() and use var.allowed_origins directly.
   cors_origins = concat(
     var.allowed_origins,
     ["https://${aws_cloudfront_distribution.site.domain_name}"],
@@ -60,20 +47,15 @@ resource "aws_apigatewayv2_stage" "default" {
   }
 }
 
-# --- Authoriser -------------------------------------------------------------
-
 resource "aws_apigatewayv2_authorizer" "google" {
   api_id                            = aws_apigatewayv2_api.main.id
   name                              = "${local.name_prefix}-google-authorizer"
   authorizer_type                   = "REQUEST"
   authorizer_uri                    = aws_lambda_function.authorizer.invoke_arn
   authorizer_payload_format_version = "2.0"
-  # Returns {isAuthorized: bool} rather than an IAM policy document.
-  enable_simple_responses = true
-  identity_sources        = ["$request.header.Authorization"]
-  # Cached per distinct token, so a signed-in trustee is not re-verified on
-  # every click. Short enough that removing someone takes effect quickly.
-  authorizer_result_ttl_in_seconds = 300
+  enable_simple_responses           = true
+  identity_sources                  = ["$request.header.Authorization"]
+  authorizer_result_ttl_in_seconds  = 300
 }
 
 resource "aws_lambda_permission" "authorizer" {
@@ -84,19 +66,14 @@ resource "aws_lambda_permission" "authorizer" {
   source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.google.id}"
 }
 
-# --- Routes -----------------------------------------------------------------
-
 locals {
-  # route_key -> which function serves it, and whether it needs a trustee.
   routes = {
-    # Public
     "GET /events"          = { function = "list_public_events", protected = false }
     "POST /hire-enquiries" = { function = "create_hire_enquiry", protected = false }
     "POST /volunteers"     = { function = "create_volunteer_application", protected = false }
     "POST /messages"       = { function = "create_message", protected = false }
     "GET /settings"        = { function = "get_settings", protected = false }
 
-    # Trustees only
     "GET /admin/me"                           = { function = "whoami", protected = true }
     "GET /admin/trustees"                     = { function = "list_trustees", protected = true }
     "POST /admin/trustees"                    = { function = "create_trustee", protected = true }

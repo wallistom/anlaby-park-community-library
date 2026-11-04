@@ -1,12 +1,10 @@
-"""Adding and removing trustees.
-
-The behaviour worth pinning is the refusals. Everything else is a table write;
-these are the cases that stop the charity locking itself out of its own site.
-"""
-
 import json
+import sys
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from trustees import create, delete
 
@@ -36,7 +34,7 @@ class AddTrusteeTest(unittest.TestCase):
             )
         self.assertEqual(r["statusCode"], 201)
         saved = table.put_item.call_args.kwargs["Item"]
-        self.assertEqual(saved["email"], "new@example.org")  # normalised
+        self.assertEqual(saved["email"], "new@example.org")
         self.assertEqual(saved["addedBy"], "chair@example.org")
 
     def test_refuses_a_duplicate(self):

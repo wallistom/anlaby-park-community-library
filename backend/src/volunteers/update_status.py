@@ -1,5 +1,3 @@
-"""PATCH /admin/volunteers/{applicationId}."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -30,7 +28,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
         if exc.response["Error"]["Code"] == "ConditionalCheckFailedException":
             return responses.not_found("That enquiry no longer exists.")
         return responses.server_error()
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error()
 
     return responses.no_content()

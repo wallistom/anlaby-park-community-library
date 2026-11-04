@@ -1,15 +1,3 @@
-"""POST /admin/trustees — give somebody access to the admin area.
-
-Adding a trustee is the one action here that widens access, so it records who
-did it and when. There is no approval step: any trustee can add another, which
-matches how the charity actually works — the alternative is a queue that only
-one person can clear.
-
-The address must be the Google account they will sign in with. Nothing is sent
-to it, and nothing is verified from this end; if it is wrong, sign-in simply
-fails and a trustee can correct the entry.
-"""
-
 from __future__ import annotations
 
 from typing import Any
@@ -30,7 +18,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         body = validation.parse_body(event)
-        email = validation.require_email(body).lower()
+        email = validation.require_email(body)
         name = validation.require_string(body, "name", max_length=80)
     except ValidationError as exc:
         return responses.bad_request(str(exc))
@@ -39,7 +27,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         existing = table.scan(ProjectionExpression="email")
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not check the trustee list.")
 
     emails = {(item.get("email") or "").lower() for item in existing.get("Items", [])}
@@ -57,7 +45,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         table.put_item(Item=item)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not add that person.")
 
     return responses.created({**item, "isYou": email == caller})

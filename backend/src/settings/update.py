@@ -1,9 +1,3 @@
-"""PUT /admin/settings — save opening hours, exceptions and the notice.
-
-Validated strictly. These values decide whether the website tells somebody the
-library is open, so a malformed save is worse than a rejected one.
-"""
-
 from __future__ import annotations
 
 from typing import Any
@@ -48,8 +42,6 @@ def _exception(entry: Any, index: int) -> dict[str, Any]:
         raise ValidationError("An exception cannot end before it starts.")
 
     closed = validation.optional_bool(entry, "closed", default=True)
-    # The reason is shown to the public: "Closed" alone sends somebody on a
-    # wasted journey, so it is required rather than optional.
     reason = validation.require_string(entry, "reason", max_length=120)
 
     result: dict[str, Any] = {
@@ -117,7 +109,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         db.table("SETTINGS_TABLE").put_item(Item=item)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not save those settings.")
 
     return responses.ok(

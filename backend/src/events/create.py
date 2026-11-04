@@ -1,5 +1,3 @@
-"""POST /admin/events — create an event."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -8,8 +6,7 @@ from common import db, responses, validation
 from common.validation import ValidationError
 
 
-def _event_fields(body: dict[str, Any]) -> dict[str, Any]:
-    """Validates and normalises the fields shared by create and update."""
+def event_fields(body: dict[str, Any]) -> dict[str, Any]:
     start_date = validation.require_date(body, "date")
     repeats = validation.require_recurrence(body)
 
@@ -42,7 +39,7 @@ def _event_fields(body: dict[str, Any]) -> dict[str, Any]:
 def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
     try:
         body = validation.parse_body(event)
-        item = _event_fields(body)
+        item = event_fields(body)
     except ValidationError as exc:
         return responses.bad_request(str(exc))
 
@@ -50,7 +47,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         db.table("EVENTS_TABLE").put_item(Item=item)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not save that event.")
 
     return responses.created(item)

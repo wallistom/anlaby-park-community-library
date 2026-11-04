@@ -1,12 +1,3 @@
-# ---------------------------------------------------------------------------
-# DynamoDB tables
-#
-# One table per entity, all on-demand billing. Volumes here are a community
-# library's worth of events and enquiries, so provisioned capacity would cost
-# more than it saves. Point-in-time recovery is on for everything that holds
-# personal data.
-# ---------------------------------------------------------------------------
-
 locals {
   name_prefix = "${var.project_name}-${var.environment}"
 }
@@ -83,11 +74,6 @@ resource "aws_dynamodb_table" "messages" {
   }
 }
 
-
-# A single item holds the weekly pattern, the dated exceptions and the site
-# notice. One row rather than a table of exceptions because there is one
-# library, the whole thing is read on every page load, and saving it atomically
-# means two trustees can never leave the hours half-updated.
 resource "aws_dynamodb_table" "settings" {
   name         = "${local.name_prefix}-settings"
   billing_mode = "PAY_PER_REQUEST"
@@ -103,9 +89,6 @@ resource "aws_dynamodb_table" "settings" {
   }
 }
 
-# Trustees the charity manages itself, through /admin/trustees. The break-glass
-# accounts in var.allowed_trustee_emails are separate and stay in Terraform, so
-# the site can always be recovered if this table is emptied by accident.
 resource "aws_dynamodb_table" "trustees" {
   name         = "${local.name_prefix}-trustees"
   billing_mode = "PAY_PER_REQUEST"

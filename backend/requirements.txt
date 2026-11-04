@@ -1,9 +1,2 @@
-# Dependencies for the Lambda layer.
-#
-# boto3 and botocore are already present in the Lambda runtime, so they are
-# deliberately excluded — bundling them only bloats the package.
-#
-# google-auth verifies Google ID tokens in the authoriser. It needs requests
-# for the transport used to fetch Google's signing keys.
 google-auth==2.35.0
 requests==2.32.5

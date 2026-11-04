@@ -1,5 +1,3 @@
-"""DELETE /admin/events/{eventId}."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -16,7 +14,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         db.table("EVENTS_TABLE").delete_item(Key={"eventId": event_id})
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not delete that event.")
 
     return responses.no_content()
