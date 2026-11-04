@@ -25,7 +25,7 @@ export class RevealDirective implements OnInit, OnDestroy {
       if (!this.visible()) {
         return;
       }
-      element.style.animationDelay = `${this.appReveal()}ms`;
+      element.style.setProperty('--reveal-delay', `${this.appReveal()}ms`);
       element.classList.remove('reveal-pending');
       element.classList.add('reveal-visible');
     });

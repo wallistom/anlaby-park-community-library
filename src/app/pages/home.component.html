@@ -50,8 +50,11 @@
         </div>
       </div>
 
-      <div class="relative lg:col-span-5">
-        <div class="hero-photo hero-rise aspect-[16/10]" style="--rise-delay: 120ms">
+      <div class="relative grid grid-cols-1 gap-4 sm:grid-cols-[1.6fr_1fr] lg:col-span-5 lg:block">
+        <div
+          class="hero-photo hero-rise aspect-[4/3] sm:aspect-[16/10]"
+          style="--rise-delay: 120ms"
+        >
           <img
             appImageFade
             src="images/library-exterior.jpg"
@@ -68,7 +71,7 @@
         </div>
 
         <div
-          class="hero-print hero-rise -mt-10 ml-6 w-[62%] sm:-mt-14 sm:ml-8 sm:w-[44%] lg:-ml-10 lg:w-[64%]"
+          class="hero-print hero-rise hidden sm:block lg:-mt-14 lg:-ml-10 lg:w-[64%]"
           style="--rise-delay: 260ms"
         >
           <img
@@ -77,7 +80,7 @@
             alt="Inside the library: wooden shelving filled with books, a display of jigsaws and board games, and a book trolley."
             width="512"
             height="512"
-            class="aspect-[4/3] h-auto w-full object-cover object-[35%_55%]"
+            class="h-full w-full object-cover object-[35%_55%] lg:aspect-[4/3] lg:h-auto"
           />
         </div>
       </div>
@@ -85,21 +88,21 @@
   </div>
 </section>
 
-<section class="container-page -mt-10 sm:-mt-12" aria-label="About the library in brief">
+<section class="container-page relative -mt-10 sm:-mt-12" aria-label="About the library in brief">
   <ul class="fact-strip hero-rise" style="--rise-delay: 420ms">
-    <li class="fact">
+    <li class="fact fact-in" style="--in-delay: 500ms">
       <span class="icon-tile h-10 w-10"><app-icon name="users" [size]="20" /></span>
       <span class="text-ink leading-snug font-semibold">Open to everyone, member or not</span>
     </li>
-    <li class="fact">
+    <li class="fact fact-in" style="--in-delay: 560ms">
       <span class="icon-tile h-10 w-10"><app-icon name="accessible" [size]="20" /></span>
       <span class="text-ink leading-snug font-semibold">Step-free access and a hearing loop</span>
     </li>
-    <li class="fact">
+    <li class="fact fact-in" style="--in-delay: 620ms">
       <span class="icon-tile h-10 w-10"><app-icon name="checkCircle" [size]="20" /></span>
       <span class="text-ink leading-snug font-semibold">In partnership with Hull City Council</span>
     </li>
-    <li class="fact">
+    <li class="fact fact-in" style="--in-delay: 680ms">
       <span class="icon-tile h-10 w-10"><app-icon name="heart" [size]="20" /></span>
       <span class="text-ink leading-snug font-semibold">
         Registered charity no. {{ site.charityNumber }}

@@ -1,5 +1,5 @@
 <header
-  class="sticky top-0 z-50 border-b border-line transition-all duration-300"
+  class="sticky top-0 z-50 border-b border-line transition-[background-color,box-shadow] duration-300"
   [class]="scrolled() ? 'bg-surface/95 shadow-sm backdrop-blur-md' : 'bg-surface'"
 >
   <div class="mx-auto flex max-w-6xl items-center gap-3 px-5 py-3 sm:px-8">
@@ -98,8 +98,8 @@
     <div class="flex-1 overflow-y-auto px-5 pt-4 pb-10">
       <nav aria-label="Mobile">
         <ul class="flex flex-col">
-          @for (item of navItems; track item.path) {
-            <li>
+          @for (item of navItems; track item.path; let i = $index) {
+            <li [style.--i]="i">
               <a
                 [routerLink]="item.path"
                 routerLinkActive="!text-navy-800 !bg-blue-50"
