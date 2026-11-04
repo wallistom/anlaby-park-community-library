@@ -1,6 +1,6 @@
 <div class="flex flex-wrap items-end justify-between gap-4">
   <div>
-    <h1 class="text-3xl font-semibold">Events</h1>
+    <h1 class="text-3xl font-bold">Events</h1>
     <p class="text-ink-soft mt-2">
       Anything published here appears on the public "What's On" page straight away.
     </p>
@@ -18,7 +18,6 @@
   </div>
 }
 
-<!-- ── Editor ────────────────────────────────────────────────────────────── -->
 @if (editingId() !== null) {
   <div class="border-blue-200 mt-8 rounded-2xl border bg-surface p-7">
     <h2 class="text-xl font-semibold">
@@ -83,7 +82,6 @@
           />
         </div>
 
-        <!-- Repeats. A weekly club is one record here, not fifty. -->
         <div class="border-line bg-page rounded-xl border p-5 sm:col-span-2">
           <div class="grid gap-5 sm:grid-cols-2">
             <div>
@@ -171,9 +169,7 @@
   </div>
 }
 
-<!-- ── List ──────────────────────────────────────────────────────────────── -->
 @if (loading()) {
-  <!-- Mirrors the real row: date tile, title, chips, then a line of detail. -->
   <ul class="mt-8 flex flex-col gap-3" aria-hidden="true">
     @for (row of [1, 2, 3, 4]; track row) {
       <li class="card flex flex-wrap items-start gap-4 p-5">
@@ -203,7 +199,7 @@
 
         <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-center gap-2">
-            <h2 class="font-display text-lg font-semibold">{{ event.title }}</h2>
+            <h2 class="font-sans text-lg font-semibold">{{ event.title }}</h2>
             @if (event.published) {
               <span class="chip-success"> Published </span>
             } @else {
@@ -258,7 +254,7 @@
     >
       <app-icon name="calendar" [size]="26" />
     </span>
-    <h2 class="font-display mt-4 text-xl font-semibold">No events yet</h2>
+    <h2 class="font-sans mt-4 text-xl font-semibold">No events yet</h2>
     <p class="text-ink-soft mt-2">
       Add your first one and it will appear on the website immediately.
     </p>

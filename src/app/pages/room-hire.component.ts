@@ -4,6 +4,7 @@ import { PageHeroComponent } from '../shared/page-hero.component';
 import { IconComponent } from '../shared/icon.component';
 import { ApiService } from '../core/api.service';
 import { SITE } from '../core/site.data';
+import { toIso } from '../core/calendar';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -20,8 +21,7 @@ export class RoomHireComponent {
   protected readonly site = SITE;
   protected readonly state = signal<FormState>('idle');
   protected readonly submitted = signal(false);
-  /** Today in ISO form, used as the `min` on the date picker. */
-  protected readonly todayIso = new Date().toISOString().slice(0, 10);
+  protected readonly todayIso = toIso(new Date());
 
   protected readonly suitableFor = [
     'Classes and workshops',
@@ -62,7 +62,6 @@ export class RoomHireComponent {
     });
   }
 
-  /** Moves keyboard focus to the first field with a problem. */
   private focusFirstError(): void {
     const firstInvalid = Object.keys(this.form.controls).find((key) => this.form.get(key)?.invalid);
     if (firstInvalid) {

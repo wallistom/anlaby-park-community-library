@@ -6,103 +6,95 @@
 
 <section class="container-page mt-20">
   <div class="grid gap-12 lg:grid-cols-12">
-    <!-- ── Details ─────────────────────────────────────────────────────── -->
     <div class="lg:col-span-5">
-      <div class="flex flex-col gap-4">
-        <a
-          [href]="'tel:' + site.phoneHref"
-          class="group border-line hover:border-blue-300 flex items-center gap-4 rounded-2xl border bg-surface p-5 transition-colors"
-        >
-          <span
-            class="bg-blue-50 text-blue-700 group-hover:bg-blue-100 flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
+      <ul class="card divide-line divide-y overflow-hidden">
+        <li>
+          <a
+            [href]="'tel:' + site.phoneHref"
+            class="flex items-center gap-4 p-5 transition-colors hover:bg-blue-50/60 sm:px-6"
           >
-            <app-icon name="phone" [size]="22" />
-          </span>
-          <span>
-            <span class="text-ink-muted block text-sm">Telephone</span>
-            <span class="font-display block text-lg font-semibold">{{ site.phone }}</span>
-          </span>
-        </a>
-
-        <a
-          [href]="'mailto:' + site.email"
-          class="group border-line hover:border-blue-300 flex items-center gap-4 rounded-2xl border bg-surface p-5 transition-colors"
-        >
-          <span
-            class="bg-blue-50 text-blue-700 group-hover:bg-blue-100 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors"
-          >
-            <app-icon name="mail" [size]="22" />
-          </span>
-          <span class="min-w-0">
-            <span class="text-ink-muted block text-sm">Email</span>
-            <span class="font-display block text-lg font-semibold break-all">{{ site.email }}</span>
-          </span>
-        </a>
-
-        <div class="card p-5">
-          <div class="flex items-start gap-4">
-            <span
-              class="bg-blue-50 text-blue-700 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-            >
-              <app-icon name="mapPin" [size]="22" />
+            <span class="icon-tile h-11 w-11"><app-icon name="phone" [size]="22" /></span>
+            <span class="min-w-0">
+              <span class="text-ink-muted block text-sm">Telephone</span>
+              <span class="text-ink block text-lg font-semibold tabular-nums">{{
+                site.phone
+              }}</span>
             </span>
-            <div>
-              <span class="text-ink-muted block text-sm">Address</span>
-              <address class="text-ink mt-0.5 leading-relaxed font-medium not-italic">
-                {{ site.address.line1 }}<br />
-                {{ site.address.line2 }}<br />
-                {{ site.address.city }} {{ site.address.postcode }}
-              </address>
-              <a
-                [href]="googleMapsUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link-arrow mt-3 text-sm"
+          </a>
+        </li>
+        <li>
+          <a
+            [href]="'mailto:' + site.email"
+            class="flex items-center gap-4 p-5 transition-colors hover:bg-blue-50/60 sm:px-6"
+          >
+            <span class="icon-tile h-11 w-11"><app-icon name="mail" [size]="22" /></span>
+            <span class="min-w-0">
+              <span class="text-ink-muted block text-sm">Email</span>
+              <span class="text-ink block font-semibold [overflow-wrap:anywhere]"
+                >{{ emailParts[0] }}@<wbr />{{ emailParts[1] }}</span
               >
-                <app-icon name="externalLink" [size]="15" />
-                Open in maps
-              </a>
-            </div>
+            </span>
+          </a>
+        </li>
+        <li class="flex items-start gap-4 p-5 sm:px-6">
+          <span class="icon-tile h-11 w-11"><app-icon name="mapPin" [size]="22" /></span>
+          <div class="min-w-0">
+            <span class="text-ink-muted block text-sm">Address</span>
+            <address class="text-ink mt-0.5 font-semibold not-italic">
+              {{ site.address.line1 }}, {{ site.address.line2 }}<br />
+              {{ site.address.city }} {{ site.address.postcode }}
+            </address>
+            <a
+              [href]="googleMapsUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link -mt-1 -mb-3 inline-flex items-center gap-1.5 py-3 text-sm"
+            >
+              Open in maps
+              <app-icon name="externalLink" [size]="14" />
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
           </div>
-        </div>
-
-        <a routerLink="/visit" class="card-interactive group flex items-center gap-4 p-5">
-          <span
-            class="bg-blue-50 text-blue-700 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+        </li>
+        <li>
+          <a
+            routerLink="/visit"
+            class="flex items-center gap-4 p-5 transition-colors hover:bg-blue-50/60 sm:px-6"
           >
-            <app-icon name="clock" [size]="22" />
-          </span>
-          <span>
-            <span class="text-ink-muted block text-sm">Opening hours</span>
-            <span class="font-display block text-lg font-semibold">{{ hours.status().label }}</span>
-          </span>
-          <span class="text-blue-700 ml-auto"><app-icon name="arrowRight" [size]="18" /></span>
+            <span class="icon-tile h-11 w-11"><app-icon name="clock" [size]="22" /></span>
+            <span class="min-w-0">
+              <span class="text-ink-muted block text-sm">Opening hours</span>
+              <span class="text-ink block font-semibold">{{ hours.status().label }}</span>
+            </span>
+            <span class="ml-auto text-blue-700"><app-icon name="arrowRight" [size]="18" /></span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="mt-4 flex gap-3">
+        <a
+          [href]="site.social.facebook"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-secondary flex-1"
+        >
+          <app-icon name="facebook" [size]="18" />
+          Facebook
+          <span class="sr-only">(opens in a new tab)</span>
         </a>
-
-        <div class="flex gap-3">
-          <a
-            [href]="site.social.facebook"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="border-line hover:border-blue-300 text-ink-soft hover:text-navy-900 flex flex-1 items-center justify-center gap-2 rounded-xl border bg-surface px-4 py-3 font-semibold transition-colors"
-          >
-            <app-icon name="facebook" [size]="18" />
-            Facebook
-          </a>
-          <a
-            [href]="site.social.x"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="border-line hover:border-blue-300 text-ink-soft hover:text-navy-900 flex flex-1 items-center justify-center gap-2 rounded-xl border bg-surface px-4 py-3 font-semibold transition-colors"
-          >
-            <app-icon name="x" [size]="18" />
-            X
-          </a>
-        </div>
+        <a
+          [href]="site.social.x"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-secondary flex-1"
+        >
+          <app-icon name="x" [size]="18" />
+          X
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
       </div>
     </div>
 
-    <!-- ── Form ────────────────────────────────────────────────────────── -->
     <div class="lg:col-span-7">
       <div class="card p-7 sm:p-9">
         @if (state() === 'success') {
@@ -112,7 +104,7 @@
             >
               <app-icon name="check" [size]="32" />
             </span>
-            <h2 class="font-display mt-5 text-2xl font-semibold">Message sent</h2>
+            <h2 class="font-display mt-5 text-2xl font-bold">Message sent</h2>
             <p class="text-ink-soft mx-auto mt-3 max-w-md text-lg">
               Thank you — we have got it. A volunteer will reply as soon as they can. If it is
               urgent, ringing us is always quicker.
@@ -126,7 +118,7 @@
             </a>
           </div>
         } @else {
-          <h2 class="text-2xl font-semibold">Send us a message</h2>
+          <h2 class="text-2xl font-bold">Send us a message</h2>
           <p class="text-ink-soft mt-2">
             We check messages on the days we are open, so please allow a little time for a reply.
           </p>

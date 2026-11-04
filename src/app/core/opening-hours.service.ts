@@ -6,46 +6,28 @@ import {
   LibrarySettings,
   ResolvedDay,
   formatRange,
+  formatTime,
   resolveDay,
   sortExceptions,
-  upcomingExceptions,
 } from './opening-hours.model';
 import { toIso } from './calendar';
 
 export interface OpenStatus {
   isOpen: boolean;
-  /** Short label, e.g. "Open until 5.00pm". */
   label: string;
-  /** Fuller sentence for the Visit page. */
   detail: string;
-  /** Set when today is an exception, so the reason can be shown. */
   reason?: string;
 }
 
-/**
- * Whether the saved settings have actually arrived.
- *
- * Public pages ignore this — they fall back to the compiled-in defaults so the
- * site is never blank. The admin form must not: editing a form seeded with
- * defaults and pressing Save would write those defaults over whatever the
- * trustees had actually saved.
- */
 export type SettingsLoadState = 'idle' | 'loading' | 'ready' | 'failed';
 
 export interface WeekRow {
   dayIndex: number;
   name: string;
+  closed: boolean;
   hours: string;
 }
 
-/**
- * Whether the library is open, and when.
- *
- * Settings are loaded from the API and start from the compiled-in defaults, so
- * the site is never blank and never wrong-by-omission if the API is down. The
- * clock is a signal refreshed every minute, so a page left open does not freeze
- * on a stale status.
- */
 @Injectable({ providedIn: 'root' })
 export class OpeningHoursService {
   private readonly http = inject(HttpClient);
@@ -56,10 +38,8 @@ export class OpeningHoursService {
 
   private readonly loadStatus = signal<SettingsLoadState>('idle');
 
-  /** For screens that must not act on the fallback defaults. */
   readonly loadState = this.loadStatus.asReadonly();
 
-  /** Exceptions sorted narrowest-first, so a single day beats a range. */
   readonly settings = computed<LibrarySettings>(() => {
     const value = this.stored();
     return { ...value, exceptions: sortExceptions(value.exceptions) };
@@ -67,7 +47,6 @@ export class OpeningHoursService {
 
   readonly notice = computed(() => this.settings().notice);
 
-  /** The whole week, Monday first, for the hours table. */
   readonly week = computed<WeekRow[]>(() => {
     const settings = this.settings();
     return WEEK_ORDER.map((dayIndex) => {
@@ -79,16 +58,16 @@ export class OpeningHoursService {
         closesAt: day?.closesAt,
         isException: false,
       };
-      return { dayIndex, name: DAY_NAMES[dayIndex], hours: formatRange(resolved) };
+      return {
+        dayIndex,
+        name: DAY_NAMES[dayIndex],
+        closed: resolved.closed,
+        hours: formatRange(resolved),
+      };
     });
   });
 
   readonly todayIndex = computed(() => this.now().getDay());
-
-  /** Exceptions still to come, so upcoming closures can be announced early. */
-  readonly upcoming = computed(() =>
-    upcomingExceptions(this.settings().exceptions, toIso(this.now())),
-  );
 
   readonly status = computed<OpenStatus>(() => {
     const now = this.now();
@@ -100,7 +79,7 @@ export class OpeningHoursService {
       const closes = toMinutes(today.closesAt);
 
       if (minutes >= opens && minutes < closes) {
-        const until = formatTimeLabel(today.closesAt);
+        const until = formatTime(today.closesAt);
         return {
           isOpen: true,
           label: `Open until ${until}`,
@@ -109,7 +88,7 @@ export class OpeningHoursService {
         };
       }
       if (minutes < opens) {
-        const from = formatTimeLabel(today.opensAt);
+        const from = formatTime(today.opensAt);
         return {
           isOpen: false,
           label: `Opens ${from}`,
@@ -139,17 +118,9 @@ export class OpeningHoursService {
   });
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      window.setInterval(() => this.now.set(new Date()), 60_000);
-    }
+    window.setInterval(() => this.now.set(new Date()), 60_000);
   }
 
-  /**
-   * Fetches the live settings once.
-   *
-   * A failure is deliberately silent: the defaults are already in place and a
-   * visitor should never see an error where the opening hours belong.
-   */
   load(): void {
     if (this.loadStarted) {
       return;
@@ -165,30 +136,23 @@ export class OpeningHoursService {
             notice: value.notice ?? DEFAULT_SETTINGS.notice,
           });
         }
-        // An empty body means nothing has been saved yet, which is a real
-        // answer: the defaults genuinely are the current state.
         this.loadStatus.set('ready');
       },
       error: () => {
-        // Public pages keep the defaults and carry on. The admin form checks
-        // this and refuses to edit rather than risk overwriting.
         this.loadStatus.set('failed');
       },
     });
   }
 
-  /** Applies settings saved in the admin area without a refetch. */
   apply(settings: LibrarySettings): void {
     this.stored.set(settings);
     this.loadStatus.set('ready');
   }
 
-  /** Hours for a given date, exceptions included — used by the calendar. */
   resolve(iso: string): ResolvedDay {
     return resolveDay(iso, this.settings());
   }
 
-  /** Scans forward for the next day the library opens. */
   private nextOpening(): { when: string; at: string } | null {
     const today = this.now();
     for (let offset = 1; offset <= 14; offset++) {
@@ -198,7 +162,7 @@ export class OpeningHoursService {
       if (!day.closed && day.opensAt) {
         return {
           when: offset === 1 ? 'tomorrow' : `on ${DAY_NAMES[date.getDay()]}`,
-          at: formatTimeLabel(day.opensAt),
+          at: formatTime(day.opensAt),
         };
       }
     }
@@ -209,12 +173,4 @@ export class OpeningHoursService {
 function toMinutes(value: string): number {
   const [hours, minutes] = value.split(':').map(Number);
   return hours * 60 + minutes;
-}
-
-function formatTimeLabel(value: string): string {
-  const [rawHours, minutes] = value.split(':');
-  const hours = Number(rawHours);
-  const suffix = hours >= 12 ? 'pm' : 'am';
-  const hours12 = hours % 12 === 0 ? 12 : hours % 12;
-  return `${hours12}.${minutes}${suffix}`;
 }

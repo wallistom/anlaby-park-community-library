@@ -1,48 +1,57 @@
-<!-- ── Hero ──────────────────────────────────────────────────────────────────
-     A pale blue band rather than the page wash. The header is white, and with
-     the hero on the same wash as the rest of the page the two ran together
-     with nothing to mark where the chrome ended and the page began. -->
-<section class="border-line bg-sunken border-b">
-  <div class="container-page pt-14 pb-20 sm:pt-20">
-    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-      <div>
-        <p class="text-ink-soft flex items-center gap-2 text-sm font-medium">
+<section class="band-hero">
+  <div class="container-page pt-12 pb-20 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28">
+    <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-14">
+      <div class="lg:col-span-7">
+        <a href="#opening-hours" class="status-pill hero-rise mb-5 flex w-fit lg:hidden">
           <span
-            class="inline-flex h-2 w-2 rounded-full"
-            [class]="hours.status().isOpen ? 'bg-success' : 'bg-orange-700'"
+            class="status-dot"
+            [class]="hours.status().isOpen ? 'status-dot-open bg-success' : 'bg-orange-700'"
             aria-hidden="true"
           ></span>
           {{ hours.status().label }}
+          <span class="text-ink-muted font-medium">· All hours</span>
+          <app-icon name="arrowRight" [size]="16" class="text-blue-700" />
+        </a>
+
+        <p class="eyebrow hero-rise mb-5">{{ site.name }}</p>
+
+        <h1 class="hero-title hero-rise" style="--rise-delay: 60ms">Books, coffee, and company</h1>
+
+        <p class="lead hero-rise mt-6 max-w-[34rem]" style="--rise-delay: 150ms">
+          A free library on The Greenway in west Hull, run by more than
+          {{ site.volunteerCount }} volunteers, with computers, a coffee corner, and clubs for every
+          age. Local people saved it from closure in 2013, and today it is {{ site.tagline }}.
         </p>
 
-        <h1 class="mt-5 text-4xl font-semibold sm:text-5xl">Books, coffee, and company</h1>
-
-        <p class="prose-body mt-6">
-          In 2013 this building was earmarked for closure, so local people took it on themselves.
-          Today we are Hull's first and only community-run library — free to join, open to everyone,
-          and kept going by more than {{ site.volunteerCount }} volunteers.
-        </p>
-
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div class="hero-rise mt-9 flex flex-col gap-3 sm:flex-row" style="--rise-delay: 240ms">
           <a routerLink="/visit" class="btn-primary">
             Plan your visit
             <app-icon name="arrowRight" [size]="18" />
           </a>
-          <a
-            routerLink="/activities"
-            class="border-line-strong hover:bg-surface inline-flex items-center justify-center rounded-xl border px-6 py-3.5 font-semibold transition-colors"
-          >
-            Clubs &amp; activities
+          <a routerLink="/activities" class="btn-secondary">Clubs &amp; activities</a>
+        </div>
+
+        <div
+          class="hero-rise border-navy-950/10 mt-10 hidden flex-wrap items-center gap-x-6 gap-y-2 border-t pt-6 lg:flex"
+          style="--rise-delay: 330ms"
+        >
+          <p class="text-ink inline-flex items-center gap-2.5 font-semibold">
+            <span
+              class="status-dot"
+              [class]="hours.status().isOpen ? 'status-dot-open bg-success' : 'bg-orange-700'"
+              aria-hidden="true"
+            ></span>
+            {{ hours.status().label }}
+          </p>
+          <a href="#opening-hours" class="link-arrow">
+            All opening hours
+            <app-icon name="arrowRight" [size]="16" />
           </a>
         </div>
       </div>
 
-      <!-- The building, presented as a photograph rather than a decoration: a
-           printed edge, a soft shadow, and a plate naming the place. The source
-           is only 512px, so it is held to a contained width where it still reads
-           sharply instead of being stretched across the viewport. -->
-      <figure class="relative mx-auto w-full max-w-xl lg:mx-0">
-        <div class="ring-navy-950/5 overflow-hidden rounded-2xl shadow-xl ring-1">
+      <div class="relative lg:col-span-5">
+        <div class="hero-photo hero-rise aspect-[16/10]" style="--rise-delay: 120ms">
           <img
             appImageFade
             src="images/library-exterior.jpg"
@@ -50,28 +59,135 @@
             width="512"
             height="512"
             fetchpriority="high"
-            class="aspect-[4/3] w-full object-cover"
+            class="h-full w-full object-cover object-[55%_62%]"
           />
+          <p class="hero-photo-label">
+            <app-icon name="mapPin" [size]="16" />
+            {{ site.address.line1 }}, {{ site.address.city }}
+          </p>
         </div>
 
-        <figcaption
-          class="border-line/70 bg-surface/95 absolute bottom-4 left-4 flex items-center gap-2.5 rounded-xl border py-2.5 pr-4 pl-3 backdrop-blur-sm"
+        <div
+          class="hero-print hero-rise -mt-10 ml-6 w-[62%] sm:-mt-14 sm:ml-8 sm:w-[44%] lg:-ml-10 lg:w-[64%]"
+          style="--rise-delay: 260ms"
         >
-          <span class="text-blue-700"><app-icon name="mapPin" [size]="17" /></span>
-          <span class="text-ink text-sm font-semibold">
-            {{ site.address.line1 }}, {{ site.address.city }}
-          </span>
-        </figcaption>
-      </figure>
+          <img
+            appImageFade
+            src="images/library-interior.jpg"
+            alt="Inside the library: wooden shelving filled with books, a display of jigsaws and board games, and a book trolley."
+            width="512"
+            height="512"
+            class="aspect-[4/3] h-auto w-full object-cover object-[35%_55%]"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── What's on ─────────────────────────────────────────────────────────── -->
-<section class="border-line border-y bg-surface section">
+<section class="container-page -mt-10 sm:-mt-12" aria-label="About the library in brief">
+  <ul class="fact-strip hero-rise" style="--rise-delay: 420ms">
+    <li class="fact">
+      <span class="icon-tile h-10 w-10"><app-icon name="users" [size]="20" /></span>
+      <span class="text-ink leading-snug font-semibold">Open to everyone, member or not</span>
+    </li>
+    <li class="fact">
+      <span class="icon-tile h-10 w-10"><app-icon name="accessible" [size]="20" /></span>
+      <span class="text-ink leading-snug font-semibold">Step-free access and a hearing loop</span>
+    </li>
+    <li class="fact">
+      <span class="icon-tile h-10 w-10"><app-icon name="checkCircle" [size]="20" /></span>
+      <span class="text-ink leading-snug font-semibold">In partnership with Hull City Council</span>
+    </li>
+    <li class="fact">
+      <span class="icon-tile h-10 w-10"><app-icon name="heart" [size]="20" /></span>
+      <span class="text-ink leading-snug font-semibold">
+        Registered charity no. {{ site.charityNumber }}
+      </span>
+    </li>
+  </ul>
+</section>
+
+<section class="container-page pt-16 sm:pt-24">
+  <div class="max-w-2xl" [appReveal]="0">
+    <p class="eyebrow">Visiting</p>
+    <h2 class="text-3xl font-bold sm:text-4xl">Come and find us</h2>
+    <p class="prose-body mt-5">
+      You do not need to be a member to walk in, use the wi-fi, read the paper, or buy a coffee.
+      Joining is free and takes a couple of minutes at the counter.
+    </p>
+  </div>
+
+  <div
+    class="mt-10 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-stretch lg:gap-8"
+  >
+    <ul class="card divide-line divide-y" [appReveal]="60">
+      <li class="flex gap-4 p-5 sm:p-6">
+        <span class="icon-tile h-10 w-10"><app-icon name="mapPin" [size]="20" /></span>
+        <div class="min-w-0">
+          <p class="text-ink-muted text-sm font-medium">Address</p>
+          <p class="text-ink mt-1 font-semibold">
+            {{ site.address.line1 }}, {{ site.address.line2 }}<br />
+            {{ site.address.city }} {{ site.address.postcode }}
+          </p>
+          <a
+            [href]="mapLinks.google"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link -mt-1 -mb-3 inline-flex items-center gap-1.5 py-3 text-sm"
+          >
+            Open in maps
+            <app-icon name="externalLink" [size]="14" />
+            <span class="sr-only">(opens in a new tab)</span>
+          </a>
+        </div>
+      </li>
+      <li class="flex gap-4 p-5 sm:p-6">
+        <span class="icon-tile h-10 w-10"><app-icon name="phone" [size]="20" /></span>
+        <div class="min-w-0">
+          <p class="text-ink-muted text-sm font-medium">Phone</p>
+          <a
+            [href]="'tel:' + site.phoneHref"
+            class="text-ink -my-2 inline-flex items-center py-2 text-lg font-semibold tabular-nums transition-colors hover:text-blue-700"
+          >
+            {{ site.phone }}
+          </a>
+        </div>
+      </li>
+      <li class="flex gap-4 p-5 sm:p-6">
+        <span class="icon-tile h-10 w-10"><app-icon name="mail" [size]="20" /></span>
+        <div class="min-w-0">
+          <p class="text-ink-muted text-sm font-medium">Email</p>
+          <a
+            [href]="'mailto:' + site.email"
+            class="text-ink -my-2 inline-flex items-center py-2 font-semibold break-all transition-colors hover:text-blue-700"
+          >
+            {{ site.email }}
+          </a>
+        </div>
+      </li>
+      @if (access) {
+        <li class="flex gap-4 p-5 sm:p-6">
+          <span class="icon-tile h-10 w-10"><app-icon [name]="access.icon" [size]="20" /></span>
+          <div class="min-w-0">
+            <p class="text-ink font-semibold">{{ access.title }}</p>
+            <p class="text-ink-soft mt-1">{{ access.description }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+
+    <app-hours-table id="opening-hours" [appReveal]="140" />
+  </div>
+</section>
+
+<section class="band-sunken mt-16 py-16 sm:mt-24 sm:py-24">
   <div class="container-page">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <h2 class="text-3xl font-semibold">On this week</h2>
+    <div class="flex flex-wrap items-end justify-between gap-4" [appReveal]="0">
+      <div>
+        <p class="eyebrow">What's on</p>
+        <h2 class="text-3xl font-bold sm:text-4xl">On this week</h2>
+      </div>
       <a routerLink="/whats-on" class="link-arrow">
         See the full calendar
         <app-icon name="arrowRight" [size]="16" />
@@ -79,22 +195,15 @@
     </div>
 
     @if (events.state() === 'loading') {
-      <!-- Skeleton rows match the real layout, so the section does not jump
-           when the events arrive. -->
-      <ul class="mt-8 flex flex-col gap-3" aria-hidden="true">
+      <ul class="mt-8 grid gap-4 lg:grid-cols-2" aria-hidden="true">
         @for (row of [1, 2, 3, 4]; track row) {
-          <li class="border-line flex flex-col gap-2 border-t pt-4 sm:flex-row sm:gap-6">
-            <div class="skeleton h-5 w-40 shrink-0"></div>
-            <div class="flex min-w-0 flex-1 flex-col gap-2">
-              <div class="flex items-center gap-3">
-                <div class="skeleton h-4 w-16 shrink-0"></div>
-                <div class="skeleton h-5 w-44"></div>
-              </div>
+          <li class="card flex gap-5 p-5 sm:p-6">
+            <div class="skeleton h-14 w-14 shrink-0 rounded-xl"></div>
+            <div class="flex min-w-0 flex-1 flex-col gap-3 pt-1">
+              <div class="skeleton h-5 w-40"></div>
+              <div class="skeleton h-4 w-56"></div>
               @if (row === 2) {
-                <div class="flex items-center gap-3">
-                  <div class="skeleton h-4 w-16 shrink-0"></div>
-                  <div class="skeleton h-5 w-32"></div>
-                </div>
+                <div class="skeleton h-4 w-44"></div>
               }
             </div>
           </li>
@@ -102,144 +211,109 @@
       </ul>
       <p class="sr-only" aria-live="polite">Loading this week's events</p>
     } @else if (comingDays().length > 0) {
-      <ul class="mt-8 flex flex-col gap-3">
-        @for (day of comingDays(); track day.iso) {
-          <!-- items-baseline so the day, the time, and the title sit on one
-               line despite three different font sizes. -->
-          <li
-            class="border-line flex flex-col gap-2 border-t pt-4 sm:flex-row sm:items-baseline sm:gap-6"
-          >
-            <p class="text-navy-800 shrink-0 font-semibold sm:w-44">
-              {{ day.isToday ? 'Today' : (day.date | date: 'EEEE d MMMM') }}
-            </p>
-            <ul class="flex min-w-0 flex-col gap-2">
-              @for (event of day.events; track event.occurrenceId) {
-                <li class="flex flex-col gap-x-3 gap-y-0.5 sm:flex-row sm:items-baseline">
-                  <span class="text-ink-muted shrink-0 text-sm tabular-nums sm:w-20">
-                    {{ event.startTime ? (event.startTime | libraryTime) : 'All day' }}
-                  </span>
-                  <span class="min-w-0">
-                    <span class="font-semibold">{{ event.title }}</span>
-                    @if (event.cost) {
-                      <span class="text-ink-muted text-sm"> · {{ event.cost }}</span>
-                    }
-                  </span>
-                </li>
-              }
-            </ul>
+      <ul class="mt-8 grid gap-4 lg:grid-cols-2">
+        @for (day of comingDays(); track day.iso; let i = $index) {
+          <li class="card flex gap-5 p-5 sm:p-6" [appReveal]="i * 50">
+            <div [class]="day.isToday ? 'date-chip-today' : 'date-chip'" aria-hidden="true">
+              <span class="text-[0.7rem] font-semibold tracking-wide uppercase">
+                {{ day.date | date: 'EEE' }}
+              </span>
+              <span class="font-display text-xl leading-none font-semibold">
+                {{ day.date | date: 'd' }}
+              </span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-navy-900 font-sans text-base font-semibold">
+                {{ day.isToday ? 'Today' : (day.date | date: 'EEEE d MMMM') }}
+              </h3>
+              <ul class="mt-2 flex flex-col gap-2">
+                @for (event of day.events; track event.occurrenceId) {
+                  <li class="flex flex-col gap-x-3 gap-y-0.5 sm:flex-row sm:items-baseline">
+                    <span class="text-ink-muted shrink-0 text-sm tabular-nums sm:w-20">
+                      {{ event.startTime ? (event.startTime | libraryTime) : 'All day' }}
+                    </span>
+                    <span class="min-w-0">
+                      <span class="text-ink font-semibold">{{ event.title }}</span>
+                      @if (event.cost) {
+                        <span class="text-ink-muted text-sm"> · {{ event.cost }}</span>
+                      }
+                    </span>
+                  </li>
+                }
+              </ul>
+            </div>
           </li>
         }
       </ul>
     } @else {
-      <!-- Shown before any events are published, and if the API is unreachable. -->
-      <p class="prose-body mt-6 max-w-2xl">
-        Nothing in the diary for the next few days. Our weekly clubs still run — those are listed
-        under <a routerLink="/activities" class="link">activities</a> — or ring us on
-        <a [href]="'tel:' + site.phoneHref" class="link">{{ site.phone }}</a> and we will tell you
-        what is coming up.
-      </p>
+      <div
+        class="card mt-8 flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center sm:p-8"
+        [appReveal]="80"
+      >
+        <span class="icon-tile"><app-icon name="calendar" [size]="22" /></span>
+        <div class="flex-1">
+          <p class="font-sans text-navy-950 text-xl font-semibold">
+            Nothing in the diary for the next few days
+          </p>
+          <p class="text-ink-soft mt-1.5">
+            Our weekly clubs still run, or ring us on
+            <a [href]="'tel:' + site.phoneHref" class="link whitespace-nowrap">{{ site.phone }}</a>
+            and we will tell you what is coming up.
+          </p>
+        </div>
+        <a routerLink="/activities" class="btn-secondary btn-sm shrink-0">
+          See our clubs
+          <app-icon name="arrowRight" [size]="16" />
+        </a>
+      </div>
     }
   </div>
 </section>
 
-<!-- ── What's here ───────────────────────────────────────────────────────── -->
-<section class="container-page py-20">
-  <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-    <div class="order-2 lg:order-1">
-      <div
-        class="ring-navy-950/5 mx-auto w-full max-w-xl overflow-hidden rounded-2xl shadow-xl ring-1 lg:mx-0"
-      >
-        <img
-          appImageFade
-          src="images/library-interior.jpg"
-          alt="Inside the library: wooden shelving filled with books, a display of jigsaws and board games, a book trolley, and a raffle hamper on the end of a bay."
-          width="512"
-          height="512"
-          loading="lazy"
-          class="aspect-[4/3] w-full object-cover"
-        />
-      </div>
-    </div>
-
-    <div class="order-1 lg:order-2">
-      <h2 class="text-3xl font-semibold">More than a room full of books</h2>
+<section class="container-page pt-16 sm:pt-24">
+  <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+    <div [appReveal]="0">
+      <p class="eyebrow">What's here</p>
+      <h2 class="text-3xl font-bold sm:text-4xl">More than a room full of books</h2>
       <p class="prose-body mt-5">
         We run a full library service in partnership with Hull City Council, so your free membership
         reaches the whole city catalogue. Alongside it you will find the practical things people
         actually need — and a decent cup of coffee.
       </p>
-
-      <ul class="mt-7 flex flex-col gap-2.5">
-        @for (item of offerings; track item.title) {
-          <li class="text-ink-soft flex items-start gap-3">
-            <span class="text-blue-600 mt-1"><app-icon name="check" [size]="16" /></span>
-            <span>{{ item.title }}</span>
-          </li>
-        }
-      </ul>
-
-      <a routerLink="/visit" class="link-arrow mt-7">
+      <a routerLink="/visit" class="link-arrow mt-6">
         Everything we offer
         <app-icon name="arrowRight" [size]="16" />
       </a>
     </div>
-  </div>
-</section>
 
-<!-- ── Visit ───────────────────────────────────────────────────────────────
-     On the band rather than white: the opening-hours card inside it is white,
-     and on a white section the two were the same colour with only a border
-     between them. -->
-<section class="border-line bg-sunken section border-y">
-  <div class="container-page grid gap-12 lg:grid-cols-2 lg:gap-16">
-    <div>
-      <h2 class="text-3xl font-semibold">Come and find us</h2>
-      <p class="prose-body mt-5">
-        You do not need to be a member to walk in, use the wi-fi, read the paper, or buy a coffee.
-        Joining is free and takes a couple of minutes at the counter.
-      </p>
-
-      <address class="mt-8 flex flex-col gap-4 text-base not-italic">
-        <p class="text-ink-soft flex items-start gap-3">
-          <span class="text-blue-600 mt-0.5"><app-icon name="mapPin" [size]="19" /></span>
-          <span>
-            {{ site.address.line1 }}, {{ site.address.line2 }}<br />
-            {{ site.address.city }} {{ site.address.postcode }}
-          </span>
-        </p>
-        <a
-          [href]="'tel:' + site.phoneHref"
-          class="text-ink-soft hover:text-navy-900 flex items-center gap-3"
+    <ul class="grid gap-3 sm:grid-cols-2">
+      @for (item of offerings; track item.title; let i = $index) {
+        <li
+          class="card flex min-h-[4.5rem] items-center gap-3 py-3 pr-4 pl-3"
+          [appReveal]="60 + i * 50"
         >
-          <span class="text-blue-600"><app-icon name="phone" [size]="19" /></span>
-          {{ site.phone }}
-        </a>
-      </address>
-    </div>
-
-    <div>
-      <app-hours-table [showNote]="false" />
-    </div>
+          <span class="icon-tile-warm h-10 w-10"><app-icon [name]="item.icon" [size]="20" /></span>
+          <span class="min-w-0">
+            <span class="text-ink block leading-snug font-semibold">{{ item.title }}</span>
+            @if (item.note) {
+              <span class="text-ink-muted mt-0.5 block text-sm">{{ item.note }}</span>
+            }
+          </span>
+        </li>
+      }
+    </ul>
   </div>
 </section>
 
-<!-- ── Support ───────────────────────────────────────────────────────────── -->
-<section class="container-page py-20">
-  <div class="bg-inverse rounded-2xl px-8 py-14 text-center sm:px-12">
-    <h2 class="mx-auto max-w-2xl text-3xl font-semibold text-white sm:text-4xl">
-      It costs around £{{ site.annualRunningCost.toLocaleString('en-GB') }} a year to keep these
-      doors open
-    </h2>
-    <p class="text-ink-on-dark mx-auto mt-5 max-w-xl text-lg leading-relaxed">
-      Nobody here is paid. Every pound goes on heat, light, books, and insurance — so a small
-      regular gift, or a couple of hours of your time, makes a real difference.
-    </p>
-    <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-      <a routerLink="/support" class="btn-on-dark">
-        Support the library
-        <app-icon name="arrowRight" [size]="18" />
-      </a>
-      <a routerLink="/volunteer" class="btn-on-dark-secondary"> Volunteer with us </a>
-    </div>
-  </div>
-</section>
+<app-cta-band
+  [heading]="
+    'It costs around £' +
+    site.annualRunningCost.toLocaleString('en-GB') +
+    ' a year to keep these doors open'
+  "
+  body="Nobody here is paid. Every pound goes on heat, light, books, and insurance — so a small regular gift, or a couple of hours of your time, makes a real difference."
+  primaryLabel="Support the library"
+  primaryPath="/support"
+  secondaryLabel="Volunteer with us"
+  secondaryPath="/volunteer"
+/>

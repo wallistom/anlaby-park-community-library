@@ -2,11 +2,6 @@ import { Routes } from '@angular/router';
 import { PublicLayoutComponent } from './layout/public-layout.component';
 import { adminGuard } from './core/admin.guard';
 
-/**
- * Every page is lazily loaded so the initial bundle stays small — this site is
- * used on older phones and on the library's own computers over modest
- * connections.
- */
 export const routes: Routes = [
   {
     path: '',
@@ -77,9 +72,6 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/sign-in.component').then((m) => m.SignInComponent),
       },
       {
-        // The dashboard was removed — it re-fetched and re-rendered what the
-        // enquiries inbox already shows. Kept as a redirect so an existing
-        // bookmark still lands somewhere useful.
         path: 'dashboard',
         redirectTo: 'enquiries',
         pathMatch: 'full',

@@ -6,7 +6,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../shared/icon.component';
 import { ApiService } from '../core/api.service';
 import { OpeningHoursService } from '../core/opening-hours.service';
@@ -22,23 +21,17 @@ import { toIso } from '../core/calendar';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
-/** A pattern row with its name, so the template does not do lookups. */
+const NEW_DAY_OPENS = '09:30';
+const NEW_DAY_CLOSES = '12:30';
+
 interface PatternRow extends OpeningDayPattern {
   name: string;
 }
 
-/**
- * Opening hours, exceptions and the site notice.
- *
- * The whole lot saves as one record, so trustees press Save once and the hours
- * can never be left half-updated. Template-driven forms rather than reactive:
- * this is a small settings screen edited in place, and a FormArray for the
- * exceptions would be more machinery than the job needs.
- */
 @Component({
   selector: 'app-manage-hours',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, IconComponent],
+  imports: [IconComponent],
   templateUrl: './manage-hours.component.html',
 })
 export class ManageHoursComponent {
@@ -52,24 +45,14 @@ export class ManageHoursComponent {
   protected readonly loadState = this.hours.loadState;
   protected readonly ready = computed(() => this.loadState() === 'ready');
 
-  /**
-   * Working copies, so nothing changes on the public site until Save.
-   *
-   * Seeded from the compiled-in defaults and re-seeded once the saved settings
-   * arrive — see the effect in the constructor. Without that, opening this
-   * screen before the API answered would show the defaults, and saving would
-   * write them over whatever the trustees had actually configured.
-   */
   protected readonly pattern = signal<PatternRow[]>(this.readPattern());
   protected readonly exceptions = signal<OpeningException[]>(
     structuredClone(this.hours.settings().exceptions),
   );
   protected readonly notice = signal<SiteNotice>({ ...this.hours.settings().notice });
 
-  /** Guards against re-seeding over edits the trustee has already made. */
   private seeded = false;
 
-  /** Past exceptions are kept but shown separately, so the list stays useful. */
   protected readonly upcomingExceptions = computed(() =>
     this.exceptions()
       .filter((e) => e.to >= this.todayIso)
@@ -83,12 +66,6 @@ export class ManageHoursComponent {
   );
 
   constructor() {
-    // Re-seed the working copies once the saved settings arrive. The fields
-    // above are initialised from whatever the service holds at construction,
-    // which is the compiled-in fallback if the request has not come back yet.
-    //
-    // Only once: after that the trustee may have started editing, and their
-    // work must not be replaced by a late response.
     effect(() => {
       if (this.seeded || this.hours.loadState() !== 'ready') {
         return;
@@ -111,10 +88,8 @@ export class ManageHoursComponent {
           ? {
               ...row,
               closed,
-              // Give a newly opened day sensible times rather than blanks the
-              // API would reject.
-              opensAt: closed ? undefined : (row.opensAt ?? '09:30'),
-              closesAt: closed ? undefined : (row.closesAt ?? '12:30'),
+              opensAt: closed ? undefined : (row.opensAt ?? NEW_DAY_OPENS),
+              closesAt: closed ? undefined : (row.closesAt ?? NEW_DAY_CLOSES),
             }
           : row,
       ),
@@ -147,13 +122,12 @@ export class ManageHoursComponent {
           return entry;
         }
         const next = { ...entry, ...patch };
-        // Keep the range valid as the dates are typed.
         if (next.to < next.from) {
           next.to = next.from;
         }
         if (!next.closed) {
-          next.opensAt ??= '09:30';
-          next.closesAt ??= '12:30';
+          next.opensAt ??= NEW_DAY_OPENS;
+          next.closesAt ??= NEW_DAY_CLOSES;
         }
         return next;
       }),
@@ -188,8 +162,6 @@ export class ManageHoursComponent {
     this.error.set(null);
     this.api.saveSettings(settings).subscribe({
       next: (saved) => {
-        // Push straight into the shared service so the rest of the admin area
-        // and the public pages reflect the change without a reload.
         this.hours.apply(saved);
         this.exceptions.set(structuredClone(saved.exceptions));
         this.state.set('saved');

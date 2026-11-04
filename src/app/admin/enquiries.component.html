@@ -1,10 +1,9 @@
-<h1 class="text-3xl font-semibold">Enquiries</h1>
+<h1 class="text-3xl font-bold">Enquiries</h1>
 <p class="text-ink-soft mt-2">
   Everything submitted through the website. Mark items as you deal with them so other trustees know
   where things stand.
 </p>
 
-<!-- Tabs -->
 <div role="group" aria-label="Choose a type of enquiry" class="mt-8 flex flex-wrap gap-2">
   @for (tab of tabs; track tab.value) {
     <button
@@ -44,8 +43,6 @@
 }
 
 @if (loading()) {
-  <!-- Shaped like the real rows — status chip, name, date — so the list does
-       not jump when the enquiries arrive. -->
   <div class="mt-6 h-5 w-56 skeleton"></div>
   <ul class="mt-4 flex flex-col gap-3" aria-hidden="true">
     @for (row of [1, 2, 3, 4, 5]; track row) {
@@ -91,7 +88,7 @@
               }}
             </span>
 
-            <span class="font-display font-semibold">{{ row.name }}</span>
+            <span class="font-sans font-semibold">{{ row.name }}</span>
             <span class="text-ink-muted min-w-0 truncate text-sm">{{ row.heading }}</span>
 
             <span class="text-ink-muted ml-auto flex items-center gap-3 text-sm">
@@ -188,7 +185,7 @@
       >
         <app-icon name="inbox" [size]="26" />
       </span>
-      <h2 class="font-display mt-4 text-xl font-semibold">Nothing here yet</h2>
+      <h2 class="font-sans mt-4 text-xl font-semibold">Nothing here yet</h2>
       <p class="text-ink-soft mt-2">Submissions from the website will appear here.</p>
     </div>
   }

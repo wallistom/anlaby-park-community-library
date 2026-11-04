@@ -4,11 +4,10 @@
   intro="More than 60 volunteers keep these doors open. Some give a morning a week behind the counter; others bake a cake once a month. Both matter."
 />
 
-<!-- ── Roles ─────────────────────────────────────────────────────────────── -->
 <section class="container-page mt-20">
   <div class="max-w-2xl">
     <p class="eyebrow">Ways to help</p>
-    <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">There is more to it than shelving books</h2>
+    <h2 class="text-3xl font-bold sm:text-4xl">There is more to it than shelving books</h2>
     <p class="prose-body mt-4">
       You do not need library experience, and you do not need to commit to a set number of hours.
       Full training is given for anything that needs it.
@@ -17,19 +16,22 @@
 
   <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
     @for (role of roles; track role.title; let i = $index) {
-      <li class="card p-6" [appReveal]="i * 45">
-        <h3 class="font-display text-lg font-semibold">{{ role.title }}</h3>
-        <p class="text-ink-soft mt-2 text-sm leading-relaxed">{{ role.description }}</p>
+      <li class="card flex items-start gap-4 p-6" [appReveal]="i * 45">
+        <span class="icon-tile"><app-icon [name]="role.icon" [size]="22" /></span>
+        <div class="min-w-0">
+          <h3 class="font-sans text-lg font-semibold">{{ role.title }}</h3>
+          <p class="text-ink-soft mt-1.5 leading-relaxed">{{ role.description }}</p>
+        </div>
       </li>
     }
   </ul>
 </section>
 
-<!-- ── Why volunteer ─────────────────────────────────────────────────────── -->
-<section class="bg-sunken mt-20 section">
+<section class="band-sunken mt-20 section">
   <div class="container-page grid items-center gap-10 lg:grid-cols-12">
     <div class="lg:col-span-7">
-      <h2 class="text-3xl font-semibold">"A very rewarding experience"</h2>
+      <p class="eyebrow">From our volunteers</p>
+      <h2 class="text-3xl font-bold sm:text-4xl">“A very rewarding experience”</h2>
       <p class="prose-body mt-4">
         That is how our volunteers describe it, and it is the reason most of them stay for years.
         You meet your neighbours properly, you learn something, and you can see exactly what your
@@ -42,30 +44,30 @@
     </div>
     <div class="lg:col-span-5">
       <div class="card p-7">
-        <span class="text-orange-600"><app-icon name="quote" [size]="28" /></span>
-        <ul class="mt-4 flex flex-col gap-3 text-sm">
+        <span class="icon-tile-warm"><app-icon name="heart" [size]="24" /></span>
+        <ul class="mt-5 flex flex-col gap-3">
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
-              <app-icon name="check" [size]="14" />
-            </span>
+            <span class="flex h-[1lh] shrink-0 items-center text-blue-600"
+              ><app-icon name="checkCircle" [size]="20"
+            /></span>
             Full training, and never thrown in at the deep end
           </li>
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
-              <app-icon name="check" [size]="14" />
-            </span>
+            <span class="flex h-[1lh] shrink-0 items-center text-blue-600"
+              ><app-icon name="checkCircle" [size]="20"
+            /></span>
             Give as much or as little time as suits you
           </li>
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
-              <app-icon name="check" [size]="14" />
-            </span>
+            <span class="flex h-[1lh] shrink-0 items-center text-blue-600"
+              ><app-icon name="checkCircle" [size]="20"
+            /></span>
             Plenty of roles that do not involve the counter at all
           </li>
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
-              <app-icon name="check" [size]="14" />
-            </span>
+            <span class="flex h-[1lh] shrink-0 items-center text-blue-600"
+              ><app-icon name="checkCircle" [size]="20"
+            /></span>
             Free coffee. Obviously.
           </li>
         </ul>
@@ -74,7 +76,6 @@
   </div>
 </section>
 
-<!-- ── Application ───────────────────────────────────────────────────────── -->
 <section class="container-page mt-20">
   <div class="mx-auto max-w-3xl">
     <div class="card p-7 sm:p-10">
@@ -85,14 +86,14 @@
           >
             <app-icon name="check" [size]="32" />
           </span>
-          <h2 class="font-display mt-5 text-2xl font-semibold">Thank you — welcome aboard</h2>
+          <h2 class="font-display mt-5 text-2xl font-bold">Thank you — welcome aboard</h2>
           <p class="text-ink-soft mx-auto mt-3 max-w-md text-lg">
             One of the trustees will get in touch to have a chat about what you would enjoy and when
             you are free. There is no commitment until you are happy.
           </p>
         </div>
       } @else {
-        <h2 class="text-3xl font-semibold">Get in touch about volunteering</h2>
+        <h2 class="text-3xl font-bold">Get in touch about volunteering</h2>
         <p class="text-ink-soft mt-2">
           Fill this in and a trustee will contact you for an informal chat. Or simply call in and
           ask — that works just as well.

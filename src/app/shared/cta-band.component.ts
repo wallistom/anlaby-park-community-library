@@ -2,20 +2,21 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from './icon.component';
 
-/** Closing call to action used at the foot of most pages. */
 @Component({
   selector: 'app-cta-band',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, IconComponent],
   template: `
-    <section class="container-page mt-20 mb-4">
-      <div class="bg-inverse rounded-2xl px-8 py-14 text-center sm:px-12">
-        <h2 class="mx-auto max-w-2xl text-3xl font-semibold text-white sm:text-4xl">
-          {{ heading() }}
-        </h2>
-        <p class="text-ink-on-dark mx-auto mt-5 max-w-xl text-lg leading-relaxed">{{ body() }}</p>
+    <section class="container-page mt-20 mb-4 sm:mt-24">
+      <div
+        class="band-inverse shadow-raised rounded-2xl px-6 py-12 sm:px-12 sm:py-14 lg:flex lg:items-center lg:justify-between lg:gap-16 lg:px-14"
+      >
+        <div class="max-w-2xl">
+          <h2 class="text-3xl font-bold text-white sm:text-4xl">{{ heading() }}</h2>
+          <p class="text-ink-on-dark mt-4 max-w-xl text-lg leading-relaxed">{{ body() }}</p>
+        </div>
 
-        <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row lg:mt-0 lg:shrink-0 lg:flex-col">
           <a [routerLink]="primaryPath()" class="btn-on-dark">
             {{ primaryLabel() }}
             <app-icon name="arrowRight" [size]="18" />

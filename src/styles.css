@@ -1,43 +1,6 @@
 @import 'tailwindcss';
 
-/* ---------------------------------------------------------------------------
-   Anlaby Park Community Library — design system
-
-   Two layers:
-
-     1. Raw ramps (blue / navy / orange / stone) — the palette, taken from
-        the library's own artwork.
-     2. Semantic tokens (ink, surface, line, accent, danger, success) — what
-        the UI actually references.
-
-   Components use the semantic layer, so a contrast problem is fixed in one
-   declaration rather than in every template that happened to pick a shade.
-   That indirection exists because its absence already caused a regression:
-   secondary text drifted onto a value that failed WCAG AA in 34 places.
-
-   Every pairing used in the UI is verified by scripts/check-contrast.mjs,
-   which fails the build if any drops below AA at its rendered size.
---------------------------------------------------------------------------- */
-
 @theme {
-  /* --- Raw ramps -------------------------------------------------------
-
-     Sampled from the library's own published artwork rather than invented.
-     The anchors are exact:
-
-       blue   #086fba  the banner and bunting
-       navy   #223f69  the wordmark and headings
-       orange #ff7500  the window squares in the roof mark
-
-     Their pale green wash (#f2fded) is deliberately not used — see the
-     surface tokens below.
-
-     An earlier version of this file used a forest-green palette chosen on a
-     narrative rationale — the library stands on The Greenway — which had the
-     obvious flaw of not being the charity's actual identity. */
-
-  /* Brand blue. 600 is the published value, and it happens to carry white
-     text at 5.26:1, so it can be used for fills as well as accents. */
   --color-blue-50: #edf4fa;
   --color-blue-100: #d2e5f2;
   --color-blue-200: #9cc5e3;
@@ -50,7 +13,6 @@
   --color-blue-900: #04406c;
   --color-blue-950: #032b48;
 
-  /* Brand navy. 800 is the published value. */
   --color-navy-50: #eef1f6;
   --color-navy-100: #d7dde8;
   --color-navy-200: #b0bccf;
@@ -63,8 +25,6 @@
   --color-navy-900: #1c3559;
   --color-navy-950: #14253f;
 
-  /* Brand orange. 500 is the published value; it cannot carry white text
-     (2.69:1), so anything with a label on it uses 700 instead. */
   --color-orange-50: #fff4ea;
   --color-orange-100: #ffe3cc;
   --color-orange-200: #ffcba3;
@@ -77,9 +37,6 @@
   --color-orange-900: #7a3800;
   --color-orange-950: #4a2200;
 
-  /* Neutrals, pulled cool toward the brand navy. Every grey, band and border
-     therefore sits with the blue rather than against it, which is what keeps
-     the palette to two hues plus the orange accent. */
   --color-stone-50: #f6f8fb;
   --color-stone-100: #eaeff6;
   --color-stone-200: #dbe2ec;
@@ -92,8 +49,6 @@
   --color-stone-900: #1d2229;
   --color-stone-950: #121519;
 
-  /* --- Semantic tokens -------------------------------------------------- */
-
   --color-ink: var(--color-stone-900);
   --color-ink-soft: var(--color-stone-700);
   --color-ink-muted: var(--color-stone-500);
@@ -102,37 +57,18 @@
   --color-ink-on-dark: var(--color-navy-100);
   --color-ink-on-dark-muted: var(--color-navy-200);
 
-  /* Surfaces. Blue and white, with orange as the single accent.
-
-     Their artwork washes the background pale green (#f2fded), but on a screen
-     that green fights the blue rather than supporting it — the page ends up
-     reading as two competing hues. The wash here is white pulled towards the
-     brand blue instead: enough tint to separate a white card from the page
-     (1.07:1, marginally more than the green gave) without introducing a second
-     colour. */
   --color-surface: #ffffff;
   --color-page: #eff5fc;
-  /* The band colour, and deliberately a step away from the page rather than
-     a neighbour of it. Page, sunken and blue-50 were once within 1.08:1 of
-     each other while doing three different jobs, so every band edge on the
-     site dissolved.
 
-     The three light surfaces are now spaced so every step is visible on its
-     own: white to page 1.10:1, page to band 1.12:1, white to band 1.23:1.
-     Cards no longer depend entirely on their border to be seen. */
   --color-sunken: #dce9f7;
   --color-inverse: var(--color-navy-800);
 
   --color-line: var(--color-stone-200);
-  --color-line-soft: var(--color-stone-300);
   --color-line-strong: var(--color-stone-400);
   --color-line-inverse: var(--color-navy-600);
 
-  /* Orange is the accent, as it is in their artwork — used sparingly and
-     never as a large field. */
   --color-accent: var(--color-orange-700);
   --color-accent-hover: var(--color-orange-800);
-  --color-accent-bright: var(--color-orange-500);
   --color-primary: var(--color-navy-800);
   --color-primary-hover: var(--color-navy-900);
 
@@ -143,19 +79,14 @@
   --color-success-soft: #f0fdf4;
   --color-success-line: #bbf7d0;
 
-  /* --- Type ------------------------------------------------------------- */
+  --font-display: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Their wordmark is a classic serif in caps, so a serif for headings is
-     already their register. */
-  --font-display: 'Literata', ui-serif, Georgia, Cambria, 'Times New Roman', serif;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --shadow-card: 0 1px 2px rgb(20 37 63 / 0.05), 0 6px 16px -6px rgb(20 37 63 / 0.12);
+  --shadow-raised: 0 1px 3px rgb(20 37 63 / 0.06), 0 12px 28px -10px rgb(20 37 63 / 0.18);
+  --shadow-lifted: 0 2px 4px rgb(20 37 63 / 0.06), 0 18px 36px -14px rgb(20 37 63 / 0.24);
+  --shadow-button: 0 1px 2px rgb(20 37 63 / 0.2), inset 0 1px 0 rgb(255 255 255 / 0.1);
 
-  /* --- Shape ------------------------------------------------------------ */
-
-  /* Three radii in use: rounded-lg for chips, rounded-xl for buttons and
-     inputs, rounded-2xl for cards, plus rounded-full for pills. */
-
-  /* --- Motion ----------------------------------------------------------- */
   --ease-gentle: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
 
@@ -167,48 +98,56 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* Keeps anchored headings clear of the sticky header. */
     scroll-padding-top: 6rem;
-    -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-page text-ink font-sans antialiased;
-    /* Many readers here are older: a 17px base and a generous line height
-       make long passages easier to hold on to. */
     font-size: 1.0625rem;
     line-height: 1.65;
-    /* Long unbroken strings (an email, a pasted URL in an event description)
-       must wrap rather than push the page wider than the screen. */
     overflow-wrap: break-word;
+    font-synthesis-weight: none;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    @apply font-display text-navy-950;
-    font-optical-sizing: auto;
+    @apply text-navy-950;
     text-wrap: balance;
-    letter-spacing: -0.011em;
+  }
+
+  h1,
+  h2 {
+    @apply font-display font-bold;
+    letter-spacing: -0.025em;
   }
 
   h1 {
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+
+  h2 {
     line-height: 1.12;
   }
 
-  h2,
-  h3 {
-    line-height: 1.22;
+  h3,
+  h4 {
+    @apply font-sans font-semibold;
+    line-height: 1.3;
   }
 
   p {
     text-wrap: pretty;
   }
 
-  /* One focus treatment everywhere, and it is never removed. */
   :focus-visible {
     @apply outline-orange-700 rounded-sm outline-3 outline-offset-2;
+  }
+
+  [tabindex='-1']:focus {
+    outline: none;
   }
 
   ::selection {
@@ -224,6 +163,7 @@
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
@@ -231,70 +171,175 @@
 }
 
 @layer components {
-  /* Tailwind v4 cannot @apply one custom class inside another, so shared
-     declarations are written out in full rather than composed. */
-
-  /* --- Layout ----------------------------------------------------------- */
-
   .container-page {
     @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
   }
 
-  /* Standard vertical rhythm for a section. Replaces the mix of mt-16 /
-     mt-20 / mt-24 / py-20 that had accumulated across the pages. */
   .section {
     @apply py-16 sm:py-20;
-  }
-
-  .section-tight {
-    @apply py-12 sm:py-16;
   }
 
   .prose-body {
     @apply text-ink-soft text-lg leading-relaxed;
   }
 
-  /* Small label above a section heading. Sentence case and lightweight — the
-     uppercase tracked treatment made every section shout equally loudly. */
   .eyebrow {
-    @apply text-ink-muted mb-2 text-sm font-medium;
+    @apply mb-4 inline-flex items-center gap-3 text-[0.8125rem] font-semibold tracking-[0.14em] text-blue-700 uppercase;
   }
 
-  /* --- Surfaces --------------------------------------------------------- */
+  .eyebrow::before {
+    @apply bg-orange-500 h-px w-7 shrink-0;
+    content: '';
+  }
+
+  .lead {
+    @apply text-ink-soft text-lg leading-relaxed sm:text-xl sm:leading-relaxed;
+  }
+
+  .icon-tile,
+  .icon-tile-warm {
+    @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl;
+  }
+
+  .icon-tile {
+    @apply bg-blue-50 text-blue-700;
+  }
+
+  .icon-tile-warm {
+    @apply bg-orange-50 text-orange-700;
+  }
+
+  .band-hero {
+    @apply bg-sunken relative isolate overflow-hidden;
+    background-image:
+      radial-gradient(70rem 36rem at 100% -35%, rgb(255 255 255 / 0.95), transparent 68%),
+      radial-gradient(56rem 32rem at -12% 118%, rgb(156 197 227 / 0.5), transparent 70%);
+  }
+
+  .hero-photo {
+    @apply relative overflow-hidden rounded-2xl bg-blue-100;
+    box-shadow:
+      0 0 0 1px rgb(20 37 63 / 0.08),
+      0 2px 6px rgb(20 37 63 / 0.08),
+      0 40px 80px -30px rgb(20 37 63 / 0.45);
+  }
+
+  .hero-photo::after {
+    @apply pointer-events-none absolute inset-0 rounded-2xl;
+    content: '';
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35);
+  }
+
+  .hero-print {
+    @apply bg-surface relative overflow-hidden rounded-2xl p-1.5;
+    box-shadow:
+      0 0 0 1px rgb(20 37 63 / 0.08),
+      0 2px 4px rgb(20 37 63 / 0.08),
+      0 24px 48px -18px rgb(20 37 63 / 0.4);
+  }
+
+  .hero-print > img {
+    @apply rounded-xl;
+  }
+
+  .fact-strip {
+    @apply border-line bg-surface shadow-raised grid grid-cols-1 rounded-2xl border sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  .fact {
+    @apply flex items-center gap-3 px-5 py-3.5 sm:px-6 sm:py-4;
+  }
+
+  .fact + .fact {
+    @apply border-line border-t lg:border-t-0 lg:border-l;
+  }
+
+  .fact:nth-child(even) {
+    @apply sm:border-l;
+  }
+
+  .fact:nth-child(2) {
+    @apply sm:border-t-0;
+  }
+
+  .status-dot {
+    @apply relative inline-flex h-2.5 w-2.5 shrink-0 rounded-full;
+  }
+
+  .status-dot-open::before {
+    @apply absolute inset-0 rounded-full;
+    content: '';
+    background: inherit;
+    animation: status-ping 2.4s var(--ease-out-soft) infinite;
+  }
+
+  .hero-photo-label {
+    @apply absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-md;
+    background: rgb(20 37 63 / 0.75);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.15);
+  }
+
+  .band-sunken {
+    @apply bg-sunken relative;
+    box-shadow:
+      inset 0 14px 24px -20px rgb(20 37 63 / 0.28),
+      inset 0 -14px 24px -20px rgb(20 37 63 / 0.18);
+  }
+
+  .band-inverse {
+    @apply bg-inverse relative isolate overflow-hidden;
+    background-image:
+      radial-gradient(50rem 28rem at 0% 0%, var(--color-navy-600), transparent 70%),
+      radial-gradient(44rem 26rem at 100% 100%, var(--color-navy-900), transparent 70%);
+  }
+
+  .status-pill {
+    @apply bg-surface/80 text-ink inline-flex min-h-11 items-center gap-2 rounded-full py-1.5 pr-3 pl-3.5 text-sm font-semibold ring-1 ring-navy-950/8;
+  }
+
+  .hero-title {
+    @apply text-navy-950 text-[2.5rem] font-bold min-[400px]:text-[2.75rem] sm:text-6xl lg:text-[4rem] xl:text-[4.5rem];
+    line-height: 1.04;
+    letter-spacing: -0.032em;
+  }
+
+  .print {
+    @apply relative overflow-hidden rounded-xl bg-blue-100;
+    box-shadow:
+      0 0 0 1px rgb(20 37 63 / 0.08),
+      0 1px 2px rgb(20 37 63 / 0.06),
+      0 24px 48px -22px rgb(20 37 63 / 0.4);
+  }
 
   .card {
-    @apply border-line bg-surface rounded-2xl border;
+    @apply border-line bg-surface shadow-card rounded-2xl border;
   }
 
   .card-interactive {
-    @apply border-line bg-surface hover:border-blue-300 rounded-2xl border transition-colors;
+    @apply border-line bg-surface shadow-card hover:border-blue-300 rounded-2xl border transition-colors;
   }
 
-  /* One placeholder block. Size it at the call site with height and width
-     utilities so a skeleton can be shaped like the thing it stands in for —
-     a skeleton that does not match its content just moves the jolt later.
+  .photo-frame {
+    @apply bg-surface shadow-raised ring-navy-950/5 rounded-2xl p-2 ring-1 sm:p-2.5;
+  }
 
-     Always inside a container marked aria-hidden, with a visually hidden
-     aria-live message alongside: a screen reader should hear "loading", not
-     a list of empty boxes. */
+  .photo-frame > img {
+    @apply rounded-xl;
+  }
+
   .skeleton {
     @apply bg-line animate-pulse rounded;
   }
 
-  /* --- Buttons ---------------------------------------------------------- */
-
-  .btn,
   .btn-primary,
   .btn-secondary,
   .btn-accent,
   .btn-on-dark,
   .btn-on-dark-secondary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-semibold transition-colors;
-    /* Comfortably clear of the 44px minimum target. */
     min-height: 3rem;
   }
 
-  .btn:disabled,
   .btn-primary:disabled,
   .btn-secondary:disabled,
   .btn-accent:disabled,
@@ -304,26 +349,23 @@
   }
 
   .btn-primary {
-    @apply bg-primary hover:bg-primary-hover text-ink-inverse;
+    @apply bg-primary hover:bg-primary-hover text-ink-inverse shadow-button;
   }
 
-  /* Solid ochre. Uses the darkened 600 so white text clears AA — the old
-     value managed 4.02:1 behind the site's most prominent call to action. */
   .btn-accent {
-    @apply bg-accent hover:bg-accent-hover text-ink-inverse;
+    @apply bg-accent hover:bg-accent-hover text-ink-inverse shadow-button;
   }
 
   .btn-secondary {
-    @apply border-line-strong text-ink hover:bg-sunken border;
+    @apply border-line-strong text-ink bg-surface shadow-card hover:border-navy-800 border;
   }
 
-  /* For use on the dark green bands. */
   .btn-on-dark {
-    @apply bg-orange-400 text-navy-950 hover:bg-orange-300;
+    @apply bg-orange-400 text-navy-950 shadow-button hover:bg-orange-300;
   }
 
   .btn-on-dark-secondary {
-    @apply border-line-inverse text-ink-inverse hover:bg-navy-800 border;
+    @apply border-navy-400 text-ink-inverse hover:bg-navy-900 hover:border-navy-300 border;
   }
 
   .btn-sm {
@@ -331,21 +373,27 @@
     min-height: 2.75rem;
   }
 
-  /* --- Links ------------------------------------------------------------ */
+  .nav-link {
+    @apply text-ink-soft hover:text-navy-900 relative rounded-lg px-2.5 py-2 text-[0.95rem] font-medium whitespace-nowrap transition-colors;
+  }
+
+  .nav-link.is-active {
+    @apply text-navy-900 font-semibold;
+  }
+
+  .nav-link.is-active::after {
+    @apply bg-orange-600 absolute right-2.5 bottom-0.5 left-2.5 h-[3px] rounded-full;
+    content: '';
+  }
 
   .link {
     @apply text-blue-700 font-medium underline-offset-4 hover:underline;
   }
 
-  /* These sit on their own rather than inside a sentence, so they need a
-     real touch target — 28px was too small to hit reliably on a phone. */
   .link-arrow {
     @apply text-blue-700 hover:text-navy-900 inline-flex min-h-11 items-center gap-1.5 font-semibold underline-offset-4 hover:underline;
   }
 
-  /* --- Chips ------------------------------------------------------------ */
-
-  .chip,
   .chip-neutral,
   .chip-accent,
   .chip-success {
@@ -364,8 +412,35 @@
     @apply bg-success-soft text-success;
   }
 
-  /* Filter pills — Activities, and the admin inbox tabs. */
-  .pill,
+  .segmented {
+    @apply border-line bg-surface shadow-card inline-flex rounded-xl border p-1;
+  }
+
+  .segment,
+  .segment-on {
+    @apply inline-flex min-h-11 items-center rounded-lg px-5 text-sm font-semibold transition-colors;
+  }
+
+  .segment {
+    @apply text-ink-soft hover:text-navy-900;
+  }
+
+  .segment-on {
+    @apply bg-navy-800 text-ink-inverse;
+  }
+
+  .icon-btn {
+    @apply border-line-strong bg-surface text-navy-900 shadow-card hover:border-navy-800 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line-strong;
+  }
+
+  .date-chip {
+    @apply bg-blue-50 text-navy-800 flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl;
+  }
+
+  .date-chip-today {
+    @apply bg-navy-800 text-ink-inverse flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl;
+  }
+
   .pill-on,
   .pill-off {
     @apply inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors;
@@ -380,18 +455,15 @@
     @apply border-line-strong text-ink-soft hover:border-blue-400 hover:bg-surface;
   }
 
-  /* --- Forms ------------------------------------------------------------ */
-
   .field-label {
     @apply text-ink mb-1.5 block text-sm font-semibold;
   }
 
   .field-input {
-    @apply border-line-strong text-ink bg-surface focus:border-blue-600 w-full rounded-xl border px-4 py-3 transition-colors;
+    @apply border-line-strong text-ink bg-surface focus:border-blue-600 w-full rounded-xl border px-4 py-3 shadow-[inset_0_1px_2px_rgb(20_37_63/0.06)] transition-colors;
     min-height: 3rem;
   }
 
-  /* Placeholders previously sat at 2.38:1 — decorative, not readable. */
   .field-input::placeholder {
     @apply text-ink-muted;
   }
@@ -408,8 +480,6 @@
     @apply text-ink-muted mt-1.5 text-sm;
   }
 
-  /* --- Alerts ----------------------------------------------------------- */
-
   .alert,
   .alert-danger {
     @apply flex items-start gap-3 rounded-xl border p-4;
@@ -420,22 +490,6 @@
   }
 }
 
-/* ---------------------------------------------------------------------------
-   Motion
-
-   Everything here is opacity/transform only, so it composites on the GPU and
-   cannot cause layout shift. The prefers-reduced-motion rule in the base layer
-   collapses every duration to ~0, which leaves each element at its final
-   state — so nothing below needs its own reduced-motion handling.
---------------------------------------------------------------------------- */
-
-/* --- Route changes ------------------------------------------------------ */
-
-/* Angular inserts the routed component as the outlet's next sibling, so this
-   selector matches a genuinely new element on every navigation and the
-   animation replays without any TypeScript. `to { transform: none }` matters:
-   a lingering transform would make the page a containing block and break any
-   position:fixed descendant. */
 @keyframes page-enter {
   from {
     opacity: 0;
@@ -449,9 +503,6 @@ router-outlet + * {
   animation: page-enter var(--duration-page) var(--ease-out-soft) both;
 }
 
-/* Navigation progress bar. It cannot know how long the guard will take, so it
-   eases towards the right and stops short rather than pretending to finish — a
-   bar that completes and then keeps waiting is a lie. */
 @keyframes route-progress {
   from {
     transform: scaleX(0.05);
@@ -465,8 +516,6 @@ router-outlet + * {
   transform-origin: left;
   animation: route-progress 4s var(--ease-out-soft) both;
 }
-
-/* --- Scroll reveal ------------------------------------------------------ */
 
 @keyframes reveal-up {
   from {
@@ -487,42 +536,59 @@ router-outlet + * {
   animation: reveal-up 0.5s var(--ease-gentle) both;
 }
 
-/* --- Buttons and links -------------------------------------------------- */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 
-/* Colour was already transitioning; transform is added so a press registers
-   physically. The scale is tiny on purpose — it should read as the control
-   yielding, not bouncing. */
-.btn,
+.hero-rise {
+  animation: hero-rise 0.7s var(--ease-gentle) both;
+  animation-delay: var(--rise-delay, 0ms);
+}
+
+@keyframes status-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
 .btn-primary,
 .btn-secondary,
 .btn-accent,
 .btn-on-dark,
 .btn-on-dark-secondary,
-.pill,
 .pill-on,
 .pill-off {
   transition:
     background-color var(--duration-micro) var(--ease-out-soft),
     border-color var(--duration-micro) var(--ease-out-soft),
     color var(--duration-micro) var(--ease-out-soft),
+    box-shadow var(--duration-micro) var(--ease-out-soft),
     transform var(--duration-micro) var(--ease-out-soft);
 }
 
-.btn:active:not(:disabled),
 .btn-primary:active:not(:disabled),
 .btn-secondary:active:not(:disabled),
 .btn-accent:active:not(:disabled),
 .btn-on-dark:active:not(:disabled),
 .btn-on-dark-secondary:active:not(:disabled),
-.pill:active,
 .pill-on:active,
 .pill-off:active {
   transform: scale(0.98);
 }
 
-/* Arrows lean towards where they are taking you. Two pixels is enough to
-   register without becoming a gimmick. */
-.btn app-icon:last-child,
 .btn-primary app-icon:last-child,
 .btn-accent app-icon:last-child,
 .btn-on-dark app-icon:last-child,
@@ -531,19 +597,25 @@ router-outlet + * {
 }
 
 @media (hover: hover) {
-  .btn:hover app-icon:last-child,
   .btn-primary:hover app-icon:last-child,
   .btn-accent:hover app-icon:last-child,
   .btn-on-dark:hover app-icon:last-child,
   .link-arrow:hover app-icon {
     transform: translateX(2px);
   }
+
+  .btn-primary:hover:not(:disabled),
+  .btn-accent:hover:not(:disabled),
+  .btn-on-dark:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
 }
 
-/* --- Cards -------------------------------------------------------------- */
-
-/* A hover-only lift. The resting state stays flat, so the page is no busier
-   than before — this is an affordance, not decoration. */
 .card-interactive {
   transition:
     border-color var(--duration-micro) var(--ease-out-soft),
@@ -554,20 +626,14 @@ router-outlet + * {
 @media (hover: hover) {
   .card-interactive:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px -8px rgb(31 66 52 / 0.18);
+    box-shadow: var(--shadow-lifted);
   }
 }
-
-/* --- Forms -------------------------------------------------------------- */
 
 .field-input {
   transition: border-color var(--duration-micro) var(--ease-out-soft);
 }
 
-/* --- Mobile drawer ------------------------------------------------------ */
-
-/* The drawer is mounted by a control-flow block, so it animates on insert
-   without any state to manage. */
 @keyframes drawer-in {
   from {
     opacity: 0;
@@ -583,10 +649,6 @@ router-outlet + * {
   animation: drawer-in var(--duration-quick) var(--ease-gentle) both;
 }
 
-/* --- Disclosure --------------------------------------------------------- */
-
-/* Used by the trustee enquiry rows. Animating grid-template-rows lets the
-   panel expand to its natural height without hardcoding one. */
 @keyframes disclosure-open {
   from {
     grid-template-rows: 0fr;
@@ -608,11 +670,6 @@ router-outlet + * {
   overflow: hidden;
 }
 
-/* --- Images ------------------------------------------------------------- */
-
-/* Photographs fade in once decoded rather than snapping in. Width and height
-   are set on the elements, so the space is reserved either way and nothing
-   moves. */
 .img-fade {
   opacity: 0;
   transition: opacity 0.4s var(--ease-out-soft);

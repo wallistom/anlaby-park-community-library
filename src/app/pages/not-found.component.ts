@@ -10,7 +10,7 @@ import { SITE } from '../core/site.data';
   template: `
     <section class="container-page py-24 text-center sm:py-32">
       <span
-        class="bg-blue-50 text-blue-600 mx-auto flex h-20 w-20 items-center justify-center rounded-2xl"
+        class="bg-surface shadow-card mx-auto flex h-20 w-20 items-center justify-center rounded-2xl text-blue-700"
       >
         <app-icon name="search" [size]="36" />
       </span>
@@ -18,7 +18,7 @@ import { SITE } from '../core/site.data';
       <p class="text-orange-700 mt-8 text-xs font-semibold tracking-[0.18em] uppercase">
         Error 404
       </p>
-      <h1 class="mt-3 text-4xl font-semibold sm:text-5xl">We can't find that page</h1>
+      <h1 class="mt-3 text-4xl font-bold sm:text-5xl">We can't find that page</h1>
       <p class="prose-body mx-auto mt-5 max-w-xl">
         It may have moved, or the link might be out of date. Have a look at the pages below, or ring
         us and we will point you in the right direction.

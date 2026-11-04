@@ -5,33 +5,28 @@
 />
 
 <section class="container-page mt-10">
-  <!-- Controls stack on a phone and sit on one line from sm up. The view
-       toggle comes first because it changes what the arrows mean. -->
   <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div role="group" aria-label="Choose a view" class="flex gap-2">
+    <div role="group" aria-label="Choose a view" class="segmented self-start">
       <button
         type="button"
         (click)="setView('week')"
-        [class]="view() === 'week' ? 'pill-on' : 'pill-off'"
+        [attr.aria-pressed]="view() === 'week'"
+        [class]="view() === 'week' ? 'segment-on' : 'segment'"
       >
         Week
       </button>
       <button
         type="button"
         (click)="setView('month')"
-        [class]="view() === 'month' ? 'pill-on' : 'pill-off'"
+        [attr.aria-pressed]="view() === 'month'"
+        [class]="view() === 'month' ? 'segment-on' : 'segment'"
       >
         Month
       </button>
     </div>
 
     <div class="flex items-center gap-2">
-      <button
-        type="button"
-        (click)="step(-1)"
-        [disabled]="!canGoBack()"
-        class="border-line-strong hover:bg-sunken flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-      >
+      <button type="button" (click)="step(-1)" [disabled]="!canGoBack()" class="icon-btn">
         <span class="sr-only">{{ view() === 'week' ? 'Previous week' : 'Previous month' }}</span>
         <app-icon name="arrowLeft" [size]="18" />
       </button>
@@ -43,17 +38,12 @@
         {{ view() === 'week' ? weekLabel() : monthLabel() }}
       </p>
 
-      <button
-        type="button"
-        (click)="step(1)"
-        [disabled]="!canGoForward()"
-        class="border-line-strong hover:bg-sunken flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-      >
+      <button type="button" (click)="step(1)" [disabled]="!canGoForward()" class="icon-btn">
         <span class="sr-only">{{ view() === 'week' ? 'Next week' : 'Next month' }}</span>
         <app-icon name="arrowRight" [size]="18" />
       </button>
 
-      @if (view() === 'week' ? !onCurrentWeek() : !onCurrentMonth()) {
+      @if (canGoBack()) {
         <button type="button" (click)="backToToday()" class="btn-secondary btn-sm shrink-0">
           Today
         </button>
@@ -64,67 +54,78 @@
   @if (events.state() === 'loading') {
     <p class="text-ink-muted mt-10" aria-live="polite">Loading what's on…</p>
   } @else {
-    <!-- ── Week ────────────────────────────────────────────────────────── -->
     @if (view() === 'week') {
       <ul class="mt-8 flex flex-col gap-3">
         @for (day of week(); track day.iso) {
           <li
-            class="overflow-hidden rounded-2xl border"
+            class="shadow-card flex gap-4 rounded-2xl border p-4 sm:gap-5 sm:p-5"
             [class]="day.isToday ? 'border-blue-300 bg-blue-50' : 'border-line bg-surface'"
           >
-            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-5 pt-4">
-              <h2 class="font-display text-lg font-semibold">
-                {{ day.date | date: 'EEEE d MMMM' }}
-              </h2>
-              @if (day.isToday) {
-                <span class="chip-accent">Today</span>
-              }
-              <span
-                class="ml-auto text-sm"
-                [class]="day.closureReason ? 'text-orange-800' : 'text-ink-muted'"
-              >
-                @if (day.closureReason) {
-                  {{ day.closureReason }} · {{ day.hours }}
-                } @else {
-                  {{ day.hours === 'Closed' ? 'Library closed' : 'Open ' + day.hours }}
-                }
+            <div [class]="day.isToday ? 'date-chip-today' : 'date-chip'" aria-hidden="true">
+              <span class="text-[0.7rem] font-semibold tracking-wide uppercase">
+                {{ day.date | date: 'EEE' }}
+              </span>
+              <span class="font-display text-xl leading-none font-semibold">
+                {{ day.date | date: 'd' }}
               </span>
             </div>
 
-            @if (day.events.length) {
-              <ul class="flex flex-col px-5 pb-4">
-                @for (event of day.events; track event.occurrenceId) {
-                  <li class="border-line flex flex-col gap-1 border-t py-3 sm:flex-row sm:gap-5">
-                    <p class="text-navy-800 shrink-0 font-semibold tabular-nums sm:w-44">
-                      @if (event.startTime) {
-                        {{ event.startTime | libraryTime }}
-                        @if (event.endTime) {
-                          <span class="text-ink-muted font-normal"
-                            >– {{ event.endTime | libraryTime }}</span
-                          >
-                        }
-                      } @else {
-                        All day
-                      }
-                    </p>
-                    <div class="min-w-0">
-                      <h3 class="font-semibold">{{ event.title }}</h3>
-                      <p class="text-ink-soft mt-0.5 text-sm leading-relaxed">
-                        {{ event.description }}
-                      </p>
-                      <p class="text-ink-muted mt-1 text-sm">
-                        {{ event.location }}
-                        @if (event.cost) {
-                          <span>· {{ event.cost }}</span>
-                        }
-                      </p>
-                    </div>
-                  </li>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1">
+                <h2 class="font-sans text-lg font-semibold">
+                  {{ day.date | date: 'EEEE d MMMM' }}
+                </h2>
+                @if (day.isToday) {
+                  <span class="chip-accent">Today</span>
                 }
-              </ul>
-            } @else {
-              <p class="text-ink-muted px-5 pt-1 pb-4 text-sm">Nothing scheduled.</p>
-            }
+                <span
+                  class="inline-flex items-center gap-1.5 text-sm sm:ml-auto"
+                  [class]="day.closureReason ? 'text-orange-800' : 'text-ink-muted'"
+                >
+                  <app-icon name="clock" [size]="16" />
+                  @if (day.closureReason) {
+                    {{ day.closureReason }} · {{ day.hours }}
+                  } @else {
+                    {{ day.closed ? 'Library closed' : 'Open ' + day.hours }}
+                  }
+                </span>
+              </div>
+
+              @if (day.events.length) {
+                <ul class="mt-2 flex flex-col">
+                  @for (event of day.events; track event.occurrenceId) {
+                    <li class="border-line flex flex-col gap-1 border-t py-3 sm:flex-row sm:gap-5">
+                      <p class="text-navy-800 shrink-0 font-semibold tabular-nums sm:w-44">
+                        @if (event.startTime) {
+                          {{ event.startTime | libraryTime }}
+                          @if (event.endTime) {
+                            <span class="text-ink-muted font-normal"
+                              >– {{ event.endTime | libraryTime }}</span
+                            >
+                          }
+                        } @else {
+                          All day
+                        }
+                      </p>
+                      <div class="min-w-0">
+                        <h3 class="font-semibold">{{ event.title }}</h3>
+                        <p class="text-ink-soft mt-0.5 text-sm leading-relaxed">
+                          {{ event.description }}
+                        </p>
+                        <p class="text-ink-muted mt-1 text-sm">
+                          {{ event.location }}
+                          @if (event.cost) {
+                            <span>· {{ event.cost }}</span>
+                          }
+                        </p>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="text-ink-muted mt-1 text-sm">Nothing scheduled.</p>
+              }
+            </div>
           </li>
         }
       </ul>
@@ -138,14 +139,7 @@
       }
     }
 
-    <!-- ── Month ───────────────────────────────────────────────────────── -->
     @if (view() === 'month') {
-      <!-- A seven-column grid needs roughly 60px per column to show an event
-           name. Below sm that would leave 45px, so the grid is replaced by the
-           day list further down rather than degrading into untappable dots. -->
-      <!-- The grid sits on a white card. On the page wash the cells had nothing
-           to read against: an empty day was the same colour as the background,
-           and a day with events was 1.07:1 from it. -->
       <div class="card mt-8 hidden p-3 sm:block sm:p-4">
         <div class="text-ink-muted grid grid-cols-7 gap-1.5 text-center text-xs font-semibold">
           @for (heading of weekdayHeadings; track heading) {
@@ -172,13 +166,9 @@
                     ? 'border-blue-600 bg-blue-50 ring-blue-600 ring-2'
                     : day.events.length
                       ? 'border-blue-200 bg-blue-50 hover:border-blue-400 cursor-pointer'
-                      : 'border-line cursor-default'
+                      : 'bg-page border-transparent cursor-default'
               "
             >
-              <!-- Three states, three separate mechanisms, so none of them can
-                   cancel another out: a blue fill means something is on, a navy
-                   disc means today, and a ring means selected. They were all
-                   competing for the same pale blue fill before. -->
               <span
                 class="text-sm font-semibold tabular-nums"
                 [class]="
@@ -220,7 +210,7 @@
         @if (selectedDay(); as day) {
           <div id="day-detail" class="card disclosure mt-4">
             <div class="p-5">
-              <h2 class="font-display text-lg font-semibold">
+              <h2 class="font-sans text-lg font-semibold">
                 {{ day.date | date: 'EEEE d MMMM' }}
               </h2>
               <ul class="mt-3 flex flex-col">
@@ -264,7 +254,6 @@
         }
       </div>
 
-      <!-- Mobile: the same month, as a list of the days that have something on. -->
       <div class="mt-8 sm:hidden">
         @if (monthDaysWithEvents().length) {
           <ul class="flex flex-col gap-3">
@@ -274,7 +263,7 @@
                 [class]="day.isToday ? 'border-blue-300 bg-blue-50' : 'border-line bg-surface'"
               >
                 <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <h2 class="font-display text-lg font-semibold">
+                  <h2 class="font-sans text-lg font-semibold">
                     {{ day.date | date: 'EEEE d MMMM' }}
                   </h2>
                   @if (day.isToday) {
@@ -309,21 +298,23 @@
   }
 </section>
 
-<!-- ── Regular fixtures ──────────────────────────────────────────────────── -->
 <section class="container-page mt-20">
-  <div class="card p-8 sm:p-10">
-    <h2 class="text-2xl font-semibold">Our regular fixtures</h2>
-    <p class="prose-body mt-3">
-      A Spring Fayre, Music on the Green, a Community Fun Day and a Christmas Fayre come round every
-      year, alongside quiz and race nights. Dates are confirmed closer to the time and appear in the
-      calendar above — or ring us on
-      <a [href]="'tel:' + site.phoneHref" class="link">{{ site.phone }}</a> and we will tell you
-      what is coming up.
-    </p>
-    <a routerLink="/activities" class="link-arrow mt-5">
-      See our weekly clubs and groups
-      <app-icon name="arrowRight" [size]="16" />
-    </a>
+  <div class="card flex flex-col gap-5 p-7 sm:flex-row sm:gap-6 sm:p-10">
+    <span class="icon-tile-warm"><app-icon name="sparkles" [size]="24" /></span>
+    <div class="min-w-0">
+      <h2 class="text-2xl font-bold">Our regular fixtures</h2>
+      <p class="prose-body mt-3">
+        A Spring Fayre, Music on the Green, a Community Fun Day and a Christmas Fayre come round
+        every year, alongside quiz and race nights. Dates are confirmed closer to the time and
+        appear in the calendar above — or ring us on
+        <a [href]="'tel:' + site.phoneHref" class="link">{{ site.phone }}</a> and we will tell you
+        what is coming up.
+      </p>
+      <a routerLink="/activities" class="link-arrow mt-5">
+        See our weekly clubs and groups
+        <app-icon name="arrowRight" [size]="16" />
+      </a>
+    </div>
   </div>
 </section>
 
