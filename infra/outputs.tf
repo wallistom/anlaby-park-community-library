@@ -16,6 +16,7 @@ output "dynamodb_tables" {
     volunteers     = aws_dynamodb_table.volunteers.name
     messages       = aws_dynamodb_table.messages.name
     settings       = aws_dynamodb_table.settings.name
+    trustees       = aws_dynamodb_table.trustees.name
   }
 }
 

@@ -5,17 +5,6 @@ import { IconComponent } from '../shared/icon.component';
 import { ApiService } from '../core/api.service';
 import { TrusteeAccount } from '../core/models';
 
-/**
- * Who can use the admin area.
- *
- * This exists so the charity does not have to ask an engineer every time a
- * trustee joins or leaves. Before it, the allowlist was an environment variable
- * set by Terraform, so every change needed somebody with AWS credentials — fine
- * during the build, a bottleneck for a volunteer board.
- *
- * The screen is deliberately plain. Adding somebody is two fields, and removing
- * them is one button with a confirmation.
- */
 @Component({
   selector: 'app-trustees',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,7 +12,7 @@ import { TrusteeAccount } from '../core/models';
   template: `
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-semibold">Who can sign in</h1>
+        <h1 class="text-3xl font-bold">Who can sign in</h1>
         <p class="text-ink-soft mt-2 max-w-2xl">
           Anyone listed here can manage events, opening hours, and enquiries. Add people using the
           Google address they will sign in with.
@@ -38,9 +27,8 @@ import { TrusteeAccount } from '../core/models';
       </div>
     }
 
-    <!-- ── Add ──────────────────────────────────────────────────────────── -->
     <form class="card mt-8 p-6 sm:p-7" (ngSubmit)="add()">
-      <h2 class="font-display text-lg font-semibold">Add a trustee</h2>
+      <h2 class="font-sans text-lg font-semibold">Add a trustee</h2>
 
       <div class="mt-5 grid gap-4 sm:grid-cols-2">
         <div>
@@ -78,8 +66,7 @@ import { TrusteeAccount } from '../core/models';
       </button>
     </form>
 
-    <!-- ── List ─────────────────────────────────────────────────────────── -->
-    <h2 class="font-display mt-10 text-lg font-semibold">
+    <h2 class="font-sans mt-10 text-lg font-semibold">
       Trustees
       @if (trustees().length) {
         <span class="text-ink-muted font-sans text-base font-normal">
@@ -92,10 +79,10 @@ import { TrusteeAccount } from '../core/models';
       <ul class="mt-4 flex flex-col gap-3" aria-hidden="true">
         @for (row of [1, 2, 3]; track row) {
           <li class="card flex items-center gap-4 p-5">
-            <div class="skeleton h-10 w-10 shrink-0 -full"></div>
+            <div class="skeleton h-10 w-10 shrink-0 rounded-full"></div>
             <div class="flex flex-1 flex-col gap-2">
-              <div class="skeleton h-4 w-40 "></div>
-              <div class="skeleton h-3 w-56 "></div>
+              <div class="skeleton h-4 w-40"></div>
+              <div class="skeleton h-3 w-56"></div>
             </div>
           </li>
         }
@@ -131,8 +118,6 @@ import { TrusteeAccount } from '../core/models';
             </span>
 
             @if (trustee.isYou) {
-              <!-- Removing yourself is the usual way a board ends up with
-                   nobody who can get in, so it is not offered. -->
               <span class="text-ink-muted text-sm">Ask another trustee to remove you</span>
             } @else if (confirming() === trustee.email) {
               <span class="flex items-center gap-2">

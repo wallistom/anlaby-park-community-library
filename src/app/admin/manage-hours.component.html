@@ -1,14 +1,11 @@
 <div class="flex flex-wrap items-end justify-between gap-4">
   <div>
-    <h1 class="text-3xl font-semibold">Opening hours</h1>
+    <h1 class="text-3xl font-bold">Opening hours</h1>
     <p class="text-ink-soft mt-2 max-w-2xl">
       The weekly pattern is what normally happens. Add an exception for anything that differs — a
       bank holiday, the Christmas break, or a day you have to close at short notice.
     </p>
   </div>
-  <!-- Disabled until the saved settings arrive. This button sits outside the
-       form, so without that it could write the compiled-in fallback over the
-       real configuration before the page had finished loading. -->
   <button
     type="button"
     (click)="save()"
@@ -25,19 +22,13 @@
     <p class="text-sm">{{ error() }}</p>
   </div>
 } @else if (state() === 'saved') {
-  <div
-    class="border-success-line bg-success-soft text-success mt-6 flex items-start gap-3 rounded-xl border p-4"
-    role="status"
-  >
+  <div class="alert border-success-line bg-success-soft text-success mt-6" role="status">
     <app-icon name="check" [size]="20" />
     <p class="text-sm">Saved. The website is showing these hours now.</p>
   </div>
 }
 
 @if (!ready()) {
-  <!-- The form is not shown until the saved settings arrive. It is seeded from
-       the compiled-in fallback, so editing it before then and pressing Save
-       would write those defaults over the real configuration. -->
   @if (loadState() === 'failed') {
     <div class="alert-danger mt-8" role="alert">
       <app-icon name="info" [size]="20" />
@@ -68,7 +59,6 @@
     <p class="sr-only" aria-live="polite">Loading the opening hours</p>
   }
 } @else {
-  <!-- ── Weekly pattern ────────────────────────────────────────────────────── -->
   <section class="card mt-8 p-6 sm:p-7">
     <h2 class="text-xl font-semibold">Normal week</h2>
     <p class="text-ink-soft mt-1 text-sm">
@@ -121,7 +111,6 @@
     </ul>
   </section>
 
-  <!-- ── Exceptions ───────────────────────────────────────────────────────── -->
   <section class="card mt-6 p-6 sm:p-7">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -267,7 +256,6 @@
     }
   </section>
 
-  <!-- ── Site notice ──────────────────────────────────────────────────────── -->
   <section class="card mt-6 p-6 sm:p-7">
     <h2 class="text-xl font-semibold">Banner</h2>
     <p class="text-ink-soft mt-1 max-w-xl text-sm">
@@ -315,9 +303,6 @@
   </section>
 
   <div class="mt-6 flex justify-end">
-    <!-- Also disabled until the saved settings arrive: this button sits outside
-         the form, so without that it could write the fallback defaults over the
-         real configuration before the page had finished loading. -->
     <button
       type="button"
       (click)="save()"

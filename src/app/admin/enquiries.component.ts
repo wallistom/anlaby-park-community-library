@@ -14,7 +14,6 @@ import { ContactMessage, EnquiryStatus, HireEnquiry, VolunteerApplication } from
 
 type Tab = 'hire' | 'volunteers' | 'messages';
 
-/** A submission flattened into the shape the list renders. */
 interface Row {
   id: string;
   name: string;
@@ -23,7 +22,6 @@ interface Row {
   status: EnquiryStatus;
   submittedAt: string;
   heading: string;
-  /** Label/value pairs shown when the row is expanded. */
   details: { label: string; value: string }[];
   body?: string;
 }
@@ -99,7 +97,6 @@ export class EnquiriesComponent implements OnInit {
     }
   });
 
-  /** Unhandled count per tab, so the badge is visible before you click in. */
   protected readonly newCounts = computed(() => ({
     hire: this.hire().filter((item) => item.status === 'new').length,
     volunteers: this.volunteers().filter((item) => item.status === 'new').length,
@@ -142,7 +139,6 @@ export class EnquiriesComponent implements OnInit {
           : 'messages';
 
     this.api.updateSubmissionStatus(kind, row.id, status).subscribe({
-      // Update locally rather than refetching everything for one status change.
       next: () => this.applyStatusLocally(row.id, status),
       error: () => this.error.set(true),
     });

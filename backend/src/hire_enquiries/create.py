@@ -1,5 +1,3 @@
-"""POST /hire-enquiries — public room hire enquiry."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -33,15 +31,13 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
     if organisation:
         item["organisation"] = organisation
 
-    # Status and timestamps are set here, never taken from the request.
     item["enquiryId"] = db.new_id()
     item["status"] = "new"
     item["submittedAt"] = db.now_iso()
 
     try:
         db.table("HIRE_ENQUIRIES_TABLE").put_item(Item=item)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not send that enquiry.")
 
-    # Only the id goes back; echoing the submission serves no purpose.
     return responses.created({"enquiryId": item["enquiryId"]})

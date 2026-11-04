@@ -1,14 +1,8 @@
 <header
-  class="sticky top-0 z-50 border-b transition-all duration-300"
-  [class]="
-    scrolled() ? 'border-line bg-surface/95 shadow-sm backdrop-blur-md' : 'border-line bg-surface'
-  "
+  class="sticky top-0 z-50 border-b border-line transition-all duration-300"
+  [class]="scrolled() ? 'bg-surface/95 shadow-sm backdrop-blur-md' : 'bg-surface'"
 >
-  <div
-    class="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-3 sm:px-8 lg:gap-6"
-  >
-    <!-- The mark and the name are one link, so it is a single target rather
-         than two adjacent ones. -->
+  <div class="mx-auto flex max-w-6xl items-center gap-3 px-5 py-3 sm:px-8">
     <a
       routerLink="/"
       class="group flex shrink-0 items-center gap-3"
@@ -17,9 +11,9 @@
       <span
         class="bg-navy-800 group-hover:bg-blue-700 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white transition-colors"
       >
-        <app-icon name="book" [size]="22" />
+        <app-icon name="bookOpen" [size]="22" />
       </span>
-      <span class="leading-tight">
+      <span class="leading-tight whitespace-nowrap">
         <span class="font-display text-navy-950 block text-lg font-semibold sm:text-xl">
           Anlaby Park
         </span>
@@ -29,21 +23,27 @@
       </span>
     </a>
 
-    <!-- Nav takes the slack in the middle, so the header stays balanced rather
-         than the links crowding the right-hand actions. -->
-    <nav class="hidden items-center justify-center gap-0.5 lg:flex" aria-label="Main">
+    <nav class="mx-auto hidden items-center lg:flex" aria-label="Main">
       @for (item of navItems; track item.path) {
         <a
           [routerLink]="item.path"
-          routerLinkActive="!text-navy-900 !bg-blue-50"
-          class="text-ink-soft hover:text-navy-900 hover:bg-sunken rounded-lg px-3 py-2 text-[0.9rem] font-medium whitespace-nowrap transition-colors"
+          routerLinkActive="is-active"
+          ariaCurrentWhenActive="page"
+          class="nav-link"
         >
           {{ item.label }}
         </a>
       }
     </nav>
 
-    <div class="col-start-3 flex shrink-0 items-center justify-end gap-2">
+    <div class="ml-auto flex shrink-0 items-center gap-3 lg:ml-0">
+      <a
+        [href]="'tel:' + site.phoneHref"
+        class="text-navy-900 hover:text-blue-700 hidden min-h-11 items-center gap-2 font-semibold whitespace-nowrap tabular-nums transition-colors xl:inline-flex"
+      >
+        <app-icon name="phone" [size]="18" />
+        {{ site.phone }}
+      </a>
       <a routerLink="/support" class="btn-accent btn-sm hidden lg:inline-flex">Donate</a>
 
       <button
@@ -60,11 +60,6 @@
   </div>
 </header>
 
-<!-- Mobile drawer.
-
-     A full-screen overlay carrying its own header bar rather than one offset
-     beneath the site header: the dismissible notice above makes the header's
-     height variable, so any fixed offset would eventually be wrong. -->
 @if (menuOpen()) {
   <div
     id="mobile-menu"
@@ -78,9 +73,9 @@
         <span
           class="bg-navy-800 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
         >
-          <app-icon name="book" [size]="22" />
+          <app-icon name="bookOpen" [size]="22" />
         </span>
-        <span class="leading-tight">
+        <span class="leading-tight whitespace-nowrap">
           <span class="font-display text-navy-950 block text-lg font-semibold">Anlaby Park</span>
           <span
             class="text-ink-muted block text-[0.68rem] font-semibold tracking-[0.14em] uppercase"
@@ -108,6 +103,7 @@
               <a
                 [routerLink]="item.path"
                 routerLinkActive="!text-navy-800 !bg-blue-50"
+                ariaCurrentWhenActive="page"
                 class="text-ink hover:bg-sunken flex items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium"
               >
                 {{ item.label }}
@@ -123,20 +119,22 @@
         Donate to the library
       </a>
 
-      <div class="border-line mt-6 flex flex-col gap-3 border-t pt-6 text-base">
+      <div class="border-line mt-6 flex flex-col gap-2 border-t pt-6 text-base">
         <a
           [href]="'tel:' + site.phoneHref"
-          class="text-ink-soft flex min-h-11 items-center gap-3 px-1 py-1"
+          class="text-ink flex min-h-11 items-center gap-3 font-semibold tabular-nums"
         >
-          <app-icon name="phone" [size]="18" />
+          <span class="icon-tile h-10 w-10"><app-icon name="phone" [size]="20" /></span>
           {{ site.phone }}
         </a>
         <a
           [href]="'mailto:' + site.email"
-          class="text-ink-soft flex min-h-11 items-center gap-3 px-1 py-1"
+          class="text-ink flex min-h-11 items-center gap-3 font-semibold"
         >
-          <app-icon name="mail" [size]="18" />
-          <span class="break-all">{{ site.email }}</span>
+          <span class="icon-tile h-10 w-10"><app-icon name="mail" [size]="20" /></span>
+          <span class="min-w-0 [overflow-wrap:anywhere]"
+            >{{ site.email.split('@')[0] }}@<wbr />{{ site.email.split('@')[1] }}</span
+          >
         </a>
       </div>
     </div>

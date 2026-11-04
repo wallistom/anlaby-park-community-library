@@ -1,29 +1,6 @@
 import { Activity, Facility, Trustee, VolunteerRole } from './models';
 import { LibrarySettings } from './opening-hours.model';
 
-/**
- * Single source of truth for the library's factual details.
- *
- * PROVENANCE — read before relying on any of this.
- *
- * Every value here was scraped from the old anlabyparkcommunitylibrary.com,
- * which is itself out of date and internally inconsistent: its own pages give
- * the trustee board as ten, eleven and twelve members, and the library's
- * printed April 2025 timetable disagrees with the website about Monday and
- * Thursday closing times (5.30pm against 5.00pm) and shows an Art Group running
- * on a Wednesday the website lists as closed.
- *
- * So treat all of this as UNVERIFIED until a trustee confirms it. Two rules
- * follow from that:
- *
- *   1. Reproduce, never derive. Publishing the hours table is fine — it is what
- *      the source said. Counting it and writing "open five days a week" is not:
- *      it turns one possible error into several, and it reads as though someone
- *      checked. Aggregate claims like that have been removed.
- *   2. Where the source published nothing, the site says so rather than
- *      guessing. See the TODO(content) markers.
- */
-
 export const SITE = {
   name: 'Anlaby Park Community Library',
   shortName: 'APCL',
@@ -37,7 +14,6 @@ export const SITE = {
     postcode: 'HU4 6XH',
   },
   phone: '01482 614483',
-  /** E.164 form for `tel:` links. */
   phoneHref: '+441482614483',
   email: 'admin@anlabyparkcommunitylibrary.com',
   social: {
@@ -50,17 +26,11 @@ export const SITE = {
 
 export const ADDRESS_ONE_LINE = `${SITE.address.line1}, ${SITE.address.line2}, ${SITE.address.city} ${SITE.address.postcode}`;
 
-/**
- * The starting weekly pattern and notice.
- *
- * These are the DEFAULTS ONLY. Trustees edit the live values through the admin
- * area, and the API is the source of truth. This copy exists so the site still
- * shows something sensible when the API is unreachable — a library website that
- * cannot say when it opens is worse than one showing slightly stale hours.
- *
- * Values are the scraped ones; see the provenance note above. Once a trustee
- * saves in the admin area, these stop being used except as an offline fallback.
- */
+export const MAP_LINKS = {
+  google: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS_ONE_LINE)}`,
+  apple: `https://maps.apple.com/?q=${encodeURIComponent(ADDRESS_ONE_LINE)}`,
+} as const;
+
 export const DEFAULT_SETTINGS: LibrarySettings = {
   pattern: [
     { dayIndex: 1, closed: false, opensAt: '13:30', closesAt: '17:00' },
@@ -79,7 +49,6 @@ export const DEFAULT_SETTINGS: LibrarySettings = {
   },
 };
 
-/** Monday first, matching how the hours are read and printed. */
 export const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
 export const DAY_NAMES: Record<number, string> = {
@@ -162,116 +131,123 @@ export const FACILITIES: Facility[] = [
   },
 ];
 
-/**
- * The clubs and groups that run here, described rather than timetabled.
- *
- * Days and times deliberately live nowhere in this file. The trustees publish
- * them as recurring events in the admin area, so "What's On" always reflects
- * what is actually happening rather than a hardcoded list that quietly rots.
- */
 export const ACTIVITIES: Activity[] = [
   {
     name: 'Baby Bounce',
+    icon: 'baby',
     description:
       'Rhymes, songs, and picture books for babies and toddlers, with a chance for parents and carers to meet.',
     category: 'regular',
   },
   {
     name: "Children's Craft Club",
+    icon: 'shapes',
     description: 'Messy, cheerful making sessions for younger children. All materials provided.',
     category: 'regular',
   },
   {
     name: 'Craft Club',
+    icon: 'scissors',
     description: 'Bring a project or start a new one, in good company and with plenty of tea.',
     category: 'regular',
   },
   {
     name: 'Art Group',
+    icon: 'palette',
     description:
       'A relaxed session for painters and drawers of every standard, run on a day the library itself is closed.',
     category: 'regular',
   },
   {
     name: 'Knit and Natter',
+    icon: 'chat',
     description:
       'Needles, wool, and conversation. Complete beginners are genuinely welcome — someone will show you how.',
     category: 'regular',
   },
   {
     name: 'Book Clubs',
+    icon: 'bookOpen',
     description:
       'Two separate reading groups — one afternoon, one evening — each with its own character. Pick whichever suits your diary.',
     category: 'regular',
   },
   {
     name: 'Bridge Club',
+    icon: 'spade',
     description: 'A friendly, established club for card players.',
     category: 'regular',
   },
   {
     name: 'Evening talks',
+    icon: 'mic',
     description:
       'A monthly speaker on local history, travel, nature, and anything else that catches our interest.',
     category: 'regular',
   },
   {
     name: 'Hull & District Chess Club',
+    icon: 'crown',
     description:
       'An independent club that meets regularly in our rooms. Contact the club directly to join.',
     category: 'external',
   },
   {
     name: "Age Concern's Brunch Bunch",
+    icon: 'coffee',
     description:
       'A sociable morning run by Age UK in our rooms. Booking is through Age UK on 01482 324644, not through the library.',
     category: 'external',
   },
 ];
 
-export const ACTIVITY_CATEGORY_LABELS: Record<Activity['category'], string> = {
-  regular: 'Our group',
-  external: 'Visiting group',
-};
-
 export const VOLUNTEER_ROLES: VolunteerRole[] = [
   {
     title: 'Library assistant',
+    icon: 'book',
     description:
       'Issue and return books, help people find what they are after, and keep the shelves in order. Full training given.',
   },
   {
     title: 'Coffee Corner',
+    icon: 'coffee',
     description: 'Serve drinks and cake, and give visitors a friendly face to talk to.',
   },
   {
     title: 'Baking',
+    icon: 'cake',
     description: 'Make the cakes that keep the Coffee Corner going — and our reputation intact.',
   },
   {
     title: 'Fundraising & events',
+    icon: 'calendar',
     description:
       'Help plan and run the fayres, quizzes, and race nights that cover a large slice of our costs.',
   },
   {
     title: 'Leaflet delivery',
+    icon: 'mail',
     description: 'Get news of what is on out across the neighbourhood.',
   },
   {
     title: 'Displays',
+    icon: 'sparkles',
     description: 'Put together the seasonal and themed displays that make the library feel alive.',
   },
   {
     title: 'Treasury support',
+    icon: 'pound',
     description: 'Assist the Treasurer with bookkeeping and record-keeping.',
   },
   {
     title: 'Building & housekeeping',
+    icon: 'wrench',
     description:
       'Read the meters, wash the linen, check the equipment, and clean and maintain the children’s toys.',
   },
   {
     title: 'Crafting for sale',
+    icon: 'heart',
     description: 'Make items we can sell on our stalls to raise funds.',
   },
 ];

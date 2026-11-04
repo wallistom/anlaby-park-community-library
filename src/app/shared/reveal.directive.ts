@@ -9,19 +9,10 @@ import {
   signal,
 } from '@angular/core';
 
-/**
- * Fades an element up as it scrolls into view.
- *
- * Elements start hidden only once the observer is confirmed to be running, so
- * content stays visible if IntersectionObserver is unavailable or JavaScript
- * fails part-way. The animation itself is disabled by the reduced-motion rule
- * in styles.css.
- */
 @Directive({
   selector: '[appReveal]',
 })
 export class RevealDirective implements OnInit, OnDestroy {
-  /** Stagger, in milliseconds, applied before the element animates in. */
   readonly appReveal = input<number>(0);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -50,11 +41,11 @@ export class RevealDirective implements OnInit, OnDestroy {
     element.classList.add('reveal-pending');
 
     this.observer = new IntersectionObserver(
-      (entries) => {
+      (entries, observer) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
             this.visible.set(true);
-            this.observer?.disconnect();
+            observer.disconnect();
           }
         }
       },

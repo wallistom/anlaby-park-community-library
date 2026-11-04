@@ -1,9 +1,3 @@
-"""GET /events — published, upcoming occurrences for the public website.
-
-Repeating events are stored once and expanded here, so the website shows real
-dates rather than "every Tuesday" and the trustees only maintain one record.
-"""
-
 from __future__ import annotations
 
 from datetime import date
@@ -15,7 +9,7 @@ from common import db, recurrence, responses
 def handler(_event: dict[str, Any], _context: Any) -> dict[str, Any]:
     try:
         items = db.scan_all(db.table("EVENTS_TABLE"))
-    except Exception:  # noqa: BLE001 - never leak internals to the public
+    except Exception:
         return responses.server_error()
 
     today = date.today()

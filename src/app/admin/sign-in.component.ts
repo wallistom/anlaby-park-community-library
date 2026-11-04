@@ -27,15 +27,12 @@ import { SITE } from '../core/site.data';
           <app-icon name="key" [size]="26" />
         </span>
 
-        <h1 class="mt-6 text-center text-2xl font-semibold">Trustee sign in</h1>
+        <h1 class="mt-6 text-center text-2xl font-bold">Trustee sign in</h1>
         <p class="text-ink-soft mt-2 text-center">
           This area is for {{ site.shortName }} trustees. Sign in with the Google account you gave
           to the Secretary.
         </p>
 
-        <!-- Google renders its own button into this element. Hidden while the
-             account is being checked, and once it has been refused, so the only
-             thing on offer is signing out and trying a different one. -->
         <div
           class="mt-8 flex justify-center"
           [hidden]="refused() || unavailable() || checking()"
@@ -43,8 +40,6 @@ import { SITE } from '../core/site.data';
         ></div>
 
         @if (checking()) {
-          <!-- Verifying the account takes a round trip. Without this the button
-               vanishes and nothing replaces it, which reads as a failure. -->
           <p
             class="text-ink-soft mt-8 flex items-center justify-center gap-3 text-sm"
             aria-live="polite"
@@ -58,8 +53,6 @@ import { SITE } from '../core/site.data';
         }
 
         @if (refused()) {
-          <!-- Naming the account matters: the usual cause is being signed in to
-               a personal Google account in this browser without realising. -->
           <div class="mt-8 alert-danger" role="alert">
             <app-icon name="info" [size]="19" />
             <div class="text-sm">
@@ -80,8 +73,6 @@ import { SITE } from '../core/site.data';
         }
 
         @if (unavailable()) {
-          <!-- The check itself failed, which is not the same as being turned
-               away. Saying "you are not a trustee" here would be wrong. -->
           <div class="mt-8 alert-danger" role="alert">
             <app-icon name="info" [size]="19" />
             <div class="text-sm">
@@ -120,17 +111,14 @@ export class SignInComponent implements AfterViewInit {
   protected readonly site = SITE;
   protected readonly error = signal<string | null>(null);
 
-  /** Signed in, but the API will not have them. */
   protected readonly refused = computed(
     () => this.auth.isSignedIn() && this.auth.accessState() === 'denied',
   );
 
-  /** Signed in, and the API is being asked whether they are a trustee. */
   protected readonly checking = computed(
     () => this.auth.isSignedIn() && this.auth.accessState() === 'checking',
   );
 
-  /** Signed in, but the check could not be completed. */
   protected readonly unavailable = computed(
     () => this.auth.isSignedIn() && this.auth.accessState() === 'unavailable',
   );
@@ -139,7 +127,6 @@ export class SignInComponent implements AfterViewInit {
     this.auth.signOut();
   }
 
-  /** Re-runs the check without making the trustee sign in again. */
   protected retry(): void {
     void this.auth.verifyTrustee(true).then((isTrustee) => {
       if (isTrustee) {
@@ -149,12 +136,6 @@ export class SignInComponent implements AfterViewInit {
   }
 
   constructor() {
-    // Send a verified trustee straight through to their inbox.
-    //
-    // The check has to happen before navigating, not after. Redirecting on
-    // isSignedIn() alone would bounce a non-trustee off the guard and back to
-    // this page, which would redirect again — a loop with no way out but
-    // closing the tab.
     effect(() => {
       if (!this.auth.isSignedIn()) {
         return;

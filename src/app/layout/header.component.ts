@@ -4,12 +4,7 @@ import { filter } from 'rxjs';
 import { IconComponent } from '../shared/icon.component';
 import { SITE } from '../core/site.data';
 
-interface NavItem {
-  label: string;
-  path: string;
-}
-
-const NAV_ITEMS: NavItem[] = [
+const NAV_ITEMS = [
   { label: "What's On", path: '/whats-on' },
   { label: 'Activities', path: '/activities' },
   { label: 'Visit Us', path: '/visit' },
@@ -34,7 +29,6 @@ export class HeaderComponent {
   protected readonly scrolled = signal(false);
 
   constructor() {
-    // Close the drawer on navigation so the menu never lingers over a new page.
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => this.closeMenu());
@@ -62,10 +56,7 @@ export class HeaderComponent {
     this.lockBodyScroll(false);
   }
 
-  /** Stops the page scrolling behind the open mobile drawer. */
   private lockBodyScroll(locked: boolean): void {
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = locked ? 'hidden' : '';
-    }
+    document.body.style.overflow = locked ? 'hidden' : '';
   }
 }

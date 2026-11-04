@@ -6,9 +6,9 @@
 
 <section class="container-page mt-20">
   <div class="grid gap-12 lg:grid-cols-12">
-    <!-- ── Information ─────────────────────────────────────────────────── -->
     <div class="lg:col-span-5">
-      <h2 class="text-2xl font-semibold">What we can offer</h2>
+      <p class="eyebrow">Hiring a room</p>
+      <h2 class="text-3xl font-bold">What we can offer</h2>
       <p class="prose-body mt-4">
         We are a small community building, not a conference centre — and the rates reflect that.
         Groups have been meeting here for years, from chess clubs to children's parties.
@@ -17,9 +17,9 @@
       <ul class="mt-6 flex flex-col gap-2.5">
         @for (item of suitableFor; track item) {
           <li class="text-ink-soft flex items-start gap-3">
-            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
-              <app-icon name="check" [size]="14" />
-            </span>
+            <span class="flex h-[1lh] shrink-0 items-center text-blue-600"
+              ><app-icon name="checkCircle" [size]="20"
+            /></span>
             <span>{{ item }}</span>
           </li>
         }
@@ -29,10 +29,12 @@
            so we do not reproduce figures we cannot verify.
            TODO(content): replace with the real rate card once confirmed. -->
       <div class="border-orange-200 bg-orange-100 mt-8 rounded-2xl border p-6">
-        <h3 class="font-display text-orange-950 flex items-center gap-2 text-lg font-semibold">
-          <span class="text-orange-700"><app-icon name="pound" [size]="20" /></span>
-          Hire charges
-        </h3>
+        <span
+          class="bg-surface/70 text-orange-700 flex h-11 w-11 items-center justify-center rounded-xl"
+        >
+          <app-icon name="pound" [size]="22" />
+        </span>
+        <h3 class="font-sans text-orange-950 mt-4 text-lg font-semibold">Hire charges</h3>
         <p class="text-orange-900 mt-2 leading-relaxed">
           Our current rate card is available on request — send an enquiry below or ring
           <a [href]="'tel:' + site.phoneHref" class="font-semibold underline underline-offset-2">
@@ -45,11 +47,9 @@
         </p>
       </div>
 
-      <div class="border-line mt-6 rounded-2xl border bg-surface p-6">
-        <h3 class="font-display flex items-center gap-2 text-lg font-semibold">
-          <span class="text-blue-700"><app-icon name="info" [size]="20" /></span>
-          Good to know
-        </h3>
+      <div class="card mt-6 p-6">
+        <span class="icon-tile h-11 w-11"><app-icon name="info" [size]="22" /></span>
+        <h3 class="font-sans mt-4 text-lg font-semibold">Good to know</h3>
         <p class="text-ink-soft mt-2 leading-relaxed">
           Bookings are usually outside library opening hours, so the space is yours. The building
           has step-free access and an accessible toilet, and refreshments can often be arranged
@@ -58,7 +58,6 @@
       </div>
     </div>
 
-    <!-- ── Enquiry form ────────────────────────────────────────────────── -->
     <div class="lg:col-span-7">
       <div class="card p-7 sm:p-9">
         @if (state() === 'success') {
@@ -68,7 +67,7 @@
             >
               <app-icon name="check" [size]="32" />
             </span>
-            <h2 class="font-display mt-5 text-2xl font-semibold">Thank you — that's with us</h2>
+            <h2 class="font-display mt-5 text-2xl font-bold">Thank you — that's with us</h2>
             <p class="text-ink-soft mx-auto mt-3 max-w-md text-lg">
               A trustee will be in touch to confirm availability and charges. We are all volunteers,
               so please allow a few days — and do ring if your enquiry is urgent.
@@ -82,7 +81,7 @@
             </a>
           </div>
         } @else {
-          <h2 class="text-2xl font-semibold">Send an enquiry</h2>
+          <h2 class="text-2xl font-bold">Send an enquiry</h2>
           <p class="text-ink-soft mt-2">
             Tell us roughly what you need and we will come back to you with availability and a
             price. Nothing is committed at this stage.

@@ -1,5 +1,3 @@
-"""Tests for expanding repeating events into dated occurrences."""
-
 from __future__ import annotations
 
 import sys
@@ -9,16 +7,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from common import recurrence  # noqa: E402
+from common import recurrence
 
-TODAY = date(2026, 8, 1)  # a Saturday
+TODAY = date(2026, 8, 1)
 
 
 def event(**overrides):
     base = {
         "eventId": "e1",
         "title": "Baby Bounce",
-        "date": "2026-08-04",  # Tuesday
+        "date": "2026-08-04",
         "description": "Rhymes and songs.",
         "location": "The Greenway",
         "published": True,
@@ -79,7 +77,6 @@ class WeeklyTests(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
 
     def test_series_started_in_the_past_resumes_from_today(self) -> None:
-        # A club running since June should show its next dates, not its history.
         result = recurrence.expand(
             event(date="2026-06-02", recurrence="weekly", repeatUntil="2026-08-25"),
             TODAY,
@@ -125,7 +122,6 @@ class MonthlyTests(unittest.TestCase):
         )
 
     def test_clamps_to_short_months(self) -> None:
-        # September has 30 days, so the 31st has to land on the 30th.
         result = recurrence.expand(
             event(date="2026-08-31", recurrence="monthly", repeatUntil="2026-09-30"),
             TODAY,
@@ -133,7 +129,6 @@ class MonthlyTests(unittest.TestCase):
         self.assertEqual(dates(result), ["2026-08-31", "2026-09-30"])
 
     def test_horizon_wins_over_a_later_repeat_until(self) -> None:
-        # The horizon falls on 29 November, so a 30 November occurrence is out.
         result = recurrence.expand(
             event(date="2026-08-31", recurrence="monthly", repeatUntil="2026-11-30"),
             TODAY,
@@ -141,7 +136,6 @@ class MonthlyTests(unittest.TestCase):
         self.assertEqual(dates(result), ["2026-08-31", "2026-09-30", "2026-10-31"])
 
     def test_clamping_does_not_drift(self) -> None:
-        # After clamping to the 30th in September, October must return to 31.
         result = recurrence.expand(
             event(date="2026-08-31", recurrence="monthly", repeatUntil="2026-10-31"),
             TODAY,

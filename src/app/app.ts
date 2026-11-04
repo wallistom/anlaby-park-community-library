@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
 import {
   NavigationCancel,
   NavigationEnd,
@@ -8,18 +9,6 @@ import {
   RouterOutlet,
 } from '@angular/router';
 
-/**
- * Root shell, plus a thin progress bar across the top during navigation.
- *
- * Angular renders nothing while an async `canActivate` resolves, and the admin
- * guard asks the API whether the account is a trustee. On a cold Lambda, or a
- * poor connection, that left a completely blank page for a second or more with
- * nothing to say it was working — which reads as a broken link rather than a
- * wait.
- *
- * Deliberately not shown for quick navigations: appearing and vanishing inside
- * 150ms is a flicker, and a flicker is worse than nothing.
- */
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +29,8 @@ export class App {
   private timer?: ReturnType<typeof setTimeout>;
 
   constructor() {
+    inject(ViewportScroller).setOffset([0, 96]);
+
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         clearTimeout(this.timer);

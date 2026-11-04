@@ -23,8 +23,6 @@ export class VolunteerComponent {
   protected readonly state = signal<FormState>('idle');
   protected readonly submitted = signal(false);
 
-  /** Roles the applicant has ticked. Held outside the form group because it is
-      a checkbox set rather than a single control. */
   protected readonly selectedRoles = signal<string[]>([]);
 
   protected readonly form = this.fb.nonNullable.group({

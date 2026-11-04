@@ -1,9 +1,3 @@
-"""Tests for the request validation that guards the public endpoints.
-
-Pure stdlib so they run without installing anything:
-    python3 -m unittest discover -s backend/tests -t backend
-"""
-
 from __future__ import annotations
 
 import json
@@ -13,17 +7,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from common import validation  # noqa: E402
-from common.validation import ValidationError  # noqa: E402
-
-
-def body(payload: dict) -> dict:
-    return {"body": json.dumps(payload)}
+from common import validation
+from common.validation import ValidationError
 
 
 class ParseBodyTests(unittest.TestCase):
     def test_parses_json_object(self) -> None:
-        self.assertEqual(validation.parse_body(body({"a": 1})), {"a": 1})
+        self.assertEqual(validation.parse_body({"body": json.dumps({"a": 1})}), {"a": 1})
 
     def test_rejects_missing_body(self) -> None:
         with self.assertRaises(ValidationError):
@@ -113,7 +103,6 @@ class IntTests(unittest.TestCase):
                     validation.require_int({"n": value}, "n", minimum=1, maximum=200)
 
     def test_rejects_booleans(self) -> None:
-        # bool is a subclass of int in Python, so this needs guarding explicitly.
         with self.assertRaises(ValidationError):
             validation.require_int({"n": True}, "n", minimum=1, maximum=200)
 

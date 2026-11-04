@@ -5,7 +5,7 @@ import { PageHeroComponent } from '../shared/page-hero.component';
 import { IconComponent } from '../shared/icon.component';
 import { ApiService } from '../core/api.service';
 import { OpeningHoursService } from '../core/opening-hours.service';
-import { ADDRESS_ONE_LINE, SITE } from '../core/site.data';
+import { MAP_LINKS, SITE } from '../core/site.data';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -21,8 +21,8 @@ export class ContactComponent {
   private readonly fb = inject(FormBuilder);
 
   protected readonly site = SITE;
-  protected readonly addressOneLine = ADDRESS_ONE_LINE;
-  protected readonly googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS_ONE_LINE)}`;
+  protected readonly googleMapsUrl = MAP_LINKS.google;
+  protected readonly emailParts = SITE.email.split('@');
 
   protected readonly state = signal<FormState>('idle');
   protected readonly submitted = signal(false);

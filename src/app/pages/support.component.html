@@ -4,19 +4,13 @@
   intro="We receive no core funding for the building. Every penny of that comes from donations, room hire, and the fayres, quizzes, and race nights our volunteers put on."
 />
 
-<!-- ── The number ────────────────────────────────────────────────────────── -->
 <section class="container-page mt-20">
   <div class="grid items-center gap-10 lg:grid-cols-12">
     <div class="min-w-0 lg:col-span-5">
-      <!-- Padding and figure size step down on narrow screens: at text-6xl
-           inside p-10 this card's min-content was 305px, wider than a 320px
-           phone can show. -->
-      <div class="bg-inverse rounded-2xl p-7 text-center sm:p-10">
+      <div class="band-inverse shadow-raised rounded-2xl p-7 text-center sm:p-10">
         <div>
           <p class="text-ink-on-dark-muted text-sm font-medium">Our annual running costs</p>
-          <p
-            class="font-display text-orange-300 mt-3 text-5xl font-semibold sm:text-6xl md:text-7xl"
-          >
+          <p class="font-display text-orange-300 mt-3 text-5xl font-bold sm:text-6xl md:text-7xl">
             £{{ annualCost }}
           </p>
           <p class="text-ink-on-dark mt-3 text-sm">
@@ -27,23 +21,21 @@
     </div>
 
     <div class="min-w-0 lg:col-span-7">
-      <h2 class="text-3xl font-semibold">Where the money goes</h2>
+      <p class="eyebrow">Running costs</p>
+      <h2 class="text-3xl font-bold sm:text-4xl">Where the money goes</h2>
       <p class="prose-body mt-4">
         Nobody here is paid — not the trustees, not the volunteers. The money covers the building
         and the service, nothing else.
       </p>
-      <ul class="mt-6 flex flex-col gap-3">
-        @for (cost of costs; track cost.label; let i = $index) {
-          <li
-            class="border-line flex items-start gap-3 rounded-xl border bg-surface px-5 py-4"
-            [appReveal]="i * 50"
-          >
-            <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
-              <app-icon name="check" [size]="14" />
-            </span>
+      <ul class="card divide-line mt-8 divide-y">
+        @for (cost of costs; track cost.label) {
+          <li class="flex items-start gap-3 px-5 py-4 sm:px-6">
+            <span class="flex h-[1lh] shrink-0 items-center text-blue-600"
+              ><app-icon name="checkCircle" [size]="20"
+            /></span>
             <span>
               <span class="text-ink block font-semibold">{{ cost.label }}</span>
-              <span class="text-ink-soft text-sm">{{ cost.detail }}</span>
+              <span class="text-ink-soft mt-0.5 block">{{ cost.detail }}</span>
             </span>
           </li>
         }
@@ -52,12 +44,11 @@
   </div>
 </section>
 
-<!-- ── Ways to give ──────────────────────────────────────────────────────── -->
-<section class="bg-sunken mt-20 section">
+<section class="band-sunken mt-20 section">
   <div class="container-page">
     <div class="max-w-2xl">
       <p class="eyebrow">How to help</p>
-      <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">Ways to give</h2>
+      <h2 class="text-3xl font-bold sm:text-4xl">Ways to give</h2>
       <p class="prose-body mt-4">
         Whatever suits you. Regular gifts help us most, but a one-off donation or a handful of
         change in the tin is genuinely welcome.
@@ -86,7 +77,7 @@
             >
               <app-icon [name]="option.icon" [size]="24" />
             </span>
-            <h3 class="font-display mt-4 text-xl font-semibold">{{ option.title }}</h3>
+            <h3 class="font-sans mt-4 text-xl font-semibold">{{ option.title }}</h3>
             <p class="text-ink-soft mt-2 flex-1 leading-relaxed">{{ option.description }}</p>
             <p class="border-line text-ink-soft mt-5 border-t pt-4 text-sm font-medium">
               {{ option.action }}
@@ -96,20 +87,22 @@
       }
     </ul>
 
-    <div class="border-line mt-8 rounded-2xl border bg-surface p-7">
-      <h3 class="font-display flex items-center gap-2 text-lg font-semibold">
-        <span class="text-blue-700"><app-icon name="info" [size]="20" /></span>
-        Setting up a standing order
-      </h3>
-      <p class="text-ink-soft mt-3 leading-relaxed">
-        Our standing order form comes in two parts: page one goes to your own bank to set the
-        payment up, and page two comes back to our Treasurer so we know to expect it. Ask at the
-        counter, or email
-        <a [href]="'mailto:' + site.email" class="text-blue-700 font-semibold hover:underline">
-          <span class="break-all">{{ site.email }}</span>
-        </a>
-        and we will send one over.
-      </p>
+    <div class="card mt-8 flex flex-col gap-5 p-7 sm:flex-row sm:gap-6">
+      <span class="icon-tile"><app-icon name="info" [size]="24" /></span>
+      <div class="min-w-0">
+        <h3 class="font-sans text-lg font-semibold">Setting up a standing order</h3>
+        <p class="text-ink-soft mt-3 leading-relaxed">
+          Our standing order form comes in two parts: page one goes to your own bank to set the
+          payment up, and page two comes back to our Treasurer so we know to expect it. Ask at the
+          counter, or email
+          <a [href]="'mailto:' + site.email" class="text-blue-700 font-semibold hover:underline">
+            <span class="[overflow-wrap:anywhere]"
+              >{{ site.email.split('@')[0] }}@<wbr />{{ site.email.split('@')[1] }}</span
+            >
+          </a>
+          and we will send one over.
+        </p>
+      </div>
     </div>
   </div>
 </section>

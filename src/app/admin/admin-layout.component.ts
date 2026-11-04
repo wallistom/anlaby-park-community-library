@@ -17,7 +17,7 @@ import { SITE } from '../core/site.data';
             <span
               class="bg-orange-500 text-navy-950 flex h-9 w-9 items-center justify-center rounded-lg"
             >
-              <app-icon name="book" [size]="18" />
+              <app-icon name="bookOpen" [size]="18" />
             </span>
             <span class="leading-tight">
               <span class="font-display block text-sm font-semibold">{{ site.shortName }}</span>
@@ -27,9 +27,6 @@ import { SITE } from '../core/site.data';
             </span>
           </a>
 
-          <!-- Gated on being a verified trustee, not merely signed in: a
-               refused account would otherwise see the full admin navigation
-               and only find out it was not welcome by clicking it. -->
           @if (isTrustee()) {
             <nav class="order-3 flex w-full gap-1 sm:order-none sm:w-auto" aria-label="Admin">
               @for (item of navItems; track item.path) {
@@ -81,7 +78,6 @@ export class AdminLayoutComponent {
 
   protected readonly site = SITE;
 
-  /** Signed in *and* on the allowlist, as confirmed by the API. */
   protected readonly isTrustee = computed(
     () => this.auth.isSignedIn() && this.auth.accessState() === 'allowed',
   );

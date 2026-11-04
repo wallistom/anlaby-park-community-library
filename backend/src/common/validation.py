@@ -1,9 +1,3 @@
-"""Request parsing and validation.
-
-Deliberately hand-rolled rather than pulling in a validation library: the rules
-are few and simple, and it keeps the deployment package small.
-"""
-
 from __future__ import annotations
 
 import json
@@ -19,11 +13,10 @@ VALID_RECURRENCES = {"none", "daily", "weekly", "fortnightly", "monthly"}
 
 
 class ValidationError(Exception):
-    """Raised when a request body fails validation."""
+    pass
 
 
 def parse_body(event: dict[str, Any]) -> dict[str, Any]:
-    """Reads the JSON body from a proxy event."""
     raw = event.get("body")
     if not raw:
         raise ValidationError("A request body is required.")
@@ -136,7 +129,6 @@ def require_status(body: dict[str, Any]) -> str:
 
 
 def require_recurrence(body: dict[str, Any]) -> str:
-    """Reads the repeat frequency, defaulting to a one-off event."""
     value = body.get("recurrence", "none")
     if not isinstance(value, str) or value not in VALID_RECURRENCES:
         raise ValidationError(
@@ -146,13 +138,6 @@ def require_recurrence(body: dict[str, Any]) -> str:
 
 
 def repeat_until(body: dict[str, Any], recurrence: str, start_date: str) -> str | None:
-    """
-    Validates the end date of a repeating event.
-
-    A repeat with no end would generate occurrences forever, so an end date is
-    required whenever the event actually repeats — and it has to be on or after
-    the first occurrence.
-    """
     if recurrence == "none":
         return None
 

@@ -1,51 +1,304 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-export type IconName =
-  | 'book'
-  | 'headphones'
-  | 'search'
-  | 'monitor'
-  | 'printer'
-  | 'coffee'
-  | 'school'
-  | 'heart'
-  | 'accessible'
-  | 'menu'
-  | 'close'
-  | 'arrowRight'
-  | 'arrowLeft'
-  | 'phone'
-  | 'mail'
-  | 'mapPin'
-  | 'clock'
-  | 'calendar'
-  | 'users'
-  | 'check'
-  | 'externalLink'
-  | 'pound'
-  | 'facebook'
-  | 'x'
-  | 'info'
-  | 'logOut'
-  | 'edit'
-  | 'trash'
-  | 'plus'
-  | 'inbox'
-  | 'key'
-  | 'sparkles'
-  | 'quote';
+export type IconName = keyof typeof ICONS;
 
-/**
- * Inline SVG icon set.
- *
- * Drawn on a 24×24 grid with a 1.75 stroke so the icons sit comfortably beside
- * Inter at body size, and they inherit `currentColor`.
- *
- * The shapes live in the template rather than in a string map so that Angular
- * compiles them as real SVG nodes. Binding markup through `[innerHTML]` would
- * be stripped by the sanitiser, and working around that would mean an
- * unnecessary `bypassSecurityTrust*` call.
- */
+interface IconDef {
+  /** Soft tinted shapes that sit behind the outline. */
+  duo?: string[];
+  /** Outlines, drawn with the icon's stroke. */
+  line: string[];
+  /** Small solid details such as dots. */
+  solid?: string[];
+}
+
+const circle = (cx: number, cy: number, r: number) =>
+  `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
+
+const ICONS = {
+  book: {
+    duo: ['M7 3h12v14H7a2 2 0 0 0-2 2V5a2 2 0 0 1 2-2Z'],
+    line: ['M5 19V5a2 2 0 0 1 2-2h12v14H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12', 'M9.5 7.5h5'],
+  },
+  books: {
+    duo: ['M4 4h4v16H4Z', 'M13.4 5.6l3.9-1 3.9 15.4-3.9 1Z'],
+    line: [
+      'M4 4h4v16H4Z',
+      'M8 7h4.5v13H8Z',
+      'M13.4 5.6l3.9-1 3.9 15.4-3.9 1Z',
+      'M4 8h4M8 16.5h4.5',
+    ],
+  },
+  bookOpen: {
+    duo: [
+      'M12 6.5C10.5 5 8.5 4.5 3 4.5V18c5.5 0 7.5.5 9 2 1.5-1.5 3.5-2 9-2V4.5c-5.5 0-7.5.5-9 2Z',
+    ],
+    line: [
+      'M12 6.5C10.5 5 8.5 4.5 3 4.5V18c5.5 0 7.5.5 9 2',
+      'M12 6.5C13.5 5 15.5 4.5 21 4.5V18c-5.5 0-7.5.5-9 2',
+      'M12 6.5V20',
+    ],
+  },
+  headphones: {
+    duo: [
+      'M4 15a2 2 0 0 1 2-2h1.5v7H6a2 2 0 0 1-2-2Z',
+      'M20 15a2 2 0 0 0-2-2h-1.5v7H18a2 2 0 0 0 2-2Z',
+    ],
+    line: [
+      'M4 17v-5a8 8 0 0 1 16 0v5',
+      'M4 15a2 2 0 0 1 2-2h1.5v7H6a2 2 0 0 1-2-2Z',
+      'M20 15a2 2 0 0 0-2-2h-1.5v7H18a2 2 0 0 0 2-2Z',
+    ],
+  },
+  search: {
+    duo: [circle(10.5, 10.5, 6.5)],
+    line: [circle(10.5, 10.5, 6.5), 'm15.5 15.5 5 5'],
+  },
+  monitor: {
+    duo: ['M4 4.5h16a1 1 0 0 1 1 1V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1Z'],
+    line: [
+      'M4 4.5h16a1 1 0 0 1 1 1V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1Z',
+      'M12 17v3.5M8.5 20.5h7',
+    ],
+  },
+  printer: {
+    duo: ['M5 8.5h14a2 2 0 0 1 2 2V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5.5a2 2 0 0 1 2-2Z'],
+    line: [
+      'M6.5 17H4a1 1 0 0 1-1-1v-5.5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2V16a1 1 0 0 1-1 1h-2.5',
+      'M6.5 8.5V3.5h11v5',
+      'M6.5 14h11v6.5h-11Z',
+    ],
+    solid: [circle(17.25, 11.5, 1)],
+  },
+  coffee: {
+    duo: ['M4 8.5h12V14a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z'],
+    line: [
+      'M4 8.5h12V14a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z',
+      'M16 10h1.5a2.5 2.5 0 0 1 0 5H16',
+      'M8 2.5v3M12 2.5v3',
+      'M3 21.5h14',
+    ],
+  },
+  school: {
+    duo: ['M2 9.5 12 5l10 4.5-10 4.5Z'],
+    line: [
+      'M2 9.5 12 5l10 4.5-10 4.5Z',
+      'M6 11.3v4.4c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.4',
+      'M22 9.5v5.5',
+    ],
+  },
+  heart: {
+    duo: [
+      'M12 20s-7.5-4.6-9-9.3C2 7.3 4.2 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.1 0 5.3 2.8 4.3 6.2-1.5 4.7-9 9.3-9 9.3Z',
+    ],
+    line: [
+      'M12 20s-7.5-4.6-9-9.3C2 7.3 4.2 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.1 0 5.3 2.8 4.3 6.2-1.5 4.7-9 9.3-9 9.3Z',
+    ],
+  },
+  accessible: {
+    duo: [circle(9.5, 15.5, 5)],
+    line: ['M14.9 17.5A5 5 0 1 1 8 10.8', 'M11 7.5V14h5.5l2 5.5H20', 'M11 10.5h5'],
+    solid: [circle(11, 4, 1.9)],
+  },
+  menu: { line: ['M4 6.5h16M4 12h16M4 17.5h16'] },
+  close: { line: ['M6 6l12 12M18 6 6 18'] },
+  arrowRight: { line: ['M4.5 12h15M13.5 6l6 6-6 6'] },
+  arrowLeft: { line: ['M19.5 12h-15M10.5 6l-6 6 6 6'] },
+  phone: {
+    duo: [
+      'M8.4 3.6 6 4.3C4.7 4.7 3.9 6 4.1 7.3c.9 6.3 5.7 11.1 12 12 1.3.2 2.6-.6 3-1.9l.7-2.4a1 1 0 0 0-.6-1.2l-3.3-1.4a1 1 0 0 0-1.1.2l-1.5 1.6a11 11 0 0 1-5.4-5.4l1.6-1.5a1 1 0 0 0 .2-1.1L8.6 3.9',
+    ],
+    line: [
+      'M8.4 3.6 6 4.3C4.7 4.7 3.9 6 4.1 7.3c.9 6.3 5.7 11.1 12 12 1.3.2 2.6-.6 3-1.9l.7-2.4a1 1 0 0 0-.6-1.2l-3.3-1.4a1 1 0 0 0-1.1.2l-1.5 1.6a11 11 0 0 1-5.4-5.4l1.6-1.5a1 1 0 0 0 .2-1.1L9.6 4.2a1 1 0 0 0-1.2-.6Z',
+    ],
+  },
+  mail: {
+    duo: ['M3.5 5.5h17L12 12.5Z'],
+    line: [
+      'M4 5.5h16a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1Z',
+      'm3.5 6 8.5 6.5L20.5 6',
+    ],
+  },
+  mapPin: {
+    duo: ['M12 21s-7-5.6-7-11.5a7 7 0 0 1 14 0C19 15.4 12 21 12 21Z'],
+    line: ['M12 21s-7-5.6-7-11.5a7 7 0 0 1 14 0C19 15.4 12 21 12 21Z', circle(12, 9.5, 2.5)],
+  },
+  clock: {
+    duo: [circle(12, 12, 9)],
+    line: [circle(12, 12, 9), 'M12 7.5V12l3 2'],
+  },
+  calendar: {
+    duo: ['M4.5 5h15a.5.5 0 0 1 .5.5V9.5H4V5.5a.5.5 0 0 1 .5-.5Z'],
+    line: [
+      'M4.5 5h15a.5.5 0 0 1 .5.5v14a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5v-14a.5.5 0 0 1 .5-.5Z',
+      'M8 3v4M16 3v4M4 9.5h16',
+    ],
+    solid: [
+      circle(8.5, 13.5, 1),
+      circle(12, 13.5, 1),
+      circle(15.5, 13.5, 1),
+      circle(8.5, 16.75, 1),
+    ],
+  },
+  check: { line: ['m5 12.5 4.5 4.5L19 7.5'] },
+  checkCircle: {
+    duo: [circle(12, 12, 9)],
+    line: [circle(12, 12, 9), 'm8.25 12.25 2.5 2.5 5-5'],
+  },
+  externalLink: {
+    line: [
+      'M14 4h6v6M20 4l-8.5 8.5',
+      'M18 13.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5.5',
+    ],
+  },
+  pound: {
+    duo: [circle(12, 12, 9)],
+    line: [
+      circle(12, 12, 9),
+      'M15 16.5H9c1-.8 1.5-2 1.5-3.5V10a2.25 2.25 0 0 1 4.25-1.1M9 12.75h4.5',
+    ],
+  },
+  facebook: {
+    line: [
+      'M14 21v-7.5h2.6l.4-3H14V8.6c0-.9.3-1.6 1.6-1.6H17V4.3c-.4-.1-1.3-.2-2.5-.2-2.5 0-4.2 1.5-4.2 4.3v2.1H7.5v3h2.8V21',
+    ],
+  },
+  x: { line: ['M4.5 4h4L19.5 20h-4Z', 'M19.5 4 13.4 11M10.6 13 4.5 20'] },
+  info: {
+    duo: [circle(12, 12, 9)],
+    line: [circle(12, 12, 9), 'M12 11v5.5'],
+    solid: [circle(12, 7.75, 1.1)],
+  },
+  logOut: {
+    line: ['M9 20.5H5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1h4', 'M16 16.5 20.5 12 16 7.5M20.5 12H9'],
+  },
+  edit: {
+    duo: ['M15.5 4.5 19.5 8.5 9 19H5v-4Z'],
+    line: ['M15.5 4.5 19.5 8.5 9 19H5v-4Z', 'm13 7 4 4'],
+  },
+  trash: {
+    duo: ['M6 6.5h12l-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1Z'],
+    line: [
+      'M4 6.5h16',
+      'M9.5 6.5v-2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2',
+      'M6 6.5l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13',
+      'M10 10.5v6M14 10.5v6',
+    ],
+  },
+  plus: { line: ['M12 5v14M5 12h14'] },
+  inbox: {
+    duo: ['M3 13.5h5l1.5 2.5h5l1.5-2.5h5V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z'],
+    line: [
+      'M3 13.5V19a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-5.5L18.2 5.6a1 1 0 0 0-.9-.6H6.7a1 1 0 0 0-.9.6Z',
+      'M3 13.5h5l1.5 2.5h5l1.5-2.5h5',
+    ],
+  },
+  key: {
+    duo: [circle(15, 9, 5)],
+    line: [circle(15, 9, 5), 'M11.5 12.5 4 20v-3h3v-3h3l1.5-1.5'],
+    solid: [circle(16.5, 7.5, 1.1)],
+  },
+  sparkles: {
+    duo: [
+      'M10 3.5l1.6 4.2a2 2 0 0 0 1.1 1.1l4.3 1.7-4.3 1.7a2 2 0 0 0-1.1 1.1L10 17.5l-1.6-4.2a2 2 0 0 0-1.1-1.1L3 10.5l4.3-1.7a2 2 0 0 0 1.1-1.1Z',
+    ],
+    line: [
+      'M10 3.5l1.6 4.2a2 2 0 0 0 1.1 1.1l4.3 1.7-4.3 1.7a2 2 0 0 0-1.1 1.1L10 17.5l-1.6-4.2a2 2 0 0 0-1.1-1.1L3 10.5l4.3-1.7a2 2 0 0 0 1.1-1.1Z',
+      'M18 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7Z',
+      'M18.5 3v3M17 4.5h3',
+    ],
+  },
+  quote: {
+    duo: [
+      'M10 11H6.5a.5.5 0 0 1-.5-.5V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1Z',
+      'M18 11h-3.5a.5.5 0 0 1-.5-.5V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1Z',
+    ],
+    line: [
+      'M10 11H6.5a.5.5 0 0 1-.5-.5V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5c0 3-1.5 5-4.5 6',
+      'M18 11h-3.5a.5.5 0 0 1-.5-.5V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5c0 3-1.5 5-4.5 6',
+    ],
+  },
+  baby: {
+    duo: [circle(12, 12.5, 8.5)],
+    line: [circle(12, 12.5, 8.5), 'M9.5 15.5c1.4 1.2 3.6 1.2 5 0', 'M12 4c-1.4 1-1.1 3 .6 3'],
+    solid: [circle(9, 12, 1), circle(15, 12, 1)],
+  },
+  palette: {
+    duo: [
+      'M12 3a9 9 0 0 0 0 18c1 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2a1.7 1.7 0 0 1 1.7-1.7h2A5.6 5.6 0 0 0 21 11.6C21 6.8 17 3 12 3Z',
+    ],
+    line: [
+      'M12 3a9 9 0 0 0 0 18c1 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2a1.7 1.7 0 0 1 1.7-1.7h2A5.6 5.6 0 0 0 21 11.6C21 6.8 17 3 12 3Z',
+    ],
+    solid: [
+      circle(7.5, 11.5, 1.2),
+      circle(9.75, 7.5, 1.2),
+      circle(14.5, 7.25, 1.2),
+      circle(17, 11, 1.2),
+    ],
+  },
+  scissors: {
+    duo: [circle(6.25, 6.25, 2.75), circle(6.25, 17.75, 2.75)],
+    line: [circle(6.25, 6.25, 2.75), circle(6.25, 17.75, 2.75), 'M8.4 7.9 20 18M8.4 16.1 20 6'],
+  },
+  shapes: {
+    duo: ['M8 3.5l4 7H4Z', 'M13.5 13.5h7v7h-7Z', circle(7.5, 17, 3.5), circle(17, 7, 3.5)],
+    line: ['M8 3.5l4 7H4Z', 'M13.5 13.5h7v7h-7Z', circle(7.5, 17, 3.5), circle(17, 7, 3.5)],
+  },
+  chat: {
+    duo: [
+      'M12 4c4.7 0 8.5 3.1 8.5 7S16.7 18 12 18c-1 0-2-.1-2.9-.4L4.5 20l1.3-3.8C4.4 14.9 3.5 13 3.5 11c0-3.9 3.8-7 8.5-7Z',
+    ],
+    line: [
+      'M12 4c4.7 0 8.5 3.1 8.5 7S16.7 18 12 18c-1 0-2-.1-2.9-.4L4.5 20l1.3-3.8C4.4 14.9 3.5 13 3.5 11c0-3.9 3.8-7 8.5-7Z',
+    ],
+    solid: [circle(8.5, 11, 1), circle(12, 11, 1), circle(15.5, 11, 1)],
+  },
+  spade: {
+    duo: [
+      'M12 3.5c3 3.4 7.5 5.7 7.5 9.5a3.8 3.8 0 0 1-6.5 2.7c.3 1.9 1 3.3 2 4.3H9c1-1 1.7-2.4 2-4.3A3.8 3.8 0 0 1 4.5 13C4.5 9.2 9 6.9 12 3.5Z',
+    ],
+    line: [
+      'M12 3.5c3 3.4 7.5 5.7 7.5 9.5a3.8 3.8 0 0 1-6.5 2.7c.3 1.9 1 3.3 2 4.3H9c1-1 1.7-2.4 2-4.3A3.8 3.8 0 0 1 4.5 13C4.5 9.2 9 6.9 12 3.5Z',
+    ],
+  },
+  crown: {
+    duo: ['M3.5 8 8 12l4-6.5 4 6.5 4.5-4-1.8 10H5.3Z'],
+    line: ['M3.5 8 8 12l4-6.5 4 6.5 4.5-4-1.8 10H5.3Z', 'M5.5 21h13'],
+  },
+  mic: {
+    duo: ['M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z'],
+    line: [
+      'M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z',
+      'M18.5 11a6.5 6.5 0 0 1-13 0M12 17.5V21M9 21h6',
+    ],
+  },
+  cake: {
+    duo: ['M4 12.5h16a1 1 0 0 1 1 1V20H3v-6.5a1 1 0 0 1 1-1Z'],
+    line: [
+      'M4 12.5h16a1 1 0 0 1 1 1V20H3v-6.5a1 1 0 0 1 1-1Z',
+      'M3 16c1.5 0 2-1.3 3-1.3s1.5 1.3 3 1.3 2-1.3 3-1.3 1.5 1.3 3 1.3 2-1.3 3-1.3 1.5 1.3 3 1.3',
+      'M12 12.5V9M2 20h20',
+    ],
+    solid: ['M12 7.6c-1.1-.9-1.2-2.2 0-3.6 1.2 1.4 1.1 2.7 0 3.6Z'],
+  },
+  wrench: {
+    duo: [
+      'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a6 6 0 0 1-7.9 7.9l-6.4 6.4a2.1 2.1 0 0 1-3-3l6.4-6.4a6 6 0 0 1 7.9-7.9Z',
+    ],
+    line: [
+      'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a6 6 0 0 1-7.9 7.9l-6.4 6.4a2.1 2.1 0 0 1-3-3l6.4-6.4a6 6 0 0 1 7.9-7.9Z',
+    ],
+  },
+  users: {
+    duo: [circle(9, 8, 3.5), 'M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5Z'],
+    line: [
+      circle(9, 8, 3.5),
+      'M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5',
+      'M15.5 4.6a3.5 3.5 0 0 1 0 6.8M17.5 14.7c2 .7 3.5 2.6 3.5 5.3',
+    ],
+  },
+} satisfies Record<string, IconDef>;
+
 @Component({
   selector: 'app-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,143 +315,14 @@ export type IconName =
       aria-hidden="true"
       focusable="false"
     >
-      @switch (name()) {
-        @case ('book') {
-          <svg:path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <svg:path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-        }
-        @case ('headphones') {
-          <svg:path d="M3 14h3v7H4a1 1 0 0 1-1-1v-6zm15 0h3v6a1 1 0 0 1-1 1h-2v-7z" />
-          <svg:path d="M3 14a9 9 0 0 1 18 0" />
-        }
-        @case ('search') {
-          <svg:circle cx="11" cy="11" r="7" />
-          <svg:path d="m20 20-3.5-3.5" />
-        }
-        @case ('monitor') {
-          <svg:rect x="2" y="3" width="20" height="14" rx="2" />
-          <svg:path d="M8 21h8m-4-4v4" />
-        }
-        @case ('printer') {
-          <svg:path
-            d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
-          />
-          <svg:rect x="6" y="14" width="12" height="8" rx="1" />
-        }
-        @case ('coffee') {
-          <svg:path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-          <svg:path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z" />
-          <svg:path d="M6 2v3M10 2v3M14 2v3" />
-        }
-        @case ('school') {
-          <svg:path d="m12 3 10 5-10 5L2 8l10-5z" />
-          <svg:path d="M6 10.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-5.5" />
-        }
-        @case ('heart') {
-          <svg:path
-            d="M20.8 5.6a5.2 5.2 0 0 0-7.4 0L12 7l-1.4-1.4a5.2 5.2 0 1 0-7.4 7.4L12 21.5l8.8-8.5a5.2 5.2 0 0 0 0-7.4z"
-          />
-        }
-        @case ('accessible') {
-          <svg:circle cx="12" cy="4.5" r="2" />
-          <svg:path d="M12 8v6m0 0h4m-4 0-2.5 7M12 8 7.5 9.5M12 8l4.5 1.5" />
-        }
-        @case ('menu') {
-          <svg:path d="M3 6h18M3 12h18M3 18h18" />
-        }
-        @case ('close') {
-          <svg:path d="M18 6 6 18M6 6l12 12" />
-        }
-        @case ('arrowRight') {
-          <svg:path d="M5 12h14m-6-7 7 7-7 7" />
-        }
-        @case ('arrowLeft') {
-          <svg:path d="M19 12H5m6 7-7-7 7-7" />
-        }
-        @case ('phone') {
-          <svg:path
-            d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"
-          />
-        }
-        @case ('mail') {
-          <svg:rect x="2" y="4" width="20" height="16" rx="2" />
-          <svg:path d="m2 7 10 6 10-6" />
-        }
-        @case ('mapPin') {
-          <svg:path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
-          <svg:circle cx="12" cy="10" r="3" />
-        }
-        @case ('clock') {
-          <svg:circle cx="12" cy="12" r="9" />
-          <svg:path d="M12 7v5l3.5 2" />
-        }
-        @case ('calendar') {
-          <svg:rect x="3" y="5" width="18" height="16" rx="2" />
-          <svg:path d="M3 10h18M8 3v4M16 3v4" />
-        }
-        @case ('users') {
-          <svg:path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-          <svg:circle cx="9" cy="7" r="4" />
-          <svg:path d="M22 20v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" />
-        }
-        @case ('check') {
-          <svg:path d="m20 6-11 11-5-5" />
-        }
-        @case ('externalLink') {
-          <svg:path d="M14 3h7v7" />
-          <svg:path d="M10 14 21 3" />
-          <svg:path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" />
-        }
-        @case ('pound') {
-          <svg:path d="M16 5.5A3.5 3.5 0 0 0 9 6v5.5m-3 0h7M6 19h12M6 19c2-1.5 3-3 3-5.5" />
-        }
-        @case ('facebook') {
-          <svg:path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-        }
-        @case ('x') {
-          <svg:path d="M3 3h4.5l5 6.8L18 3h3l-7.1 8.6L21.5 21H17l-5.3-7.2L5.8 21H3l7.5-9L3 3z" />
-        }
-        @case ('info') {
-          <svg:circle cx="12" cy="12" r="9" />
-          <svg:path d="M12 11v5M12 8h.01" />
-        }
-        @case ('logOut') {
-          <svg:path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-          <svg:path d="m16 17 5-5-5-5M21 12H9" />
-        }
-        @case ('edit') {
-          <svg:path d="M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-6" />
-          <svg:path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-        }
-        @case ('trash') {
-          <svg:path
-            d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
-          />
-        }
-        @case ('plus') {
-          <svg:path d="M12 5v14M5 12h14" />
-        }
-        @case ('inbox') {
-          <svg:path d="M22 12h-6l-2 3h-4l-2-3H2" />
-          <svg:path
-            d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1z"
-          />
-        }
-        @case ('key') {
-          <svg:circle cx="7.5" cy="15.5" r="4.5" />
-          <svg:path d="m10.7 12.3 8.3-8.3M17 6l2.5 2.5M14.5 8.5 17 11" />
-        }
-        @case ('sparkles') {
-          <svg:path
-            d="M12 3v4M12 17v4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M3 12h4M17 12h4M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"
-          />
-        }
-        @case ('quote') {
-          <svg:path d="M9 11H5.5A1.5 1.5 0 0 1 4 9.5V8a4 4 0 0 1 4-4" />
-          <svg:path d="M9 11v3a4 4 0 0 1-4 4" />
-          <svg:path d="M20 11h-3.5A1.5 1.5 0 0 1 15 9.5V8a4 4 0 0 1 4-4" />
-          <svg:path d="M20 11v3a4 4 0 0 1-4 4" />
-        }
+      @for (d of def().duo ?? []; track $index) {
+        <svg:path [attr.d]="d" fill="currentColor" stroke="none" opacity="0.2" />
+      }
+      @for (d of def().line; track $index) {
+        <svg:path [attr.d]="d" />
+      }
+      @for (d of def().solid ?? []; track $index) {
+        <svg:path [attr.d]="d" fill="currentColor" stroke="none" />
       }
     </svg>
   `,
@@ -212,4 +336,6 @@ export type IconName =
 export class IconComponent {
   readonly name = input.required<IconName>();
   readonly size = input(24);
+
+  protected readonly def = computed<IconDef>(() => ICONS[this.name()]);
 }

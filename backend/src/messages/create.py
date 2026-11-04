@@ -1,5 +1,3 @@
-"""POST /messages — public contact form."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -28,8 +26,7 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
 
     try:
         db.table("MESSAGES_TABLE").put_item(Item=item)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return responses.server_error("We could not send that message.")
-
 
     return responses.created({"messageId": item["messageId"]})

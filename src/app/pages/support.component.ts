@@ -10,7 +10,6 @@ interface GivingOption {
   description: string;
   icon: IconName;
   action: string;
-  /** Highlighted as the option we most want people to choose. */
   preferred?: boolean;
 }
 

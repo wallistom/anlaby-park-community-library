@@ -3,12 +3,6 @@ import { inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 
-/**
- * Attaches the trustee's Google ID token to admin requests.
- *
- * Scoped to our own `/admin/` routes so the token is never leaked to a third
- * party if the app later calls an external API.
- */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const isAdminCall = req.url.startsWith(`${environment.apiBaseUrl}/admin/`);
   if (!isAdminCall) {

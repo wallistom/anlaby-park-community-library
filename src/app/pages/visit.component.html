@@ -4,9 +4,8 @@
   intro="You do not need to be a member to come in, use the wi-fi, read the paper, or buy a coffee. Joining is free too, and takes a couple of minutes at the counter."
 />
 
-<!-- ── Hours & location ──────────────────────────────────────────────────── -->
 <section class="container-page mt-20">
-  <div class="grid gap-8 lg:grid-cols-2">
+  <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
     <div [appReveal]="0">
       <app-hours-table />
     </div>
@@ -18,7 +17,7 @@
         >
           <app-icon name="mapPin" [size]="22" />
         </span>
-        <h2 class="font-display text-xl font-semibold">Where to find us</h2>
+        <h2 class="font-sans text-xl font-semibold">Where to find us</h2>
       </div>
 
       <figure class="mt-6">
@@ -75,7 +74,7 @@
         </a>
         <a
           [href]="'mailto:' + site.email"
-          class="text-ink-soft hover:text-navy-900 flex min-h-11 items-start gap-3 font-medium break-all"
+          class="text-ink-soft hover:text-navy-900 flex min-h-11 items-start gap-3 font-medium"
         >
           <span class="text-blue-600 mt-0.5"><app-icon name="mail" [size]="19" /></span>
           <span class="break-all">{{ site.email }}</span>
@@ -85,14 +84,11 @@
   </div>
 </section>
 
-<!-- ── Membership ────────────────────────────────────────────────────────── -->
-<section class="container-page mt-20">
-  <div
-    class="border-blue-200 bg-sunken grid items-center gap-8 rounded-2xl border p-8 sm:p-12 lg:grid-cols-12"
-  >
+<section class="band-sunken section mt-20">
+  <div class="container-page grid items-center gap-8 lg:grid-cols-12 lg:gap-14">
     <div class="lg:col-span-8">
-      <p class="text-blue-700 text-xs font-semibold tracking-[0.18em] uppercase">Membership</p>
-      <h2 class="mt-2 text-3xl font-semibold">Free to join, and it opens up the whole city</h2>
+      <p class="eyebrow">Membership</p>
+      <h2 class="text-3xl font-bold sm:text-4xl">Free to join, and it opens up the whole city</h2>
       <p class="prose-body mt-4">
         We run in partnership with Hull City Council, so your membership here gives you the entire
         Hull City Libraries catalogue. Request a title from any branch and we will have it delivered
@@ -104,25 +100,19 @@
       </p>
     </div>
     <div class="lg:col-span-4">
-      <div class="border-blue-200 rounded-2xl border bg-surface p-6 text-center">
-        <p class="font-display text-navy-800 text-5xl font-semibold">£0</p>
+      <div class="card p-7 text-center">
+        <p class="font-display text-navy-800 text-5xl font-bold">£0</p>
         <p class="text-ink-soft mt-2 text-sm">Membership costs nothing, and always has.</p>
-        <a
-          routerLink="/contact"
-          class="bg-navy-800 hover:bg-blue-700 mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold text-white transition-colors"
-        >
-          Ask us a question
-        </a>
+        <a routerLink="/contact" class="btn-primary mt-5 w-full"> Ask us a question </a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Everything we offer ───────────────────────────────────────────────── -->
 <section class="container-page mt-20">
   <div class="max-w-2xl">
     <p class="eyebrow">What's here</p>
-    <h2 class="mt-2 text-3xl font-semibold sm:text-4xl">Everything we offer</h2>
+    <h2 class="text-3xl font-bold sm:text-4xl">Everything we offer</h2>
     <p class="prose-body mt-4">
       A full library service, plus the practical bits and pieces people actually need — printing,
       copying, laminating, and a computer you can sit at without booking weeks ahead.
@@ -132,12 +122,8 @@
   <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
     @for (facility of facilities; track facility.title; let i = $index) {
       <li class="card p-6" [appReveal]="i * 50">
-        <span
-          class="bg-orange-50 text-orange-700 flex h-12 w-12 items-center justify-center rounded-xl"
-        >
-          <app-icon [name]="facility.icon" [size]="24" />
-        </span>
-        <h3 class="font-display mt-4 flex flex-wrap items-center gap-2 text-lg font-semibold">
+        <span class="icon-tile-warm"><app-icon [name]="facility.icon" [size]="24" /></span>
+        <h3 class="font-sans mt-4 flex flex-wrap items-center gap-2 text-lg font-semibold">
           {{ facility.title }}
           @if (facility.note) {
             <span class="bg-sunken text-ink-soft rounded-full px-2.5 py-0.5 text-xs font-medium">
@@ -145,13 +131,12 @@
             </span>
           }
         </h3>
-        <p class="text-ink-soft mt-2 text-sm leading-relaxed">{{ facility.description }}</p>
+        <p class="text-ink-soft mt-2 leading-relaxed">{{ facility.description }}</p>
       </li>
     }
   </ul>
 </section>
 
-<!-- ── Accessibility ─────────────────────────────────────────────────────── -->
 <section class="container-page mt-20">
   <div class="card p-8 sm:p-12">
     <div class="grid gap-10 lg:grid-cols-12">
@@ -161,7 +146,7 @@
         >
           <app-icon name="accessible" [size]="24" />
         </span>
-        <h2 class="mt-4 text-3xl font-semibold">Getting in and getting around</h2>
+        <h2 class="mt-4 text-3xl font-bold">Getting in and getting around</h2>
         <p class="prose-body mt-4">
           If there is something that would make a visit easier, ring us before you come. We would
           far rather sort it out in advance than have you turn up and struggle.
@@ -172,16 +157,16 @@
         <ul class="flex flex-col gap-3">
           @for (note of accessNotes; track note) {
             <li class="text-ink-soft flex items-start gap-3">
-              <span class="bg-blue-100 text-blue-700 mt-0.5 rounded-full p-1">
-                <app-icon name="check" [size]="15" />
-              </span>
+              <span class="flex h-[1lh] shrink-0 items-center text-blue-600"
+                ><app-icon name="checkCircle" [size]="20"
+              /></span>
               <span>{{ note }}</span>
             </li>
           }
         </ul>
 
         <div class="border-line mt-8 border-t pt-6">
-          <h3 class="font-display text-lg font-semibold">Can't get to us?</h3>
+          <h3 class="font-sans text-lg font-semibold">Can't get to us?</h3>
           <p class="text-ink-soft mt-2">
             We run an outreach service taking books out to residents of Lees Rest Homes. If getting
             here is difficult, ring

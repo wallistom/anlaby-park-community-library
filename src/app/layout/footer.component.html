@@ -1,18 +1,13 @@
-<!-- Deliberately short. The previous version reproduced the full seven-row
-     opening hours table, which is the Visit page's job and made the footer
-     taller than several of the pages above it. What is left is what a footer
-     is for: who this is, how to reach them, and the legal line. -->
-<footer class="bg-inverse mt-24 text-white">
-  <div class="container-page py-12">
+<footer class="band-inverse mt-24 text-white">
+  <div class="container-page pt-12 pb-10 sm:pt-14">
     <div class="grid gap-8 lg:grid-cols-12 lg:gap-12">
-      <!-- Identity and contact -->
       <div class="lg:col-span-5">
-        <p class="font-display text-lg font-semibold">{{ site.name }}</p>
-        <p class="text-ink-on-dark mt-2 max-w-sm text-sm leading-relaxed">
+        <p class="font-display text-xl font-semibold">{{ site.name }}</p>
+        <p class="text-ink-on-dark mt-3 max-w-sm leading-relaxed">
           {{ site.tagline }}, kept open by more than {{ site.volunteerCount }} volunteers.
         </p>
 
-        <address class="mt-5 text-sm not-italic">
+        <address class="mt-6 not-italic">
           <p class="text-ink-on-dark">{{ addressOneLine }}</p>
           <p class="mt-1">
             <a routerLink="/visit" class="text-orange-300 font-semibold hover:underline">
@@ -28,9 +23,9 @@
             </a>
             <a
               [href]="'mailto:' + site.email"
-              class="text-ink-on-dark hover:text-orange-300 break-all transition-colors"
+              class="text-ink-on-dark hover:text-orange-300 [overflow-wrap:anywhere] transition-colors"
             >
-              {{ site.email }}
+              {{ site.email.split('@')[0] }}@<wbr />{{ site.email.split('@')[1] }}
             </a>
           </p>
         </address>
@@ -57,10 +52,11 @@
         </div>
       </div>
 
-      <!-- Navigation, split so neither column runs long -->
       <nav class="grid grid-cols-2 gap-6 sm:gap-8 lg:col-span-7" aria-label="Footer">
         <div>
-          <h2 class="text-ink-on-dark-muted text-xs font-semibold tracking-[0.12em] uppercase">
+          <h2
+            class="text-ink-on-dark-muted font-sans text-xs font-semibold tracking-[0.14em] uppercase"
+          >
             Explore
           </h2>
           <ul class="mt-3 flex flex-col">
@@ -68,7 +64,7 @@
               <li>
                 <a
                   [routerLink]="link.path"
-                  class="text-ink-on-dark hover:text-orange-300 inline-flex min-h-9 items-center text-sm transition-colors"
+                  class="text-ink-on-dark hover:text-orange-300 inline-flex min-h-10 items-center transition-colors"
                 >
                   {{ link.label }}
                 </a>
@@ -77,7 +73,9 @@
           </ul>
         </div>
         <div>
-          <h2 class="text-ink-on-dark-muted text-xs font-semibold tracking-[0.12em] uppercase">
+          <h2
+            class="text-ink-on-dark-muted font-sans text-xs font-semibold tracking-[0.14em] uppercase"
+          >
             Get involved
           </h2>
           <ul class="mt-3 flex flex-col">
@@ -85,7 +83,7 @@
               <li>
                 <a
                   [routerLink]="link.path"
-                  class="text-ink-on-dark hover:text-orange-300 inline-flex min-h-9 items-center text-sm transition-colors"
+                  class="text-ink-on-dark hover:text-orange-300 inline-flex min-h-10 items-center transition-colors"
                 >
                   {{ link.label }}
                 </a>
@@ -97,7 +95,7 @@
     </div>
 
     <div
-      class="border-line-inverse text-ink-on-dark-muted mt-10 flex flex-col gap-2 border-t pt-6 text-xs sm:flex-row sm:items-center sm:justify-between"
+      class="border-line-inverse text-ink-on-dark-muted mt-10 flex flex-col gap-2 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between"
     >
       <p>© {{ year }} {{ site.name }} · Registered charity no. {{ site.charityNumber }}</p>
       <div class="-mx-2 flex items-center">

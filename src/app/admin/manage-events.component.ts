@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IconComponent } from '../shared/icon.component';
-import { ApiService, EventInput } from '../core/api.service';
+import { ApiService } from '../core/api.service';
 import { LibraryEvent, RECURRENCE_LABELS, Recurrence } from '../core/models';
 
 @Component({
@@ -19,11 +19,9 @@ export class ManageEventsComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
-  /** Null when the form is closed, '' when adding, or the id being edited. */
   protected readonly editingId = signal<string | null>(null);
   protected readonly submitted = signal(false);
 
-  /** Options for the "how often" selector, in the order they are offered. */
   protected readonly recurrenceOptions = (Object.keys(RECURRENCE_LABELS) as Recurrence[]).map(
     (value) => ({ value, label: RECURRENCE_LABELS[value] }),
   );
@@ -41,12 +39,9 @@ export class ManageEventsComponent implements OnInit {
     repeatUntil: [''],
   });
 
-  /** True when the chosen frequency means the event repeats. */
   protected readonly repeats = signal(false);
 
   constructor() {
-    // An end date is only meaningful — and only required — once an event
-    // actually repeats, so the validator is attached and removed as you choose.
     this.form.controls.recurrence.valueChanges.subscribe((value) => {
       const isRepeating = value !== 'none';
       this.repeats.set(isRepeating);
@@ -94,7 +89,6 @@ export class ManageEventsComponent implements OnInit {
     this.editingId.set(event.eventId);
   }
 
-  /** Plain-English summary of the repeat, shown in the list. */
   protected repeatSummary(event: LibraryEvent): string | null {
     if (!event.recurrence || event.recurrence === 'none') {
       return null;
@@ -115,7 +109,7 @@ export class ManageEventsComponent implements OnInit {
     }
 
     const id = this.editingId();
-    const payload = this.form.getRawValue() as EventInput;
+    const payload = this.form.getRawValue();
     this.saving.set(true);
     this.error.set(null);
 

@@ -1,13 +1,4 @@
 #!/usr/bin/env node
-/**
- * Fails if any colour pairing the UI actually uses drops below WCAG AA.
- *
- * This exists because the palette silently regressed once: secondary text
- * drifted onto a value at 3.54:1 in 34 places while the README claimed AA
- * throughout. A comment asserting good contrast is not a check.
- *
- *   node scripts/check-contrast.mjs
- */
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -16,14 +7,11 @@ import { dirname, join } from 'node:path';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const css = readFileSync(join(root, 'src/styles.css'), 'utf8');
 
-/** Every --color-* declaration, including semantic aliases. */
 const raw = Object.fromEntries(
   [...css.matchAll(/--color-([a-z0-9-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]),
 );
 
-/** Resolves `var(--color-x)` chains down to a hex value. */
 function resolve(name, seen = new Set()) {
-  if (name === 'white') return '#ffffff';
   if (seen.has(name)) throw new Error(`Circular colour reference at --color-${name}`);
   seen.add(name);
 
@@ -49,12 +37,7 @@ function contrast(a, b) {
   return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
-/**
- * `large` means >=18.66px bold or >=24px regular, where AA allows 3:1.
- * Anything rendered at body size must clear 4.5:1.
- */
 const PAIRS = [
-  // Text on light surfaces
   ['ink', 'page', 'body text', 'normal'],
   ['ink', 'surface', 'text on cards', 'normal'],
   ['ink-soft', 'page', 'prose', 'normal'],
@@ -73,38 +56,37 @@ const PAIRS = [
   ['danger', 'danger-soft', 'error alert text', 'normal'],
   ['success', 'success-soft', 'success chip', 'normal'],
 
-  // Text on dark surfaces
   ['ink-inverse', 'inverse', 'text on navy bands', 'normal'],
   ['ink-on-dark', 'inverse', 'body on navy bands', 'normal'],
   ['ink-on-dark-muted', 'inverse', 'labels on navy bands', 'normal'],
   ['orange-300', 'inverse', 'figures on navy bands', 'large'],
+  ['ink-on-dark', 'navy-600', 'body over the highlight on navy bands', 'normal'],
+  ['ink-on-dark-muted', 'navy-600', 'labels over the highlight on navy bands', 'normal'],
+  ['ink-inverse', 'navy-600', 'headings over the highlight on navy bands', 'normal'],
 
-  // Solid fills carrying text
   ['ink-inverse', 'accent', 'Donate button', 'normal'],
   ['ink-inverse', 'accent-hover', 'Donate button, hover', 'normal'],
   ['ink-inverse', 'primary', 'primary button', 'normal'],
   ['ink-inverse', 'primary-hover', 'primary button, hover', 'normal'],
-  ['navy-950', 'accent-bright', 'button on dark bands', 'normal'],
+  ['navy-950', 'orange-400', 'button on dark bands', 'normal'],
+  ['navy-950', 'orange-300', 'button on dark bands, hover', 'normal'],
   ['ink-inverse', 'navy-800', 'active nav pill', 'normal'],
   ['orange-900', 'orange-100', 'accent chip and the hire-charges callout', 'normal'],
   ['orange-950', 'orange-100', 'callout heading', 'large'],
   ['ink-inverse', 'blue-700', 'badge on brand blue', 'normal'],
 
-  // Pale blue panels and icon tiles. These carry real text, not just glyphs.
   ['navy-800', 'blue-50', 'date chip numerals', 'normal'],
   ['navy-800', 'blue-100', 'trustee initials', 'normal'],
   ['ink-soft', 'blue-50', 'prose in blue panels', 'normal'],
   ['ink-muted', 'blue-50', 'hints in blue panels', 'normal'],
   ['blue-700', 'blue-50', 'links in blue panels', 'normal'],
 
-  // Footer newsletter sits on the darkest navy, not the band colour.
-  ['ink-inverse', 'navy-950', 'newsletter input text', 'normal'],
-  ['ink-on-dark-muted', 'navy-950', 'newsletter placeholder', 'normal'],
-  ['navy-950', 'orange-500', 'newsletter sign-up button', 'normal'],
-  ['ink-on-dark', 'navy-950', 'footer body on darkest navy', 'normal'],
+  ['ink-inverse', 'navy-950', 'admin header title', 'normal'],
+  ['ink-on-dark-muted', 'navy-950', 'admin header nav labels', 'normal'],
+  ['navy-950', 'orange-500', 'admin header logo tile', 'normal'],
+  ['ink-on-dark', 'navy-950', 'admin header user name', 'normal'],
 ];
 
-/** Non-text contrast (borders, focus rings, state dots) needs 3:1. */
 const NON_TEXT = [
   ['line-strong', 'surface', 'input borders'],
   ['line-strong', 'page', 'input borders on page'],
@@ -114,12 +96,13 @@ const NON_TEXT = [
   ['blue-700', 'blue-50', 'icon glyphs in tiles'],
   ['blue-600', 'blue-50', 'icon glyphs in tiles'],
 
-  // The hero sits on the band colour, the darkest light surface an
-  // interactive border or a status dot has to hold up against.
   ['line-strong', 'sunken', 'secondary button border in the hero'],
   ['success', 'sunken', 'open-status dot'],
   ['orange-700', 'sunken', 'closed-status dot'],
   ['line-strong', 'blue-50', 'borders on pale blue fills'],
+  ['orange-600', 'surface', 'active nav underline'],
+  ['orange-700', 'orange-50', 'icon glyphs in warm tiles'],
+  ['success', 'success-soft', 'today card open icon'],
 ];
 
 let failures = 0;

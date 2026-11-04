@@ -1,15 +1,6 @@
-# Copy to terraform.tfvars and fill in before running `terraform apply`.
-# terraform.tfvars is gitignored — it names real people.
-
-# OAuth 2.0 Web client ID from the Google Cloud console.
 google_client_id = "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
 
-# Google accounts allowed into the trustee admin area.
 allowed_trustee_emails = [
   "secretary@example.com",
   "treasurer@example.com",
 ]
-
-# Uncomment to override the defaults.
-# aws_region  = "eu-west-2"
-# environment = "prod"
