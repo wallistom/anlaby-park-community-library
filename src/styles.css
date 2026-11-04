@@ -190,6 +190,7 @@
   .eyebrow::before {
     @apply bg-orange-500 h-px w-7 shrink-0;
     content: '';
+    transform-origin: left center;
   }
 
   .lead {
@@ -328,7 +329,20 @@
   }
 
   .skeleton {
-    @apply bg-line animate-pulse rounded;
+    @apply bg-line relative overflow-hidden rounded;
+  }
+
+  .skeleton::after {
+    @apply absolute inset-0;
+    content: '';
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.55) 50%,
+      transparent 100%
+    );
+    transform: translateX(-100%);
+    animation: shimmer 1.6s var(--ease-out-soft) infinite;
   }
 
   .btn-primary,
@@ -413,12 +427,23 @@
   }
 
   .segmented {
-    @apply border-line bg-surface shadow-card inline-flex rounded-xl border p-1;
+    @apply border-line bg-surface shadow-card relative isolate grid grid-cols-2 rounded-xl border p-1;
+  }
+
+  .segmented::before {
+    @apply bg-navy-800 absolute top-1 bottom-1 left-1 -z-10 rounded-lg;
+    content: '';
+    width: calc(50% - 0.25rem);
+    transition: transform var(--duration-quick) var(--ease-gentle);
+  }
+
+  .segmented.is-second::before {
+    transform: translateX(100%);
   }
 
   .segment,
   .segment-on {
-    @apply inline-flex min-h-11 items-center rounded-lg px-5 text-sm font-semibold transition-colors;
+    @apply inline-flex min-h-11 items-center justify-center rounded-lg px-5 text-sm font-semibold transition-colors;
   }
 
   .segment {
@@ -426,7 +451,7 @@
   }
 
   .segment-on {
-    @apply bg-navy-800 text-ink-inverse;
+    @apply text-ink-inverse;
   }
 
   .icon-btn {
@@ -520,7 +545,7 @@ router-outlet + * {
 @keyframes reveal-up {
   from {
     opacity: 0;
-    transform: translateY(0.75rem);
+    transform: translateY(0.625rem);
   }
   to {
     opacity: 1;
@@ -533,7 +558,56 @@ router-outlet + * {
 }
 
 .reveal-visible {
-  animation: reveal-up 0.5s var(--ease-gentle) both;
+  animation: reveal-up 0.6s var(--ease-gentle) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+@keyframes line-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.hero-rise.eyebrow::before,
+.hero-rise .eyebrow::before {
+  animation: line-draw 0.7s var(--ease-gentle) both;
+  animation-delay: calc(var(--rise-delay, 0ms) + 180ms);
+}
+
+.reveal-visible.eyebrow::before,
+.reveal-visible .eyebrow::before {
+  animation: line-draw 0.7s var(--ease-gentle) both;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 180ms);
+}
+
+.nav-link.is-active::after {
+  transform-origin: center;
+  animation: line-draw var(--duration-quick) var(--ease-out-soft) both;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fact-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fact-in {
+  animation: fact-in 0.5s var(--ease-gentle) both;
+  animation-delay: var(--in-delay, 0ms);
 }
 
 @keyframes hero-rise {
@@ -649,6 +723,11 @@ router-outlet + * {
   animation: drawer-in var(--duration-quick) var(--ease-gentle) both;
 }
 
+.drawer-enter nav li {
+  animation: reveal-up 0.45s var(--ease-gentle) both;
+  animation-delay: calc(60ms + var(--i, 0) * 35ms);
+}
+
 @keyframes disclosure-open {
   from {
     grid-template-rows: 0fr;
@@ -677,4 +756,19 @@ router-outlet + * {
 
 .img-fade.is-loaded {
   opacity: 1;
+}
+
+.hero-photo .img-fade,
+.hero-print .img-fade,
+.photo-frame .img-fade {
+  transform: scale(1.04);
+  transition:
+    opacity 0.5s var(--ease-out-soft),
+    transform 1.1s var(--ease-gentle);
+}
+
+.hero-photo .img-fade.is-loaded,
+.hero-print .img-fade.is-loaded,
+.photo-frame .img-fade.is-loaded {
+  transform: none;
 }

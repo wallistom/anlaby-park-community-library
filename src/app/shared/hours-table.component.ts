@@ -22,8 +22,8 @@ import { IconComponent } from './icon.component';
             [class]="hours.status().isOpen ? 'text-success' : 'text-orange-700'"
           >
             <span
-              class="inline-flex h-2 w-2 rounded-full"
-              [class]="hours.status().isOpen ? 'bg-success' : 'bg-orange-600'"
+              class="status-dot h-2 w-2"
+              [class]="hours.status().isOpen ? 'status-dot-open bg-success' : 'bg-orange-600'"
               aria-hidden="true"
             ></span>
             {{ hours.status().label }}
