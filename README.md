@@ -13,7 +13,7 @@ CloudFront. Everything in `eu-west-2`.
 
 | Path       | Contents                                                    |
 | ---------- | ----------------------------------------------------------- |
-| `src/`     | Angular app — 10 public pages, 5 in the admin area           |
+| `src/`     | Angular app — 10 public pages, 6 in the admin area           |
 | `backend/` | Lambda handlers, one per endpoint, and their tests           |
 | `infra/`   | Terraform: DynamoDB, Lambda, API Gateway, S3, CloudFront     |
 | `docs/`    | Running costs, and the contrast audit                        |

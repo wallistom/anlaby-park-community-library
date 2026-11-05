@@ -1,9 +1,11 @@
 <div class="flex flex-wrap items-end justify-between gap-4">
-  <div>
+  <div class="max-w-2xl">
     <h1 class="text-3xl font-bold">Opening hours</h1>
-    <p class="text-ink-soft mt-2 max-w-2xl">
-      The weekly pattern is what normally happens. Add an exception for anything that differs — a
-      bank holiday, the Christmas break, or a day you have to close at short notice.
+    <p class="text-ink-soft mt-2">
+      These hours are shown on the website's home page, on the
+      <a href="/visit" target="_blank" rel="noopener" class="link">
+        Visit page<span class="sr-only"> (opens in a new tab)</span></a
+      >, and at the bottom of every page. Nothing changes on the website until you press Save.
     </p>
   </div>
   <button
@@ -21,10 +23,20 @@
     <app-icon name="info" [size]="20" />
     <p class="text-sm">{{ error() }}</p>
   </div>
-} @else if (state() === 'saved') {
-  <div class="alert border-success-line bg-success-soft text-success mt-6" role="status">
-    <app-icon name="check" [size]="20" />
-    <p class="text-sm">Saved. The website is showing these hours now.</p>
+} @else if (state() === 'saved' && !dirty()) {
+  <div class="alert-success mt-6" role="status">
+    <app-icon name="checkCircle" [size]="20" />
+    <p class="text-sm">
+      Saved. The website is showing these hours now.
+      <a
+        href="/visit"
+        target="_blank"
+        rel="noopener"
+        class="font-semibold underline underline-offset-4"
+      >
+        See the Visit page<span class="sr-only"> (opens in a new tab)</span>
+      </a>
+    </p>
   </div>
 }
 
@@ -59,10 +71,10 @@
     <p class="sr-only" aria-live="polite">Loading the opening hours</p>
   }
 } @else {
-  <section class="card mt-8 p-6 sm:p-7">
-    <h2 class="text-xl font-semibold">Normal week</h2>
+  <section class="card mt-8 p-6 sm:p-7" aria-labelledby="usual-heading">
+    <h2 id="usual-heading" class="text-xl font-semibold">Usual opening hours</h2>
     <p class="text-ink-soft mt-1 text-sm">
-      Untick a day to close it. These are the hours shown everywhere on the site.
+      Tick the days you open and set the times. Untick a day to show it as closed.
     </p>
 
     <ul class="mt-5 flex flex-col">
@@ -111,19 +123,19 @@
     </ul>
   </section>
 
-  <section class="card mt-6 p-6 sm:p-7">
+  <section class="card mt-6 p-6 sm:p-7" aria-labelledby="different-heading">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h2 class="text-xl font-semibold">Exceptions</h2>
+        <h2 id="different-heading" class="text-xl font-semibold">Days that are different</h2>
         <p class="text-ink-soft mt-1 max-w-xl text-sm">
-          Anything that overrides the normal week. Use a date range for a run of days like
-          Christmas. The reason is shown on the website, so write it for the public — "Bank holiday"
-          rather than "BH".
+          Bank holidays, the Christmas break, or a day you have to close at short notice. Use a date
+          range for a run of days. The reason is shown on the website, so write it for the public:
+          “Bank holiday”, not “BH”.
         </p>
       </div>
       <button type="button" (click)="addException()" class="btn-secondary btn-sm">
         <app-icon name="plus" [size]="16" />
-        Add an exception
+        Add a date
       </button>
     </div>
 
@@ -210,19 +222,23 @@
               <button
                 type="button"
                 (click)="removeException(entry.exceptionId)"
-                class="border-danger-line text-danger ml-auto inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-danger-soft"
+                class="border-danger-line text-danger hover:bg-danger-soft ml-auto inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
               >
                 <app-icon name="trash" [size]="15" />
                 Remove
               </button>
             </div>
+
+            <p class="text-ink-muted border-line mt-3 border-t pt-3 text-sm">
+              Shows as: <span class="text-ink font-medium">{{ exceptionPreview(entry) }}</span>
+            </p>
           </li>
         }
       </ul>
     } @else {
       <p class="text-ink-muted mt-5 text-sm">
-        Nothing set. The normal week applies every week — including bank holidays, so add those here
-        when you know them.
+        None yet. The usual hours apply every week, including bank holidays, so add those here when
+        you know them.
       </p>
     }
 
@@ -231,8 +247,7 @@
         <summary
           class="text-ink-soft inline-flex min-h-11 cursor-pointer items-center text-sm font-semibold"
         >
-          {{ pastExceptions().length }} past
-          {{ pastExceptions().length === 1 ? 'exception' : 'exceptions' }}
+          {{ pastExceptions().length }} past {{ pastExceptions().length === 1 ? 'date' : 'dates' }}
         </summary>
         <ul class="mt-3 flex flex-col gap-2">
           @for (entry of pastExceptions(); track entry.exceptionId) {
@@ -256,11 +271,11 @@
     }
   </section>
 
-  <section class="card mt-6 p-6 sm:p-7">
-    <h2 class="text-xl font-semibold">Banner</h2>
+  <section class="card mt-6 p-6 sm:p-7" aria-labelledby="notice-heading">
+    <h2 id="notice-heading" class="text-xl font-semibold">Notice at the top of the website</h2>
     <p class="text-ink-soft mt-1 max-w-xl text-sm">
-      Shown at the very top of every page. Use it for something everybody needs to know, and switch
-      it off when it no longer applies.
+      A message shown above every page. Use it for something everybody needs to know, and switch it
+      off when it no longer applies.
     </p>
 
     <label class="mt-5 flex min-h-11 items-center gap-3">
@@ -270,7 +285,7 @@
         [checked]="notice().active"
         (change)="setNotice({ active: $any($event.target).checked })"
       />
-      <span class="text-sm font-medium">Show the banner</span>
+      <span class="text-sm font-medium">Show the notice on the website</span>
     </label>
 
     @if (notice().active) {
@@ -298,18 +313,50 @@
           ></textarea>
           <p class="field-hint">A link to the contact page is added automatically.</p>
         </div>
+
+        <div aria-hidden="true">
+          <p class="text-ink-muted mb-2 text-xs font-semibold tracking-wide uppercase">
+            How it will look
+          </p>
+          <div
+            class="bg-orange-100 text-orange-950 border-orange-200 flex items-start gap-3 rounded-xl border px-4 py-2.5 text-sm"
+          >
+            <span class="text-orange-700 mt-0.5"><app-icon name="info" [size]="18" /></span>
+            <p>
+              <strong class="font-semibold">{{ notice().title || 'Your heading' }}.</strong>
+              {{ notice().body }}
+              <span class="font-semibold underline underline-offset-2">
+                Any questions? Get in touch
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     }
   </section>
 
-  <div class="mt-6 flex justify-end">
-    <button
-      type="button"
-      (click)="save()"
-      [disabled]="state() === 'saving' || !ready()"
-      class="btn-primary"
-    >
-      {{ state() === 'saving' ? 'Saving…' : 'Save changes' }}
-    </button>
-  </div>
+  @if (dirty()) {
+    <div class="sticky bottom-4 z-10 mt-8">
+      <div
+        class="bg-inverse shadow-raised flex flex-wrap items-center gap-3 rounded-2xl px-5 py-3 text-white"
+      >
+        <app-icon name="info" [size]="18" />
+        <p class="min-w-0 flex-1 basis-56 text-sm font-medium">
+          You have changes that are not saved yet. The website keeps the old hours until you press
+          Save.
+        </p>
+        <button type="button" (click)="discard()" class="btn-on-dark-secondary btn-sm">
+          Undo changes
+        </button>
+        <button
+          type="button"
+          (click)="save()"
+          [disabled]="state() === 'saving'"
+          class="btn-on-dark btn-sm"
+        >
+          {{ state() === 'saving' ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+    </div>
+  }
 }

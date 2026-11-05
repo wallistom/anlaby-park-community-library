@@ -13,7 +13,10 @@ import { SITE } from '../core/site.data';
     <div class="bg-sunken flex min-h-screen flex-col">
       <header class="bg-navy-950 text-white">
         <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-5 py-3.5 sm:px-8">
-          <a routerLink="/" class="flex min-h-11 items-center gap-3">
+          <a
+            [routerLink]="isTrustee() ? '/admin/dashboard' : '/'"
+            class="flex min-h-11 items-center gap-3"
+          >
             <span
               class="bg-orange-500 text-navy-950 flex h-9 w-9 items-center justify-center rounded-lg"
             >
@@ -28,7 +31,10 @@ import { SITE } from '../core/site.data';
           </a>
 
           @if (isTrustee()) {
-            <nav class="order-3 flex w-full gap-1 sm:order-none sm:w-auto" aria-label="Admin">
+            <nav
+              class="order-3 flex w-full flex-wrap gap-1 lg:order-none lg:w-auto"
+              aria-label="Admin"
+            >
               @for (item of navItems; track item.path) {
                 <a
                   [routerLink]="item.path"
@@ -42,7 +48,17 @@ import { SITE } from '../core/site.data';
             </nav>
 
             <div class="ml-auto flex items-center gap-3">
-              <span class="text-ink-on-dark hidden text-sm sm:block">
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener"
+                class="text-ink-on-dark-muted inline-flex min-h-11 items-center gap-1.5 text-sm font-medium underline-offset-4 hover:text-white hover:underline"
+              >
+                <app-icon name="externalLink" [size]="15" />
+                <span class="hidden sm:inline">View the website</span>
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+              <span class="text-ink-on-dark hidden text-sm md:block">
                 {{ auth.currentUser()?.name }}
               </span>
               <button
@@ -83,10 +99,11 @@ export class AdminLayoutComponent {
   );
 
   protected readonly navItems: { label: string; path: string; icon: IconName }[] = [
+    { label: 'Overview', path: '/admin/dashboard', icon: 'bookOpen' },
     { label: 'Events', path: '/admin/events', icon: 'calendar' },
     { label: 'Enquiries', path: '/admin/enquiries', icon: 'inbox' },
-    { label: 'Hours', path: '/admin/hours', icon: 'clock' },
-    { label: 'Access', path: '/admin/trustees', icon: 'key' },
+    { label: 'Opening hours', path: '/admin/hours', icon: 'clock' },
+    { label: 'Who can sign in', path: '/admin/trustees', icon: 'users' },
   ];
 
   constructor() {

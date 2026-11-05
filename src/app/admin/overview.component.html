@@ -1,0 +1,171 @@
+<h1 class="text-3xl font-bold">Hello, {{ firstName() }}</h1>
+<p class="text-ink-soft mt-2 max-w-2xl">
+  Anything you save here goes on the website straight away. Keep the
+  <a href="/" target="_blank" rel="noopener" class="link">
+    website<span class="sr-only"> (opens in a new tab)</span></a
+  >
+  open in another tab to check how your changes look.
+</p>
+
+@if (failed()) {
+  <div class="alert-danger mt-6" role="alert">
+    <app-icon name="info" [size]="20" />
+    <p class="text-sm">
+      We could not load everything just now. The pages below still work. Reload this one in a
+      minute.
+    </p>
+  </div>
+}
+
+<div class="mt-8 grid gap-5 md:grid-cols-2">
+  <article class="card flex flex-col p-6" aria-labelledby="ov-enquiries">
+    <div class="flex items-center gap-3">
+      <span class="icon-tile-warm"><app-icon name="inbox" [size]="22" /></span>
+      <h2 id="ov-enquiries" class="font-sans text-lg font-semibold">Enquiries</h2>
+    </div>
+    @if (loading()) {
+      <div class="mt-5 flex flex-col gap-2" aria-hidden="true">
+        <span class="skeleton h-9 w-16"></span>
+        <span class="skeleton h-4 w-56"></span>
+      </div>
+    } @else if (!failed()) {
+      <p class="font-display mt-4 text-4xl font-semibold" aria-hidden="true">
+        {{ newEnquiries() }}
+      </p>
+      <p class="text-ink-soft mt-1 text-sm">
+        <span class="sr-only">{{ newEnquiries() }}</span>
+        {{
+          newEnquiries() === 1
+            ? 'new enquiry waiting for a reply'
+            : 'new enquiries waiting for a reply'
+        }}
+        @if (inProgress() > 0) {
+          · {{ inProgress() }} being dealt with
+        }
+      </p>
+    }
+    <a routerLink="/admin/enquiries" class="btn-secondary btn-sm mt-5 self-start">
+      Go to enquiries
+      <app-icon name="arrowRight" [size]="16" />
+    </a>
+  </article>
+
+  <article class="card flex flex-col p-6" aria-labelledby="ov-events">
+    <div class="flex items-center gap-3">
+      <span class="icon-tile"><app-icon name="calendar" [size]="22" /></span>
+      <h2 id="ov-events" class="font-sans text-lg font-semibold">Events</h2>
+    </div>
+    @if (loading()) {
+      <div class="mt-5 flex flex-col gap-2" aria-hidden="true">
+        <span class="skeleton h-4 w-52"></span>
+        <span class="skeleton h-4 w-44"></span>
+      </div>
+    } @else if (!failed()) {
+      <ul class="text-ink-soft mt-4 flex flex-col gap-1 text-sm">
+        <li>
+          <strong class="text-ink font-semibold">{{ runningClubs() }}</strong>
+          regular {{ runningClubs() === 1 ? 'club or group' : 'clubs and groups' }} on the website
+        </li>
+        <li>
+          <strong class="text-ink font-semibold">{{ upcomingOneOffs() }}</strong>
+          one-off {{ upcomingOneOffs() === 1 ? 'event' : 'events' }} coming up
+        </li>
+        @if (drafts() > 0) {
+          <li>
+            <strong class="text-ink font-semibold">{{ drafts() }}</strong>
+            {{ drafts() === 1 ? 'draft that is' : 'drafts that are' }} not on the website
+          </li>
+        }
+      </ul>
+      @if (clubWarnings().length) {
+        <ul class="mt-4 flex flex-col gap-2 text-sm">
+          @for (warning of clubWarnings(); track warning.title + warning.lastDate) {
+            <li
+              class="flex items-start gap-2 rounded-xl px-3 py-2"
+              [class]="
+                warning.status === 'finished'
+                  ? 'bg-danger-soft text-danger'
+                  : 'bg-orange-100 text-orange-900'
+              "
+            >
+              <app-icon name="info" [size]="16" />
+              <span>
+                @if (warning.status === 'finished') {
+                  <strong class="font-semibold">{{ warning.title }}</strong> finished on
+                  {{ warning.lastDate | date: 'd MMMM' }} and is no longer on the website.
+                } @else {
+                  <strong class="font-semibold">{{ warning.title }}</strong> ends on
+                  {{ warning.lastDate | date: 'd MMMM' }}. Extend it if it carries on.
+                }
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    }
+    <a routerLink="/admin/events" class="btn-secondary btn-sm mt-5 self-start">
+      Manage events
+      <app-icon name="arrowRight" [size]="16" />
+    </a>
+  </article>
+
+  <article class="card flex flex-col p-6" aria-labelledby="ov-hours">
+    <div class="flex items-center gap-3">
+      <span class="icon-tile"><app-icon name="clock" [size]="22" /></span>
+      <h2 id="ov-hours" class="font-sans text-lg font-semibold">Opening hours</h2>
+    </div>
+    @if (!hoursReady()) {
+      <div class="mt-5 flex flex-col gap-2" aria-hidden="true">
+        <span class="skeleton h-4 w-60"></span>
+        <span class="skeleton h-4 w-48"></span>
+      </div>
+    } @else {
+      <p class="text-ink mt-4 text-sm font-medium">{{ today().detail }}</p>
+      <p class="text-ink-soft mt-2 text-sm">
+        @if (nextChange(); as change) {
+          Next change: {{ change.closed ? 'closed' : 'different hours' }} on
+          {{ change.from | date: 'd MMMM' }}
+          @if (change.to !== change.from) {
+            to {{ change.to | date: 'd MMMM' }}
+          }
+          for {{ change.reason }}.
+        } @else {
+          No bank holidays or closures have been added yet.
+        }
+      </p>
+      <p class="text-ink-soft mt-2 text-sm">
+        @if (notice().active) {
+          The notice at the top of the website is on: “{{ notice().title }}”.
+        } @else {
+          The notice at the top of the website is switched off.
+        }
+      </p>
+    }
+    <a routerLink="/admin/hours" class="btn-secondary btn-sm mt-5 self-start">
+      Change opening hours
+      <app-icon name="arrowRight" [size]="16" />
+    </a>
+  </article>
+
+  <article class="card flex flex-col p-6" aria-labelledby="ov-access">
+    <div class="flex items-center gap-3">
+      <span class="icon-tile"><app-icon name="users" [size]="22" /></span>
+      <h2 id="ov-access" class="font-sans text-lg font-semibold">Who can sign in</h2>
+    </div>
+    @if (loading()) {
+      <div class="mt-5 flex flex-col gap-2" aria-hidden="true">
+        <span class="skeleton h-4 w-60"></span>
+      </div>
+    } @else if (!failed()) {
+      <p class="text-ink-soft mt-4 text-sm">
+        <strong class="text-ink font-semibold">{{ trusteeCount() }}</strong>
+        {{ trusteeCount() === 1 ? 'person can' : 'people can' }} sign in here. Add a new trustee
+        with the Google address they use.
+      </p>
+    }
+    <a routerLink="/admin/trustees" class="btn-secondary btn-sm mt-5 self-start">
+      Manage who can sign in
+      <app-icon name="arrowRight" [size]="16" />
+    </a>
+  </article>
+</div>
