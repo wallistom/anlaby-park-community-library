@@ -191,11 +191,11 @@ export class TrusteesComponent {
     this.saving.set(true);
     this.error.set(null);
     this.api.addTrustee({ name, email }).subscribe({
-      next: () => {
+      next: (added) => {
         this.name = '';
         this.email = '';
         this.saving.set(false);
-        this.load();
+        this.trustees.update((list) => [...list, added]);
       },
       error: (response: { error?: { error?: string } }) => {
         this.saving.set(false);
@@ -211,7 +211,7 @@ export class TrusteesComponent {
       next: () => {
         this.removing.set(false);
         this.confirming.set(null);
-        this.load();
+        this.trustees.update((list) => list.filter((entry) => entry.email !== trustee.email));
       },
       error: (response: { error?: { error?: string } }) => {
         this.removing.set(false);

@@ -181,27 +181,38 @@
                     <button
                       type="button"
                       (click)="setStatus(row, 'in_progress')"
+                      [disabled]="pending()?.id === row.id"
                       class="btn-secondary btn-sm"
                     >
-                      I'm dealing with this
+                      {{ isSaving(row, 'in_progress') ? 'Saving…' : "I'm dealing with this" }}
                     </button>
                   }
                   @if (row.status !== 'closed') {
                     <button
                       type="button"
                       (click)="setStatus(row, 'closed')"
+                      [disabled]="pending()?.id === row.id"
                       class="btn-primary btn-sm"
                     >
-                      <app-icon name="check" [size]="16" />
-                      Mark as done
+                      @if (isSaving(row, 'closed')) {
+                        <span
+                          class="spinner border-navy-400 border-t-white"
+                          aria-hidden="true"
+                        ></span>
+                        Saving…
+                      } @else {
+                        <app-icon name="check" [size]="16" />
+                        Mark as done
+                      }
                     </button>
                   } @else {
                     <button
                       type="button"
                       (click)="setStatus(row, 'new')"
+                      [disabled]="pending()?.id === row.id"
                       class="btn-secondary btn-sm"
                     >
-                      Reopen
+                      {{ isSaving(row, 'new') ? 'Saving…' : 'Reopen' }}
                     </button>
                   }
                 </div>

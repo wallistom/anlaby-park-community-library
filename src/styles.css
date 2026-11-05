@@ -466,6 +466,22 @@
   .date-chip {
     @apply bg-blue-50 text-navy-800 flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl;
   }
+  .time-tile {
+    @apply bg-blue-50 text-navy-800 flex h-14 w-20 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl;
+  }
+  .row-action,
+  .row-action-danger {
+    @apply inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold transition-colors;
+  }
+  .row-action {
+    @apply text-navy-900 hover:bg-page;
+  }
+  .row-action-danger {
+    @apply text-ink-muted hover:text-danger hover:bg-danger-soft;
+  }
+  .spinner {
+    @apply border-line-strong border-t-navy-800 inline-block h-4 w-4 shrink-0 animate-spin rounded-full border-2;
+  }
 
   .date-chip-today {
     @apply bg-navy-800 text-ink-inverse flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl;

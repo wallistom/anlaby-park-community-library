@@ -87,10 +87,22 @@ export class ManageEventsComponent implements OnInit {
   protected readonly editingId = signal<string | null>(null);
   protected readonly submitted = signal(false);
   protected readonly confirmingId = signal<string | null>(null);
+  /** The event whose delete request is in flight; its row is dimmed and locked. */
+  protected readonly busyId = signal<string | null>(null);
 
   protected readonly todayIso = toIso(new Date());
 
-  protected readonly clubs = computed(() => this.events().filter(isClub).sort(compareClubs));
+  private readonly clubs = computed(() => this.events().filter(isClub).sort(compareClubs));
+
+  protected readonly activeClubs = computed(() =>
+    this.clubs().filter((club) => clubStatus(club, this.todayIso) !== 'finished'),
+  );
+
+  protected readonly finishedClubs = computed(() =>
+    this.clubs()
+      .filter((club) => clubStatus(club, this.todayIso) === 'finished')
+      .sort((a, b) => (b.repeatUntil ?? '').localeCompare(a.repeatUntil ?? '')),
+  );
 
   protected readonly upcoming = computed(() =>
     this.events()
@@ -145,7 +157,7 @@ export class ManageEventsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.refresh();
+    this.load();
   }
 
   protected invalid(control: keyof typeof this.form.controls): boolean {
@@ -214,6 +226,11 @@ export class ManageEventsComponent implements OnInit {
       next: (saved) => {
         this.saving.set(false);
         this.editingId.set(null);
+        this.events.update((list) =>
+          id
+            ? list.map((event) => (event.eventId === saved.eventId ? saved : event))
+            : [...list, saved],
+        );
         this.notice.set(
           saved.published
             ? { text: `“${saved.title}” is saved and on the What's On page now.`, showLink: true }
@@ -222,7 +239,6 @@ export class ManageEventsComponent implements OnInit {
                 showLink: false,
               },
         );
-        this.refresh();
       },
       error: () => {
         this.saving.set(false);
@@ -233,15 +249,31 @@ export class ManageEventsComponent implements OnInit {
 
   protected remove(event: LibraryEvent): void {
     this.confirmingId.set(null);
+    this.busyId.set(event.eventId);
     this.error.set(null);
     this.api.deleteEvent(event.eventId).subscribe({
       next: () => {
+        this.busyId.set(null);
+        this.events.update((list) => list.filter((item) => item.eventId !== event.eventId));
         this.notice.set({ text: `“${event.title}” has been deleted.`, showLink: false });
-        this.refresh();
       },
-      error: () =>
-        this.error.set('We could not delete that event. Check your connection and try again.'),
+      error: () => {
+        this.busyId.set(null);
+        this.error.set('We could not delete that event. Check your connection and try again.');
+      },
     });
+  }
+
+  /** The short label on a club's time tile: the weekday, or how often for daily and monthly. */
+  protected tileLabel(event: LibraryEvent): string {
+    switch (event.recurrence) {
+      case 'daily':
+        return 'Daily';
+      case 'monthly':
+        return 'Monthly';
+      default:
+        return fromIso(event.date)?.toLocaleDateString('en-GB', { weekday: 'short' }) ?? '';
+    }
   }
 
   protected status(event: LibraryEvent): ClubStatus {
@@ -278,7 +310,7 @@ export class ManageEventsComponent implements OnInit {
     );
   }
 
-  private refresh(): void {
+  private load(): void {
     this.loading.set(true);
     this.api.listAllEvents().subscribe({
       next: (events) => {

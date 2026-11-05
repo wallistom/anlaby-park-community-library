@@ -54,6 +54,8 @@ export class EnquiriesComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly loadError = signal(false);
   protected readonly updateError = signal(false);
+  /** The row and status being saved, so the pressed button can say so. */
+  protected readonly pending = signal<{ id: string; status: EnquiryStatus } | null>(null);
 
   protected readonly statusLabels = STATUS_LABELS;
 
@@ -157,6 +159,11 @@ export class EnquiriesComponent implements OnInit {
     this.expandedId.update((current) => (current === id ? null : id));
   }
 
+  protected isSaving(row: Row, status: EnquiryStatus): boolean {
+    const current = this.pending();
+    return current?.id === row.id && current.status === status;
+  }
+
   protected mailto(row: Row): string {
     return `mailto:${row.email}?subject=${encodeURIComponent(row.replySubject)}`;
   }
@@ -170,9 +177,16 @@ export class EnquiriesComponent implements OnInit {
           : 'messages';
 
     this.updateError.set(false);
+    this.pending.set({ id: row.id, status });
     this.api.updateSubmissionStatus(kind, row.id, status).subscribe({
-      next: () => this.applyStatusLocally(row.id, status),
-      error: () => this.updateError.set(true),
+      next: () => {
+        this.pending.set(null);
+        this.applyStatusLocally(row.id, status);
+      },
+      error: () => {
+        this.pending.set(null);
+        this.updateError.set(true);
+      },
     });
   }
 
