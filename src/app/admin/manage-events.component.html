@@ -199,7 +199,15 @@
 }
 
 <ng-template #actions let-event>
-  @if (confirmingId() === event.eventId) {
+  @if (busyId() === event.eventId) {
+    <span
+      class="text-ink-muted inline-flex min-h-11 items-center gap-2 text-sm font-medium"
+      role="status"
+    >
+      <span class="spinner" aria-hidden="true"></span>
+      Deleting…
+    </span>
+  } @else if (confirmingId() === event.eventId) {
     <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm delete">
       <span class="text-sm font-semibold">
         {{ event.recurrence !== 'none' ? 'Delete it and every date it meets?' : 'Delete it?' }}
@@ -216,16 +224,12 @@
       </button>
     </div>
   } @else {
-    <div class="flex gap-2">
-      <button type="button" (click)="startEditing(event)" class="btn-secondary btn-sm">
+    <div class="flex gap-1">
+      <button type="button" (click)="startEditing(event)" class="row-action">
         <app-icon name="edit" [size]="15" />
-        Edit
+        Edit<span class="sr-only"> {{ event.title }}</span>
       </button>
-      <button
-        type="button"
-        (click)="confirmingId.set(event.eventId)"
-        class="border-danger-line text-danger hover:bg-danger-soft inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors"
-      >
+      <button type="button" (click)="confirmingId.set(event.eventId)" class="row-action-danger">
         <app-icon name="trash" [size]="15" />
         Delete<span class="sr-only"> {{ event.title }}</span>
       </button>
@@ -254,73 +258,55 @@
   <section class="mt-10" aria-labelledby="clubs-heading">
     <h2 id="clubs-heading" class="font-sans text-xl font-semibold">Regular clubs and groups</h2>
     <p class="text-ink-soft mt-1 text-sm">
-      Anything that repeats. Each one stays on the website until its last date, so extend it before
-      then if it carries on.
+      Anything that repeats. Each one stays on the website until its last date.
     </p>
 
-    @if (clubs().length) {
+    @if (activeClubs().length) {
       <ul class="mt-4 flex flex-col gap-3">
-        @for (event of clubs(); track event.eventId) {
-          <li class="card flex flex-wrap items-start gap-4 p-5">
-            <div
-              class="bg-blue-50 text-navy-800 flex w-20 shrink-0 flex-col items-center rounded-xl py-2"
-              [class.opacity-60]="status(event) === 'finished'"
-            >
-              <span class="text-xs font-semibold uppercase">{{ event.date | date: 'EEE' }}</span>
+        @for (event of activeClubs(); track event.eventId) {
+          <li
+            class="card flex flex-wrap items-center gap-x-4 gap-y-3 p-4 transition-opacity sm:p-5"
+            [class.opacity-60]="busyId() === event.eventId"
+          >
+            <div class="time-tile">
+              <span class="text-[0.6875rem] font-semibold tracking-wide uppercase">
+                {{ tileLabel(event) }}
+              </span>
               <span class="font-display text-base font-semibold">
                 {{ event.startTime ? (event.startTime | libraryTime) : '—' }}
               </span>
             </div>
 
             <div class="min-w-0 flex-1 basis-48">
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-sans text-lg font-semibold">{{ event.title }}</h3>
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <h3 class="font-sans text-base font-semibold sm:text-lg">{{ event.title }}</h3>
                 @if (!event.published) {
-                  <span class="chip-neutral">Draft, not on the website</span>
+                  <span class="chip-neutral">Draft</span>
                 }
-                @switch (status(event)) {
-                  @case ('finished') {
-                    <span class="chip-danger">Finished</span>
-                  }
-                  @case ('ending-soon') {
-                    <span class="chip-accent">
-                      {{
-                        daysLeft(event) === 0
-                          ? 'Last date is today'
-                          : 'Ends in ' +
-                            daysLeft(event) +
-                            (daysLeft(event) === 1 ? ' day' : ' days')
-                      }}
-                    </span>
-                  }
+                @if (status(event) === 'ending-soon') {
+                  <span class="chip-accent">
+                    {{
+                      daysLeft(event) === 0
+                        ? 'Last date is today'
+                        : 'Ends in ' + daysLeft(event) + (daysLeft(event) === 1 ? ' day' : ' days')
+                    }}
+                  </span>
                 }
               </div>
-              <p class="text-ink mt-1 text-sm font-medium">
+              <p class="text-ink-soft mt-1 text-sm">
                 {{ schedule(event) }}
                 @if (event.startTime) {
-                  <span class="text-ink-soft font-normal">
-                    · {{ event.startTime | libraryTime
-                    }}{{ event.endTime ? ' – ' + (event.endTime | libraryTime) : '' }}
-                  </span>
+                  · {{ event.startTime | libraryTime
+                  }}{{ event.endTime ? ' – ' + (event.endTime | libraryTime) : '' }}
                 }
-              </p>
-              <p class="text-ink-muted mt-1 text-sm">
-                {{ event.location }}
+                · {{ event.location }}
                 @if (event.cost) {
-                  <span>· {{ event.cost }}</span>
-                }
-                @if (event.repeatUntil) {
-                  <span>
-                    ·
-                    {{ status(event) === 'finished' ? 'Finished on' : 'Until' }}
-                    {{ event.repeatUntil | date: 'd MMMM y' }}
-                  </span>
+                  · {{ event.cost }}
                 }
               </p>
-              @if (status(event) === 'finished') {
-                <p class="text-danger mt-2 text-sm">
-                  It is no longer on the website. Edit it and set a later last date if it still
-                  meets, or delete it.
+              @if (event.repeatUntil) {
+                <p class="text-ink-muted mt-0.5 text-sm">
+                  Until {{ event.repeatUntil | date: 'd MMMM y' }}
                 </p>
               }
             </div>
@@ -334,46 +320,77 @@
         None yet. Add an event and choose how often it happens.
       </p>
     }
+
+    @if (finishedClubs().length) {
+      <details class="mt-5">
+        <summary
+          class="text-ink-soft inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold"
+        >
+          {{ finishedClubs().length }} finished
+          {{ finishedClubs().length === 1 ? 'club' : 'clubs' }}
+          <span class="text-ink-muted font-normal">· no longer on the website</span>
+        </summary>
+        <p class="text-ink-soft mt-2 max-w-2xl text-sm">
+          These have passed their last date. If one still meets, edit it and set a later last date
+          to put it back on the website. Otherwise delete it.
+        </p>
+        <ul class="mt-3 flex flex-col gap-2">
+          @for (event of finishedClubs(); track event.eventId) {
+            <li
+              class="border-line flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-4 py-2.5 transition-opacity"
+              [class.opacity-60]="busyId() === event.eventId"
+            >
+              <span class="text-ink-muted w-36 shrink-0 text-sm">
+                Finished {{ event.repeatUntil | date: 'd MMM y' }}
+              </span>
+              <span class="min-w-0 flex-1 basis-40 font-medium">{{ event.title }}</span>
+              <ng-container *ngTemplateOutlet="actions; context: { $implicit: event }" />
+            </li>
+          }
+        </ul>
+      </details>
+    }
   </section>
 
   <section class="mt-10" aria-labelledby="upcoming-heading">
     <h2 id="upcoming-heading" class="font-sans text-xl font-semibold">One-off events coming up</h2>
-    <p class="text-ink-soft mt-1 text-sm">
-      Talks, fayres, sales, and anything else that happens once.
-    </p>
+    <p class="text-ink-soft mt-1 text-sm">Anything that happens once.</p>
 
     @if (upcoming().length) {
       <ul class="mt-4 flex flex-col gap-3">
         @for (event of upcoming(); track event.eventId) {
-          <li class="card flex flex-wrap items-start gap-4 p-5">
-            <div class="date-chip">
-              <span class="text-xs font-semibold uppercase">{{ event.date | date: 'MMM' }}</span>
-              <span class="font-display text-2xl font-semibold">{{ event.date | date: 'd' }}</span>
+          <li
+            class="card flex flex-wrap items-center gap-x-4 gap-y-3 p-4 transition-opacity sm:p-5"
+            [class.opacity-60]="busyId() === event.eventId"
+          >
+            <div class="time-tile">
+              <span class="text-[0.6875rem] font-semibold tracking-wide uppercase">
+                {{ event.date | date: 'MMM' }}
+              </span>
+              <span class="font-display text-xl leading-none font-semibold">
+                {{ event.date | date: 'd' }}
+              </span>
             </div>
 
             <div class="min-w-0 flex-1 basis-48">
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-sans text-lg font-semibold">{{ event.title }}</h3>
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <h3 class="font-sans text-base font-semibold sm:text-lg">{{ event.title }}</h3>
                 @if (!event.published) {
-                  <span class="chip-neutral">Draft, not on the website</span>
+                  <span class="chip-neutral">Draft</span>
                 }
               </div>
-              <p class="text-ink mt-1 text-sm font-medium">
-                {{ event.date | date: 'EEEE d MMMM y' }}
+              <p class="text-ink-soft mt-1 text-sm">
+                {{ event.date | date: 'EEEE d MMMM' }}
                 @if (event.startTime) {
-                  <span class="text-ink-soft font-normal">
-                    · {{ event.startTime | libraryTime
-                    }}{{ event.endTime ? ' – ' + (event.endTime | libraryTime) : '' }}
-                  </span>
+                  · {{ event.startTime | libraryTime
+                  }}{{ event.endTime ? ' – ' + (event.endTime | libraryTime) : '' }}
                 }
-              </p>
-              <p class="text-ink-muted mt-1 text-sm">
-                {{ event.location }}
+                · {{ event.location }}
                 @if (event.cost) {
-                  <span>· {{ event.cost }}</span>
+                  · {{ event.cost }}
                 }
               </p>
-              <p class="text-ink-soft mt-2 text-sm">{{ event.description }}</p>
+              <p class="text-ink-muted mt-0.5 truncate text-sm">{{ event.description }}</p>
             </div>
 
             <ng-container *ngTemplateOutlet="actions; context: { $implicit: event }" />
@@ -398,7 +415,8 @@
       <ul class="mt-3 flex flex-col gap-2">
         @for (event of past(); track event.eventId) {
           <li
-            class="border-line flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-4 py-3"
+            class="border-line flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-4 py-2.5 transition-opacity"
+            [class.opacity-60]="busyId() === event.eventId"
           >
             <span class="text-ink-muted w-28 shrink-0 text-sm tabular-nums">
               {{ event.date | date: 'd MMM y' }}
