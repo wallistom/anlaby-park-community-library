@@ -22,9 +22,9 @@
 }
 
 @if (notice(); as note) {
-  <div class="alert-success mt-6" role="status">
+  <div class="alert-success mt-6 items-center py-2 pr-2" role="status">
     <app-icon name="checkCircle" [size]="20" />
-    <p class="text-sm">
+    <p class="min-w-0 flex-1 py-1.5 text-sm">
       {{ note.text }}
       @if (note.showLink) {
         <a
@@ -37,13 +37,27 @@
         </a>
       }
     </p>
+    <button type="button" (click)="notice.set(null)" class="alert-dismiss">
+      <app-icon name="close" [size]="16" />
+      <span class="sr-only">Dismiss this message</span>
+    </button>
   </div>
 }
 
 @if (editingId() !== null) {
-  <div #formPanel class="border-blue-200 bg-surface mt-8 scroll-mt-6 rounded-2xl border p-6 sm:p-7">
-    <h2 class="text-xl font-semibold">{{ editingId() ? 'Edit event' : 'New event' }}</h2>
-    <p class="text-ink-muted mt-1 text-sm">Fields marked * are needed.</p>
+  <div #formPanel class="card shadow-raised panel-in mt-8 scroll-mt-6 p-6 sm:p-7">
+    <div class="flex items-start justify-between gap-4">
+      <div class="min-w-0">
+        <h2 class="font-sans text-xl font-semibold">
+          {{ editingId() ? 'Edit “' + editingTitle() + '”' : 'New event' }}
+        </h2>
+        <p class="text-ink-muted mt-1 text-sm">Fields marked * are needed.</p>
+      </div>
+      <button type="button" (click)="cancel()" class="icon-btn -mt-1 -mr-1">
+        <app-icon name="close" [size]="18" />
+        <span class="sr-only">Close without saving</span>
+      </button>
+    </div>
 
     <form [formGroup]="form" (ngSubmit)="save()" class="mt-6 flex flex-col gap-5" novalidate>
       <div>
@@ -63,7 +77,52 @@
 
       <fieldset class="border-line bg-page rounded-xl border p-5">
         <legend class="sr-only">When it happens</legend>
-        <div class="grid gap-5 sm:grid-cols-2">
+
+        <p id="kind-label" class="field-label">Does it happen once, or regularly?</p>
+        <div
+          role="group"
+          aria-labelledby="kind-label"
+          class="segmented max-w-md"
+          [class.is-second]="repeats()"
+        >
+          <button
+            type="button"
+            (click)="setKind('one-off')"
+            [attr.aria-pressed]="!repeats()"
+            [class]="repeats() ? 'segment' : 'segment-on'"
+          >
+            Once
+          </button>
+          <button
+            type="button"
+            (click)="setKind('regular')"
+            [attr.aria-pressed]="repeats()"
+            [class]="repeats() ? 'segment-on' : 'segment'"
+          >
+            Regularly
+          </button>
+        </div>
+
+        <div
+          [class]="
+            repeats()
+              ? 'mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3'
+              : 'mt-5 grid gap-5 sm:grid-cols-2'
+          "
+        >
+          @if (repeats()) {
+            <div class="sm:col-span-2 lg:col-span-1">
+              <label for="recurrence" class="field-label">
+                How often? <span aria-hidden="true">*</span>
+              </label>
+              <select id="recurrence" formControlName="recurrence" class="field-input">
+                @for (option of repeatOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          }
+
           <div>
             <label for="date" class="field-label">
               {{ repeats() ? 'First date' : 'Date' }} <span aria-hidden="true">*</span>
@@ -78,17 +137,6 @@
             @if (invalid('date')) {
               <p class="field-error"><app-icon name="info" [size]="15" /> Please pick a date.</p>
             }
-          </div>
-
-          <div>
-            <label for="recurrence" class="field-label">
-              How often does it happen? <span aria-hidden="true">*</span>
-            </label>
-            <select id="recurrence" formControlName="recurrence" class="field-input">
-              @for (option of recurrenceOptions; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select>
           </div>
 
           @if (repeats()) {
@@ -111,7 +159,9 @@
           }
         </div>
 
-        <p class="text-ink-soft mt-4 text-sm">{{ repeatPreview() }}</p>
+        @if (repeatPreview(); as preview) {
+          <p class="text-ink-soft mt-4 text-sm">{{ preview }}</p>
+        }
       </fieldset>
 
       <div class="grid gap-5 sm:grid-cols-2">
@@ -188,7 +238,7 @@
         </span>
       </label>
 
-      <div class="flex flex-wrap gap-3">
+      <div class="border-line flex flex-wrap gap-3 border-t pt-5">
         <button type="submit" [disabled]="saving()" class="btn-primary">
           {{ saving() ? 'Saving…' : editingId() ? 'Save changes' : 'Save event' }}
         </button>
@@ -238,34 +288,66 @@
 </ng-template>
 
 @if (loading()) {
-  <ul class="mt-10 flex flex-col gap-3" aria-hidden="true">
-    @for (row of [1, 2, 3, 4]; track row) {
-      <li class="card flex flex-wrap items-start gap-4 p-5">
-        <span class="skeleton h-14 w-16 shrink-0 rounded-xl"></span>
-        <span class="flex min-w-0 flex-1 flex-col gap-2.5">
-          <span class="flex flex-wrap items-center gap-2">
-            <span class="skeleton h-5 w-48"></span>
-            <span class="skeleton h-5 w-20 rounded-lg"></span>
-          </span>
-          <span class="skeleton h-4 w-64"></span>
-          <span class="skeleton h-4 w-40"></span>
-        </span>
-      </li>
+  <div aria-hidden="true">
+    @for (
+      rows of [
+        [1, 2, 3],
+        [1, 2],
+      ];
+      track $index
+    ) {
+      <div class="card overflow-hidden" [class]="$first ? 'mt-8' : 'mt-6'">
+        <div class="flex flex-col gap-2.5 px-5 py-5 sm:px-6">
+          <span class="skeleton h-6 w-56"></span>
+          <span class="skeleton h-4 w-80 max-w-full"></span>
+        </div>
+        <ul class="divide-line border-line divide-y border-t">
+          @for (row of rows; track row) {
+            <li class="flex items-start gap-4 px-5 py-4 sm:px-6">
+              <span class="skeleton h-14 w-20 shrink-0 rounded-xl"></span>
+              <span class="flex min-w-0 flex-1 flex-col gap-2.5 pt-1">
+                <span class="skeleton h-5 w-44"></span>
+                <span class="skeleton h-4 w-72 max-w-full"></span>
+                <span class="skeleton h-4 w-32"></span>
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
     }
-  </ul>
+  </div>
   <p class="sr-only" aria-live="polite">Loading events</p>
-} @else if (events().length > 0) {
-  <section class="mt-10" aria-labelledby="clubs-heading">
-    <h2 id="clubs-heading" class="font-sans text-xl font-semibold">Regular clubs and groups</h2>
-    <p class="text-ink-soft mt-1 text-sm">
-      Anything that repeats. Each one stays on the website until its last date.
-    </p>
+} @else if (loadFailed()) {
+  <div class="alert-danger mt-8" role="alert">
+    <app-icon name="info" [size]="20" />
+    <div class="text-sm">
+      <p class="font-semibold">We could not load your events</p>
+      <p class="mt-1">
+        Nothing has been changed. Check your connection and try again. If it keeps happening, sign
+        out and back in.
+      </p>
+      <button type="button" (click)="load()" class="btn-secondary btn-sm mt-3">Try again</button>
+    </div>
+  </div>
+} @else {
+  <section class="card mt-8 overflow-hidden" aria-labelledby="clubs-heading">
+    <div class="px-5 py-5 sm:px-6">
+      <h2 id="clubs-heading" class="font-sans text-xl font-semibold">
+        Regular clubs and groups
+        @if (activeClubs().length) {
+          <span class="text-ink-muted font-normal">· {{ activeClubs().length }}</span>
+        }
+      </h2>
+      <p class="text-ink-soft mt-1 text-sm">
+        Anything that repeats. Each one stays on the website until its last date.
+      </p>
+    </div>
 
     @if (activeClubs().length) {
-      <ul class="mt-4 flex flex-col gap-3">
+      <ul class="divide-line border-line divide-y border-t">
         @for (event of activeClubs(); track event.eventId) {
           <li
-            class="card flex flex-wrap items-center gap-x-4 gap-y-3 p-4 transition-opacity sm:p-5"
+            class="flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4 transition-opacity sm:px-6"
             [class.opacity-60]="busyId() === event.eventId"
           >
             <div class="time-tile">
@@ -316,28 +398,57 @@
         }
       </ul>
     } @else {
-      <p class="text-ink-muted mt-4 text-sm">
-        None yet. Add an event and choose how often it happens.
-      </p>
+      <div class="empty-state">
+        <span class="empty-state-icon"><app-icon name="repeat" [size]="22" /></span>
+        <div class="min-w-0 flex-1 basis-60">
+          @if (finishedClubs().length) {
+            <p class="text-ink font-semibold">None running at the moment</p>
+            <p class="text-ink-soft mt-0.5 text-sm">
+              {{ finishedClubs().length === 1 ? 'The one below has' : 'The ones below have' }}
+              passed {{ finishedClubs().length === 1 ? 'its' : 'their' }} last date. Edit it and set
+              a later last date to put it back on the website, or add a new one.
+            </p>
+          } @else {
+            <p class="text-ink font-semibold">No regular clubs or groups yet</p>
+            <p class="text-ink-soft mt-0.5 text-sm">
+              Add each one once, with the day it meets and how often. What's On then shows every
+              date for you.
+            </p>
+          }
+        </div>
+        <button type="button" (click)="startAdding('regular')" class="btn-secondary btn-sm">
+          <app-icon name="plus" [size]="16" />
+          Add a regular club
+        </button>
+      </div>
     }
 
     @if (finishedClubs().length) {
-      <details class="mt-5">
-        <summary
-          class="text-ink-soft inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold"
-        >
-          {{ finishedClubs().length }} finished
-          {{ finishedClubs().length === 1 ? 'club' : 'clubs' }}
-          <span class="text-ink-muted font-normal">· no longer on the website</span>
+      <details class="group border-line border-t">
+        <summary class="section-toggle">
+          <span>
+            <strong class="text-ink font-semibold">
+              {{ finishedClubs().length }} finished
+              {{ finishedClubs().length === 1 ? 'club' : 'clubs' }}
+            </strong>
+            · no longer on the website
+          </span>
+          <span class="text-navy-900 ml-auto inline-flex items-center gap-1.5 font-semibold">
+            <span class="group-open:hidden">Show</span>
+            <span class="hidden group-open:inline">Hide</span>
+            <app-icon name="chevronDown" [size]="16" class="toggle-chevron" />
+          </span>
         </summary>
-        <p class="text-ink-soft mt-2 max-w-2xl text-sm">
-          These have passed their last date. If one still meets, edit it and set a later last date
-          to put it back on the website. Otherwise delete it.
-        </p>
-        <ul class="mt-3 flex flex-col gap-2">
+        @if (activeClubs().length) {
+          <p class="text-ink-soft px-5 pb-3 text-sm sm:px-6">
+            These have passed their last date. If one still meets, edit it and set a later last date
+            to put it back on the website. Otherwise delete it.
+          </p>
+        }
+        <ul class="divide-line border-line divide-y border-t">
           @for (event of finishedClubs(); track event.eventId) {
             <li
-              class="border-line flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-4 py-2.5 transition-opacity"
+              class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-2.5 transition-opacity sm:px-6"
               [class.opacity-60]="busyId() === event.eventId"
             >
               <span class="text-ink-muted w-36 shrink-0 text-sm">
@@ -352,15 +463,24 @@
     }
   </section>
 
-  <section class="mt-10" aria-labelledby="upcoming-heading">
-    <h2 id="upcoming-heading" class="font-sans text-xl font-semibold">One-off events coming up</h2>
-    <p class="text-ink-soft mt-1 text-sm">Anything that happens once.</p>
+  <section class="card mt-6 overflow-hidden" aria-labelledby="upcoming-heading">
+    <div class="px-5 py-5 sm:px-6">
+      <h2 id="upcoming-heading" class="font-sans text-xl font-semibold">
+        One-off events coming up
+        @if (upcoming().length) {
+          <span class="text-ink-muted font-normal">· {{ upcoming().length }}</span>
+        }
+      </h2>
+      <p class="text-ink-soft mt-1 text-sm">
+        Anything that happens once. Each one comes off the website after its date.
+      </p>
+    </div>
 
     @if (upcoming().length) {
-      <ul class="mt-4 flex flex-col gap-3">
+      <ul class="divide-line border-line divide-y border-t">
         @for (event of upcoming(); track event.eventId) {
           <li
-            class="card flex flex-wrap items-center gap-x-4 gap-y-3 p-4 transition-opacity sm:p-5"
+            class="flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4 transition-opacity sm:px-6"
             [class.opacity-60]="busyId() === event.eventId"
           >
             <div class="time-tile">
@@ -398,51 +518,51 @@
         }
       </ul>
     } @else {
-      <p class="text-ink-muted mt-4 text-sm">
-        Nothing coming up. Add an event to put one on the website.
-      </p>
+      <div class="empty-state">
+        <span class="empty-state-icon"><app-icon name="calendar" [size]="22" /></span>
+        <div class="min-w-0 flex-1 basis-60">
+          <p class="text-ink font-semibold">Nothing coming up</p>
+          <p class="text-ink-soft mt-0.5 text-sm">
+            Add anything that happens on a single day, such as a talk or a sale, with its date.
+          </p>
+        </div>
+        <button type="button" (click)="startAdding('one-off')" class="btn-secondary btn-sm">
+          <app-icon name="plus" [size]="16" />
+          Add a one-off event
+        </button>
+      </div>
+    }
+
+    @if (past().length) {
+      <details class="group border-line border-t">
+        <summary class="section-toggle">
+          <span>
+            <strong class="text-ink font-semibold">
+              {{ past().length }} past {{ past().length === 1 ? 'event' : 'events' }}
+            </strong>
+            · no longer on the website
+          </span>
+          <span class="text-navy-900 ml-auto inline-flex items-center gap-1.5 font-semibold">
+            <span class="group-open:hidden">Show</span>
+            <span class="hidden group-open:inline">Hide</span>
+            <app-icon name="chevronDown" [size]="16" class="toggle-chevron" />
+          </span>
+        </summary>
+        <ul class="divide-line border-line divide-y border-t">
+          @for (event of past(); track event.eventId) {
+            <li
+              class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-2.5 transition-opacity sm:px-6"
+              [class.opacity-60]="busyId() === event.eventId"
+            >
+              <span class="text-ink-muted w-28 shrink-0 text-sm tabular-nums">
+                {{ event.date | date: 'd MMM y' }}
+              </span>
+              <span class="min-w-0 flex-1 basis-40 font-medium">{{ event.title }}</span>
+              <ng-container *ngTemplateOutlet="actions; context: { $implicit: event }" />
+            </li>
+          }
+        </ul>
+      </details>
     }
   </section>
-
-  @if (past().length) {
-    <details class="mt-10">
-      <summary
-        class="text-ink-soft inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold"
-      >
-        {{ past().length }} past {{ past().length === 1 ? 'event' : 'events' }}
-        <span class="text-ink-muted font-normal">· no longer on the website</span>
-      </summary>
-      <ul class="mt-3 flex flex-col gap-2">
-        @for (event of past(); track event.eventId) {
-          <li
-            class="border-line flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-4 py-2.5 transition-opacity"
-            [class.opacity-60]="busyId() === event.eventId"
-          >
-            <span class="text-ink-muted w-28 shrink-0 text-sm tabular-nums">
-              {{ event.date | date: 'd MMM y' }}
-            </span>
-            <span class="min-w-0 flex-1 basis-40 font-medium">{{ event.title }}</span>
-            <ng-container *ngTemplateOutlet="actions; context: { $implicit: event }" />
-          </li>
-        }
-      </ul>
-    </details>
-  }
-} @else if (!error()) {
-  <div
-    class="border-line-strong bg-surface/60 mt-8 rounded-2xl border border-dashed px-6 py-16 text-center"
-  >
-    <span class="icon-tile mx-auto h-14 w-14 rounded-2xl">
-      <app-icon name="calendar" [size]="26" />
-    </span>
-    <h2 class="mt-4 font-sans text-xl font-semibold">No events yet</h2>
-    <p class="text-ink-soft mx-auto mt-2 max-w-md">
-      Add your first one. Regular clubs go in once with how often they meet, and one-off events go
-      in with their date.
-    </p>
-    <button type="button" (click)="startAdding()" class="btn-primary mt-6">
-      <app-icon name="plus" [size]="18" />
-      Add an event
-    </button>
-  </div>
 }

@@ -598,6 +598,26 @@
   .alert-success {
     @apply border-success-line bg-success-soft text-success;
   }
+
+  .alert-dismiss {
+    @apply hover:bg-success-line/60 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors;
+  }
+
+  .empty-state {
+    @apply bg-page mx-5 mb-5 flex flex-wrap items-center gap-x-5 gap-y-4 rounded-xl border border-dashed border-stone-300 px-4 py-5 sm:mx-6 sm:mb-6 sm:px-5;
+  }
+
+  .empty-state-icon {
+    @apply bg-surface ring-line hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl text-blue-700 ring-1 sm:flex;
+  }
+
+  .section-toggle {
+    @apply text-ink-muted hover:bg-page flex min-h-14 cursor-pointer list-none items-center gap-3 px-5 py-3 text-sm transition-colors sm:px-6;
+  }
+
+  .section-toggle::-webkit-details-marker {
+    display: none;
+  }
 }
 
 @keyframes page-enter {
@@ -837,6 +857,14 @@ router-outlet + * {
     grid-template-rows: 1fr;
     opacity: 1;
   }
+}
+
+.toggle-chevron {
+  transition: transform var(--duration-quick) var(--ease-gentle);
+}
+
+details[open] > summary .toggle-chevron {
+  transform: rotate(180deg);
 }
 
 .disclosure {
