@@ -189,7 +189,7 @@
     <div class="flex flex-wrap items-end justify-between gap-4" [appReveal]="0">
       <div>
         <p class="eyebrow">What's on</p>
-        <h2 class="text-3xl font-bold sm:text-4xl">On this week</h2>
+        <h2 class="text-3xl font-bold sm:text-4xl">The week ahead</h2>
       </div>
       <a routerLink="/whats-on" class="link-arrow">
         See the full calendar
@@ -198,77 +198,125 @@
     </div>
 
     @if (events.state() === 'loading') {
-      <ul class="mt-8 grid gap-4 lg:grid-cols-2" aria-hidden="true">
-        @for (row of [1, 2, 3, 4]; track row) {
-          <li class="card flex gap-5 p-5 sm:p-6">
-            <div class="skeleton h-14 w-14 shrink-0 rounded-xl"></div>
-            <div class="flex min-w-0 flex-1 flex-col gap-3 pt-1">
-              <div class="skeleton h-5 w-40"></div>
-              <div class="skeleton h-4 w-56"></div>
-              @if (row === 2) {
-                <div class="skeleton h-4 w-44"></div>
-              }
-            </div>
+      <ol class="mt-8 grid gap-2 lg:grid-cols-7" aria-hidden="true">
+        @for (column of [1, 2, 3, 4, 5, 6, 7]; track column) {
+          <li class="card p-3.5 lg:min-h-[11rem]">
+            <div class="skeleton h-6 w-8"></div>
+            <div class="skeleton mt-3 h-4 w-20"></div>
           </li>
         }
-      </ul>
+      </ol>
       <p class="sr-only" aria-live="polite">Loading this week's events</p>
-    } @else if (comingDays().length > 0) {
-      <ul class="mt-8 grid gap-4 lg:grid-cols-2">
-        @for (day of comingDays(); track day.iso; let i = $index) {
-          <li class="card flex gap-5 p-5 sm:p-6" [appReveal]="i * 50">
-            <div [class]="day.isToday ? 'date-chip-today' : 'date-chip'" aria-hidden="true">
-              <span class="text-[0.7rem] font-semibold tracking-wide uppercase">
-                {{ day.date | date: 'EEE' }}
+    } @else {
+      @if (events.state() === 'error') {
+        <p class="text-ink-soft mt-6">
+          We could not load the diary just now. Ring us on
+          <a [href]="'tel:' + site.phoneHref" class="link whitespace-nowrap">{{ site.phone }}</a>
+          and we will tell you what is coming up.
+        </p>
+      }
+      <p
+        class="text-ink-muted mt-8 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm lg:justify-end"
+      >
+        <span class="flex items-center gap-2">
+          <span class="bg-blue-600 inline-block h-3.5 w-3.5 rounded" aria-hidden="true"></span>
+          Weekly club
+        </span>
+        <span class="flex items-center gap-2">
+          <span class="bg-accent inline-block h-3.5 w-3.5 rounded" aria-hidden="true"></span>
+          One-off event
+        </span>
+        <span class="flex items-center gap-2">
+          <span
+            class="border-line-strong inline-block h-3.5 w-3.5 rounded border border-dashed"
+            aria-hidden="true"
+          ></span>
+          Closed
+        </span>
+      </p>
+      <ol class="mt-3 grid gap-3 lg:grid-cols-7" aria-label="The next seven days">
+        @for (day of weekAhead(); track day.iso; let i = $index) {
+          <li [appReveal]="i * 40">
+            <a
+              routerLink="/whats-on"
+              [queryParams]="{ view: 'week', day: day.iso }"
+              class="card-interactive flex h-full flex-col gap-2 p-4 lg:min-h-[12rem]"
+              [class]="
+                day.isToday
+                  ? 'bg-navy-800 border-navy-800 hover:border-navy-700 shadow-raised text-white'
+                  : day.closed
+                    ? 'border-line-strong hover:border-blue-400 border-dashed bg-transparent shadow-none'
+                    : ''
+              "
+              [attr.aria-label]="
+                (day.isToday ? 'Today, ' : '') +
+                (day.date | date: 'EEEE d MMMM') +
+                (day.closed ? ', library closed' : ', open ' + day.hours) +
+                ', ' +
+                (day.events.length ? day.events.length + ' on' : 'nothing booked')
+              "
+            >
+              <span class="flex items-baseline justify-between gap-2">
+                <span
+                  class="text-xs font-bold tracking-[0.14em] uppercase"
+                  [class]="day.isToday ? 'text-orange-300' : 'text-navy-800'"
+                >
+                  @if (day.isToday) {
+                    Today
+                  } @else {
+                    <span class="lg:hidden">{{ day.date | date: 'EEEE' }}</span>
+                    <span class="hidden lg:inline">{{ day.date | date: 'EEE' }}</span>
+                  }
+                </span>
+                <span
+                  class="font-display text-2xl leading-none font-semibold"
+                  [class]="day.isToday ? 'text-white' : 'text-navy-950'"
+                >
+                  {{ day.date | date: 'd' }}
+                </span>
               </span>
-              <span class="font-display text-xl leading-none font-semibold">
-                {{ day.date | date: 'd' }}
+
+              <span
+                class="text-xs font-medium tabular-nums"
+                [class]="
+                  day.isToday ? 'text-ink-on-dark' : day.closed ? 'text-ink-muted' : 'text-ink-soft'
+                "
+              >
+                {{ day.closed ? 'Closed' : day.hours }}
               </span>
-            </div>
-            <div class="min-w-0 flex-1">
-              <h3 class="text-navy-900 font-sans text-base font-semibold">
-                {{ day.isToday ? 'Today' : (day.date | date: 'EEEE d MMMM') }}
-              </h3>
-              <ul class="mt-2 flex flex-col gap-2">
-                @for (event of day.events; track event.occurrenceId) {
-                  <li class="flex flex-col gap-x-3 gap-y-0.5 sm:flex-row sm:items-baseline">
-                    <span class="text-ink-muted shrink-0 text-sm tabular-nums sm:w-20">
-                      {{ event.startTime ? (event.startTime | libraryTime) : 'All day' }}
-                    </span>
-                    <span class="min-w-0">
-                      <span class="text-ink font-semibold">{{ event.title }}</span>
-                      @if (event.cost) {
-                        <span class="text-ink-muted text-sm"> · {{ event.cost }}</span>
+
+              @if (day.events.length) {
+                <span class="mt-1 flex flex-col gap-1.5">
+                  @for (event of day.events.slice(0, 3); track event.occurrenceId) {
+                    <span
+                      class="line-clamp-3"
+                      [class]="
+                        day.isToday
+                          ? event.recurrence === 'none'
+                            ? 'evt-on-dark is-oneoff'
+                            : 'evt-on-dark is-club'
+                          : event.recurrence === 'none'
+                            ? 'evt-oneoff'
+                            : 'evt-club'
+                      "
+                    >
+                      @if (event.startTime) {
+                        <span class="evt-time">{{ event.startTime | libraryTime }}</span>
                       }
+                      {{ event.title }}
                     </span>
-                  </li>
-                }
-              </ul>
-            </div>
+                  }
+                  @if (day.events.length > 3) {
+                    <span class="evt-more" [class.text-ink-on-dark]="day.isToday">
+                      +{{ day.events.length - 3 }} more
+                    </span>
+                  }
+                </span>
+              }
+            </a>
           </li>
         }
-      </ul>
-    } @else {
-      <div
-        class="card mt-8 flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center sm:p-8"
-        [appReveal]="80"
-      >
-        <span class="icon-tile"><app-icon name="calendar" [size]="22" /></span>
-        <div class="flex-1">
-          <p class="font-sans text-navy-950 text-xl font-semibold">
-            Nothing in the diary for the next few days
-          </p>
-          <p class="text-ink-soft mt-1.5">
-            Our weekly clubs still run, or ring us on
-            <a [href]="'tel:' + site.phoneHref" class="link whitespace-nowrap">{{ site.phone }}</a>
-            and we will tell you what is coming up.
-          </p>
-        </div>
-        <a routerLink="/activities" class="btn-secondary btn-sm shrink-0">
-          See our clubs
-          <app-icon name="arrowRight" [size]="16" />
-        </a>
-      </div>
+      </ol>
     }
   </div>
 </section>

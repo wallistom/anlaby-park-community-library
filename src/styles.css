@@ -472,6 +472,65 @@
     min-height: 2.75rem;
   }
 
+  .evt-club,
+  .evt-oneoff,
+  .evt-on-dark {
+    @apply block rounded-lg px-2.5 py-1.5 text-[0.8125rem] leading-snug font-semibold;
+  }
+
+  .evt-club {
+    @apply bg-blue-600 text-white;
+  }
+
+  .evt-oneoff {
+    @apply bg-accent text-white;
+  }
+
+  .evt-on-dark {
+    @apply bg-surface text-ink border-l-[3px];
+  }
+
+  .evt-on-dark.is-club {
+    @apply border-blue-600;
+  }
+
+  .evt-on-dark.is-oneoff {
+    @apply border-orange-500;
+  }
+
+  .evt-sm {
+    @apply py-1 text-xs;
+  }
+
+  .evt-time {
+    @apply block text-xs font-medium tabular-nums;
+  }
+
+  .evt-on-dark .evt-time {
+    @apply text-ink-muted;
+  }
+
+  .evt-more {
+    @apply text-ink-muted block px-1 text-xs font-semibold;
+  }
+
+  .evt-tag-club,
+  .evt-tag-oneoff {
+    @apply inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+
+  .evt-tag-club {
+    @apply bg-blue-100 text-navy-800;
+  }
+
+  .evt-tag-oneoff {
+    @apply bg-orange-100 text-orange-900;
+  }
+
+  .day-col {
+    @apply flex min-h-[14rem] w-full flex-col rounded-xl border p-2.5 text-left transition-colors;
+  }
+
   .pill-on {
     @apply border-navy-800 bg-navy-800 text-ink-inverse;
   }
@@ -592,6 +651,21 @@ router-outlet + * {
   to {
     transform: translateX(100%);
   }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.panel-in {
+  animation: panel-in var(--duration-page) var(--ease-gentle) both;
 }
 
 @keyframes fact-in {
