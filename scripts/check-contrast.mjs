@@ -80,6 +80,9 @@ const PAIRS = [
   ['ink-soft', 'blue-50', 'prose in blue panels', 'normal'],
   ['ink-muted', 'blue-50', 'hints in blue panels', 'normal'],
   ['blue-700', 'blue-50', 'links in blue panels', 'normal'],
+  ['ink-inverse', 'blue-600', 'weekly club chips', 'normal'],
+  ['ink-inverse', 'accent', 'one-off event chips', 'normal'],
+  ['orange-300', 'inverse', 'today label on the navy day card', 'normal'],
 
   ['ink-inverse', 'navy-950', 'admin header title', 'normal'],
   ['ink-on-dark-muted', 'navy-950', 'admin header nav labels', 'normal'],

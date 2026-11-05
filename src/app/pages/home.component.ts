@@ -11,6 +11,7 @@ import { OpeningHoursService } from '../core/opening-hours.service';
 import { EventsService } from '../core/events.service';
 import { FACILITIES, MAP_LINKS, SITE } from '../core/site.data';
 import { addDays, toIso } from '../core/calendar';
+import { formatRange } from '../core/opening-hours.model';
 
 @Component({
   selector: 'app-home',
@@ -33,17 +34,21 @@ export class HomeComponent implements OnInit {
 
   protected readonly site = SITE;
   protected readonly mapLinks = MAP_LINKS;
-  protected readonly comingDays = computed(() => {
+  protected readonly weekAhead = computed(() => {
     const today = new Date();
     return Array.from({ length: 7 }, (_, offset) => {
       const date = addDays(today, offset);
+      const iso = toIso(date);
+      const opening = this.hours.resolve(iso);
       return {
         date,
-        iso: toIso(date),
+        iso,
         isToday: offset === 0,
-        events: this.events.eventsOn(toIso(date)),
+        closed: opening.closed,
+        hours: formatRange(opening),
+        events: this.events.eventsOn(iso),
       };
-    }).filter((day) => day.events.length > 0);
+    });
   });
 
   protected readonly offerings = FACILITIES.slice(0, 6);
