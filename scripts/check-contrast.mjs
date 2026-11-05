@@ -88,6 +88,8 @@ const PAIRS = [
   ['ink-on-dark-muted', 'navy-950', 'admin header nav labels', 'normal'],
   ['navy-950', 'orange-500', 'admin header logo tile', 'normal'],
   ['ink-on-dark', 'navy-950', 'admin header user name', 'normal'],
+  ['navy-900', 'surface', 'Show / Hide toggles on admin cards', 'normal'],
+  ['navy-900', 'page', 'Show / Hide toggles, hover', 'normal'],
 ];
 
 const NON_TEXT = [
@@ -106,6 +108,7 @@ const NON_TEXT = [
   ['orange-600', 'surface', 'active nav underline'],
   ['orange-700', 'orange-50', 'icon glyphs in warm tiles'],
   ['success', 'success-soft', 'today card open icon'],
+  ['success', 'success-line', 'dismiss icon on a success alert, hover'],
 ];
 
 let failures = 0;

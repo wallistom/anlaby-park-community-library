@@ -39,6 +39,9 @@ interface Notice {
   showLink: boolean;
 }
 
+/** The two kinds the page is split into: they map onto `recurrence` being 'none' or not. */
+type EventKind = 'one-off' | 'regular';
+
 function repeatRules(group: AbstractControl): ValidationErrors | null {
   const { recurrence, date, repeatUntil } = group.value as {
     recurrence: Recurrence;
@@ -81,6 +84,8 @@ export class ManageEventsComponent implements OnInit {
 
   protected readonly events = signal<LibraryEvent[]>([]);
   protected readonly loading = signal(true);
+  /** Kept apart from `error` so a failed load never shows the sections as genuinely empty. */
+  protected readonly loadFailed = signal(false);
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly notice = signal<Notice | null>(null);
@@ -116,8 +121,16 @@ export class ManageEventsComponent implements OnInit {
       .sort((a, b) => b.date.localeCompare(a.date)),
   );
 
-  protected readonly recurrenceOptions = (Object.keys(RECURRENCE_LABELS) as Recurrence[]).map(
-    (value) => ({ value, label: RECURRENCE_LABELS[value] }),
+  /** Only the repeating choices: whether it repeats at all is asked first, as one-off or regular. */
+  protected readonly repeatOptions = (Object.keys(RECURRENCE_LABELS) as Recurrence[])
+    .filter((value) => value !== 'none')
+    .map((value) => ({ value, label: RECURRENCE_LABELS[value] }));
+
+  /** The repeat a trustee last chose, restored if they switch to one-off and back. */
+  private lastRepeat: Recurrence = 'weekly';
+
+  protected readonly editingTitle = computed(
+    () => this.events().find((event) => event.eventId === this.editingId())?.title ?? '',
   );
 
   protected readonly form = this.fb.nonNullable.group(
@@ -147,7 +160,13 @@ export class ManageEventsComponent implements OnInit {
   protected readonly repeatPreview = computed(() => {
     const value = this.formValue();
     if (value.recurrence === 'none') {
-      return 'Pick how often it happens to turn this into a regular club or group.';
+      const day = fromIso(value.date)?.toLocaleDateString('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      return day ? `One date only: ${day}.` : '';
     }
     if (!fromIso(value.date)) {
       return 'Choose the first date. It will then be shown on every date after it, up to the last date.';
@@ -160,14 +179,18 @@ export class ManageEventsComponent implements OnInit {
     this.load();
   }
 
+  /**
+   * Errors wait for a save attempt, or for the field to be typed in and left. Touched alone is not
+   * enough: Name is focused when the form opens, so the first click elsewhere would flag it.
+   */
   protected invalid(control: keyof typeof this.form.controls): boolean {
     const field = this.form.controls[control];
-    return (this.submitted() || field.touched) && field.invalid;
+    return (this.submitted() || (field.touched && field.dirty)) && field.invalid;
   }
 
   protected repeatUntilError(): string | null {
     const control = this.form.controls.repeatUntil;
-    if (!this.submitted() && !control.touched) {
+    if (!this.submitted() && !(control.touched && control.dirty)) {
       return null;
     }
     if (this.form.hasError('repeatUntilMissing')) {
@@ -179,10 +202,26 @@ export class ManageEventsComponent implements OnInit {
     return null;
   }
 
-  protected startAdding(): void {
-    this.form.reset({ location: 'The Greenway', published: true, recurrence: 'none' });
+  protected startAdding(kind: EventKind = 'one-off'): void {
+    this.form.reset({
+      location: 'The Greenway',
+      published: true,
+      recurrence: kind === 'regular' ? 'weekly' : 'none',
+    });
     this.editingId.set('');
     this.openForm();
+  }
+
+  protected setKind(kind: EventKind): void {
+    const control = this.form.controls.recurrence;
+    if (kind === 'one-off') {
+      if (control.value !== 'none') {
+        this.lastRepeat = control.value;
+      }
+      control.setValue('none');
+    } else if (control.value === 'none') {
+      control.setValue(this.lastRepeat);
+    }
   }
 
   protected startEditing(event: LibraryEvent): void {
@@ -289,6 +328,7 @@ export class ManageEventsComponent implements OnInit {
   }
 
   private openForm(): void {
+    this.lastRepeat = 'weekly';
     this.submitted.set(false);
     this.confirmingId.set(null);
     this.notice.set(null);
@@ -310,8 +350,9 @@ export class ManageEventsComponent implements OnInit {
     );
   }
 
-  private load(): void {
+  protected load(): void {
     this.loading.set(true);
+    this.loadFailed.set(false);
     this.api.listAllEvents().subscribe({
       next: (events) => {
         this.events.set(events);
@@ -319,9 +360,7 @@ export class ManageEventsComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        this.error.set(
-          'We could not load your events. Check your connection and reload the page. If it keeps happening, sign out and back in.',
-        );
+        this.loadFailed.set(true);
       },
     });
   }
