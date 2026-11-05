@@ -109,6 +109,9 @@ const NON_TEXT = [
   ['orange-700', 'orange-50', 'icon glyphs in warm tiles'],
   ['success', 'success-soft', 'today card open icon'],
   ['success', 'success-line', 'dismiss icon on a success alert, hover'],
+  ['orange-300', 'inverse', 'focus ring on navy bands'],
+  ['orange-300', 'navy-950', 'focus ring in the trustee header'],
+  ['orange-300', 'navy-800', 'focus ring on the active header link'],
 ];
 
 let failures = 0;

@@ -14,15 +14,19 @@ import { ApiService } from '../core/api.service';
 import { AuthService } from '../core/auth.service';
 import { OpeningHoursService } from '../core/opening-hours.service';
 import { EnquiryStatus, LibraryEvent } from '../core/models';
-import { upcomingExceptions } from '../core/opening-hours.model';
-import { toIso } from '../core/calendar';
-import { ClubStatus, clubStatus, daysBetween, isClub } from './event-schedule';
+import { formatTime, upcomingExceptions } from '../core/opening-hours.model';
+import { fromIso, toIso } from '../core/calendar';
+import { ClubStatus, ENDING_SOON_DAYS, clubStatus, daysBetween, isClub } from './event-schedule';
 
 interface ClubWarning {
   title: string;
   status: ClubStatus;
   lastDate: string;
   daysLeft: number;
+}
+
+function dayMonth(iso: string): string {
+  return fromIso(iso)?.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) ?? iso;
 }
 
 @Component({
@@ -56,14 +60,20 @@ export class OverviewComponent implements OnInit {
     () => this.statuses().filter((status) => status === 'in_progress').length,
   );
 
-  private readonly clubs = computed(() => this.events().filter(isClub));
+  /** Drafts are counted on their own line, so these only count what the public can see. */
+  private readonly clubs = computed(() =>
+    this.events().filter((event) => isClub(event) && event.published),
+  );
 
   protected readonly runningClubs = computed(
     () => this.clubs().filter((club) => clubStatus(club, this.todayIso) !== 'finished').length,
   );
 
   protected readonly upcomingOneOffs = computed(
-    () => this.events().filter((event) => !isClub(event) && event.date >= this.todayIso).length,
+    () =>
+      this.events().filter(
+        (event) => !isClub(event) && event.published && event.date >= this.todayIso,
+      ).length,
   );
 
   protected readonly drafts = computed(
@@ -77,9 +87,15 @@ export class OverviewComponent implements OnInit {
       ).length,
   );
 
+  /** Clubs ending soon, or finished in the last few weeks. Older ones were left to finish. */
   protected readonly clubWarnings = computed<ClubWarning[]>(() =>
     this.clubs()
-      .filter((club) => club.repeatUntil && clubStatus(club, this.todayIso) !== 'running')
+      .filter(
+        (club) =>
+          club.repeatUntil &&
+          clubStatus(club, this.todayIso) !== 'running' &&
+          daysBetween(club.repeatUntil, this.todayIso) <= ENDING_SOON_DAYS,
+      )
       .sort((a, b) => (a.repeatUntil ?? '').localeCompare(b.repeatUntil ?? ''))
       .map((club) => ({
         title: club.title,
@@ -89,15 +105,42 @@ export class OverviewComponent implements OnInit {
       })),
   );
 
-  protected readonly hoursReady = computed(() => this.hours.loadState() === 'ready');
+  protected readonly hoursState = this.hours.loadState;
   protected readonly today = this.hours.status;
   protected readonly notice = this.hours.notice;
 
-  protected readonly nextChange = computed(
-    () => upcomingExceptions(this.hours.settings().exceptions, this.todayIso)[0] ?? null,
-  );
+  /** The current or next closure, in a sentence. */
+  protected readonly nextChange = computed(() => {
+    const change = upcomingExceptions(this.hours.settings().exceptions, this.todayIso)[0];
+    if (!change) {
+      return 'No closures or changed hours coming up.';
+    }
+    const hours = change.closed
+      ? 'closed'
+      : `open ${formatTime(change.opensAt)} – ${formatTime(change.closesAt)}`;
+    if (change.from <= this.todayIso) {
+      return change.to === this.todayIso
+        ? `Today: ${change.reason}, ${hours}.`
+        : `Now: ${change.reason}, ${hours} until ${dayMonth(change.to)}.`;
+    }
+    const when =
+      change.from === change.to
+        ? `on ${dayMonth(change.from)}`
+        : `from ${dayMonth(change.from)} to ${dayMonth(change.to)}`;
+    return `Coming up: ${change.reason}, ${hours} ${when}.`;
+  });
 
   ngOnInit(): void {
+    this.load();
+  }
+
+  protected retryHours(): void {
+    this.hours.load();
+  }
+
+  protected load(): void {
+    this.loading.set(true);
+    this.failed.set(false);
     forkJoin({
       events: this.api.listAllEvents(),
       hire: this.api.listHireEnquiries(),

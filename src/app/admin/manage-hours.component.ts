@@ -1,6 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
   computed,
   effect,
   inject,
@@ -28,6 +31,21 @@ interface PatternRow extends OpeningDayPattern {
   name: string;
 }
 
+/** Why a day's times cannot be saved, or null when they can. */
+function timesProblem(day: {
+  closed: boolean;
+  opensAt?: string;
+  closesAt?: string;
+}): string | null {
+  if (day.closed) {
+    return null;
+  }
+  if (!day.opensAt || !day.closesAt) {
+    return 'Set both an opening and a closing time.';
+  }
+  return day.closesAt <= day.opensAt ? 'The closing time must be after the opening time.' : null;
+}
+
 function longDate(iso: string): string {
   return (
     fromIso(iso)?.toLocaleDateString('en-GB', {
@@ -48,6 +66,8 @@ function longDate(iso: string): string {
 export class ManageHoursComponent {
   private readonly api = inject(ApiService);
   private readonly hours = inject(OpeningHoursService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   protected readonly state = signal<SaveState>('idle');
   protected readonly error = signal<string | null>(null);
@@ -88,6 +108,54 @@ export class ManageHoursComponent {
       .sort((a, b) => b.from.localeCompare(a.from)),
   );
 
+  /** Set by pressing Save, so a reason is not flagged as missing while it is still being typed. */
+  protected readonly attempted = signal(false);
+
+  /** Everything that would stop a save, worked out live so each message clears once it is fixed. */
+  private readonly problems = computed(() => {
+    const times = new Map<string, string>();
+    for (const day of this.pattern()) {
+      const problem = timesProblem(day);
+      if (problem) {
+        times.set(`day-${day.dayIndex}`, problem);
+      }
+    }
+    const reasons = new Set<string>();
+    for (const entry of this.upcomingExceptions()) {
+      const problem = timesProblem(entry);
+      if (problem) {
+        times.set(`ex-${entry.exceptionId}`, problem);
+      }
+      if (!entry.reason.trim()) {
+        reasons.add(entry.exceptionId);
+      }
+    }
+    const noticeTitle = this.notice().active && !this.notice().title.trim();
+    return { times, reasons, noticeTitle, count: times.size + reasons.size + Number(noticeTitle) };
+  });
+
+  protected readonly noticeTitleMissing = computed(
+    () => this.attempted() && this.problems().noticeTitle,
+  );
+
+  /** What the save bar has to report: a blocked save or a failed one, otherwise nothing. */
+  protected readonly barProblem = computed(() => {
+    const count = this.problems().count;
+    if (this.attempted() && count) {
+      return count === 1
+        ? 'One thing needs fixing before this can be saved. It is marked in red.'
+        : `${count} things need fixing before this can be saved. They are marked in red.`;
+    }
+    return this.state() === 'error' ? this.error() : null;
+  });
+
+  protected readonly barTone = computed<'saved' | 'problem' | 'unsaved'>(() => {
+    if (!this.dirty()) {
+      return 'saved';
+    }
+    return this.barProblem() ? 'problem' : 'unsaved';
+  });
+
   constructor() {
     effect(() => {
       if (this.seeded || this.hours.loadState() !== 'ready') {
@@ -98,21 +166,35 @@ export class ManageHoursComponent {
     });
   }
 
+  protected timeError(key: string): string | null {
+    return this.problems().times.get(key) ?? null;
+  }
+
+  protected reasonMissing(id: string): boolean {
+    return this.attempted() && this.problems().reasons.has(id);
+  }
+
+  protected retryLoad(): void {
+    this.hours.load();
+  }
+
   protected preview(day: PatternRow): string {
     return day.closed ? 'Closed' : `${formatTime(day.opensAt)} – ${formatTime(day.closesAt)}`;
   }
 
+  protected dateRange(entry: OpeningException): string {
+    return entry.from === entry.to
+      ? longDate(entry.from)
+      : `${longDate(entry.from)} to ${longDate(entry.to)}`;
+  }
+
   /** The exception as the public will read it. */
   protected exceptionPreview(entry: OpeningException): string {
-    const when =
-      entry.from === entry.to
-        ? longDate(entry.from)
-        : `${longDate(entry.from)} to ${longDate(entry.to)}`;
     const hours = entry.closed
       ? 'Closed'
       : `Open ${formatTime(entry.opensAt)} – ${formatTime(entry.closesAt)}`;
     const reason = entry.reason.trim();
-    return `${hours}, ${when}${reason ? ` — ${reason}` : ''}`;
+    return `${hours}, ${this.dateRange(entry)}${reason ? ` — ${reason}` : ''}`;
   }
 
   protected setClosed(dayIndex: number, closed: boolean): void {
@@ -156,6 +238,10 @@ export class ManageHoursComponent {
           return entry;
         }
         const next = { ...entry, ...patch };
+        // A single day stays a single day when its date moves, earlier or later.
+        if (patch.from && entry.to === entry.from) {
+          next.to = patch.from;
+        }
         if (next.to < next.from) {
           next.to = next.from;
         }
@@ -178,29 +264,23 @@ export class ManageHoursComponent {
 
   protected discard(): void {
     this.seed();
+    this.attempted.set(false);
     this.state.set('idle');
     this.error.set(null);
   }
 
   protected save(): void {
+    this.attempted.set(true);
+    if (this.problems().count) {
+      this.focusFirstProblem();
+      return;
+    }
+
     const settings: LibrarySettings = {
       pattern: this.pattern().map(({ name: _name, ...day }) => day),
       exceptions: this.exceptions(),
       notice: this.notice(),
     };
-
-    if (settings.exceptions.some((entry) => !entry.reason.trim())) {
-      this.error.set(
-        'Each different day needs a reason, because the website shows it so people know why.',
-      );
-      this.state.set('error');
-      return;
-    }
-    if (settings.notice.active && !settings.notice.title.trim()) {
-      this.error.set('The notice needs a heading, or switch it off.');
-      this.state.set('error');
-      return;
-    }
 
     this.state.set('saving');
     this.error.set(null);
@@ -208,6 +288,7 @@ export class ManageHoursComponent {
       next: (saved) => {
         this.hours.apply(saved);
         this.seed();
+        this.attempted.set(false);
         this.state.set('saved');
       },
       error: () => {
@@ -215,6 +296,26 @@ export class ManageHoursComponent {
         this.error.set('We could not save that. Check your connection and try again.');
       },
     });
+  }
+
+  /** Brings the first field marked in red into view, wherever Save was pressed. */
+  private focusFirstProblem(): void {
+    afterNextRender(
+      () => {
+        const field = this.host.nativeElement.querySelector<HTMLElement>('[aria-invalid="true"]');
+        if (!field) {
+          return;
+        }
+        field.scrollIntoView({
+          block: 'center',
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 'auto'
+            : 'smooth',
+        });
+        field.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
 
   private seed(): void {

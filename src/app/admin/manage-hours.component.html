@@ -18,35 +18,18 @@
   </button>
 </div>
 
-@if (state() === 'error' && error()) {
-  <div class="alert-danger mt-6" role="alert">
-    <app-icon name="info" [size]="20" />
-    <p class="text-sm">{{ error() }}</p>
-  </div>
-} @else if (state() === 'saved' && !dirty()) {
-  <div class="alert-success mt-6" role="status">
-    <app-icon name="checkCircle" [size]="20" />
-    <p class="text-sm">
-      Saved. The website is showing these hours now.
-      <a
-        href="/visit"
-        target="_blank"
-        rel="noopener"
-        class="font-semibold underline underline-offset-4"
-      >
-        See the Visit page<span class="sr-only"> (opens in a new tab)</span>
-      </a>
-    </p>
-  </div>
-}
-
 @if (!ready()) {
   @if (loadState() === 'failed') {
     <div class="alert-danger mt-8" role="alert">
       <app-icon name="info" [size]="20" />
       <div class="text-sm">
-        <p>We could not load the current opening hours, so they cannot be edited right now.</p>
-        <p class="mt-2">Reload the page in a minute. Nothing has been changed.</p>
+        <p class="font-semibold">We could not load the current opening hours</p>
+        <p class="mt-1">
+          They cannot be edited until they load, so nothing has been changed. Try again in a minute.
+        </p>
+        <button type="button" (click)="retryLoad()" class="btn-secondary btn-sm mt-3">
+          Try again
+        </button>
       </div>
     </div>
   } @else {
@@ -93,15 +76,19 @@
           @if (day.closed) {
             <span class="text-ink-muted text-sm">Closed all day</span>
           } @else {
-            <span class="flex items-center gap-2">
+            <span class="flex w-full items-center gap-1.5 sm:w-auto sm:gap-2">
               <label class="sr-only" [attr.for]="'opens-' + day.dayIndex">
                 {{ day.name }} opening time
               </label>
               <input
                 [id]="'opens-' + day.dayIndex"
                 type="time"
-                class="field-input w-36"
+                class="field-input min-w-0 flex-1 px-2.5 sm:w-36 sm:flex-none sm:px-4"
                 [value]="day.opensAt"
+                [attr.aria-invalid]="!!timeError('day-' + day.dayIndex)"
+                [attr.aria-describedby]="
+                  timeError('day-' + day.dayIndex) ? 'time-error-day-' + day.dayIndex : null
+                "
                 (change)="setTime(day.dayIndex, 'opensAt', $any($event.target).value)"
               />
               <span class="text-ink-muted">to</span>
@@ -111,41 +98,54 @@
               <input
                 [id]="'closes-' + day.dayIndex"
                 type="time"
-                class="field-input w-36"
+                class="field-input min-w-0 flex-1 px-2.5 sm:w-36 sm:flex-none sm:px-4"
                 [value]="day.closesAt"
+                [attr.aria-invalid]="!!timeError('day-' + day.dayIndex)"
+                [attr.aria-describedby]="
+                  timeError('day-' + day.dayIndex) ? 'time-error-day-' + day.dayIndex : null
+                "
                 (change)="setTime(day.dayIndex, 'closesAt', $any($event.target).value)"
               />
             </span>
             <span class="text-ink-muted ml-auto text-sm">Shows as {{ preview(day) }}</span>
+            @if (timeError('day-' + day.dayIndex); as message) {
+              <p class="field-error mt-0 w-full" [id]="'time-error-day-' + day.dayIndex">
+                <app-icon name="info" [size]="16" />
+                {{ message }}
+              </p>
+            }
           }
         </li>
       }
     </ul>
   </section>
 
-  <section class="card mt-6 p-6 sm:p-7" aria-labelledby="different-heading">
+  <section class="card mt-6 overflow-hidden p-6 sm:p-7" aria-labelledby="different-heading">
     <div class="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <h2 id="different-heading" class="text-xl font-semibold">Days that are different</h2>
-        <p class="text-ink-soft mt-1 max-w-xl text-sm">
-          Bank holidays, the Christmas break, or a day you have to close at short notice. Use a date
-          range for a run of days. The reason is shown on the website, so write it for the public:
-          “Bank holiday”, not “BH”.
+      <div class="max-w-xl">
+        <h2 id="different-heading" class="text-xl font-semibold">Closures and changed hours</h2>
+        <p class="text-ink-soft mt-1 text-sm">
+          For dates when the library is closed, or open at different times from usual, such as bank
+          holidays and the Christmas break. On those dates, What's On and the home page show this
+          instead of the usual hours. The weekly hours table on the website always shows a normal
+          week.
         </p>
       </div>
       <button type="button" (click)="addException()" class="btn-secondary btn-sm">
         <app-icon name="plus" [size]="16" />
-        Add a date
+        Add a closure or change
       </button>
     </div>
 
     @if (upcomingExceptions().length) {
       <ul class="mt-5 flex flex-col gap-3">
         @for (entry of upcomingExceptions(); track entry.exceptionId) {
-          <li class="border-line rounded-xl border p-4">
-            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <li class="border-line rounded-xl border p-4 sm:p-5">
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <label class="field-label" [attr.for]="'from-' + entry.exceptionId">From</label>
+                <label class="field-label" [attr.for]="'from-' + entry.exceptionId">
+                  First day
+                </label>
                 <input
                   [id]="'from-' + entry.exceptionId"
                   type="date"
@@ -155,7 +155,7 @@
                 />
               </div>
               <div>
-                <label class="field-label" [attr.for]="'to-' + entry.exceptionId">To</label>
+                <label class="field-label" [attr.for]="'to-' + entry.exceptionId">Last day</label>
                 <input
                   [id]="'to-' + entry.exceptionId"
                   type="date"
@@ -165,7 +165,7 @@
                   (change)="updateException(entry.exceptionId, { to: $any($event.target).value })"
                 />
               </div>
-              <div class="lg:col-span-2">
+              <div class="sm:col-span-2">
                 <label class="field-label" [attr.for]="'reason-' + entry.exceptionId">
                   Reason <span aria-hidden="true">*</span>
                 </label>
@@ -175,94 +175,166 @@
                   class="field-input"
                   placeholder="Bank holiday"
                   [value]="entry.reason"
+                  [attr.aria-invalid]="reasonMissing(entry.exceptionId)"
+                  [attr.aria-describedby]="
+                    (reasonMissing(entry.exceptionId)
+                      ? 'reason-error-' + entry.exceptionId + ' '
+                      : '') +
+                    'reason-hint-' +
+                    entry.exceptionId
+                  "
                   (input)="
                     updateException(entry.exceptionId, { reason: $any($event.target).value })
                   "
                 />
+                @if (reasonMissing(entry.exceptionId)) {
+                  <p class="field-error" [id]="'reason-error-' + entry.exceptionId">
+                    <app-icon name="info" [size]="16" />
+                    Please give a reason. The website shows it to visitors.
+                  </p>
+                }
+                <p class="field-hint" [id]="'reason-hint-' + entry.exceptionId">
+                  Shown on the website, so write it for visitors: “Bank holiday”, not “BH”.
+                </p>
               </div>
             </div>
 
-            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3">
-              <label class="flex min-h-11 items-center gap-3">
-                <input
-                  type="checkbox"
-                  class="accent-blue-700 h-5 w-5 shrink-0"
-                  [checked]="entry.closed"
-                  (change)="
-                    updateException(entry.exceptionId, { closed: $any($event.target).checked })
-                  "
-                />
-                <span class="text-sm font-medium">Closed all day</span>
-              </label>
+            <fieldset class="mt-4">
+              <legend class="field-label">On these dates the library is</legend>
+              <div class="flex flex-wrap gap-x-6">
+                <label class="flex min-h-11 items-center gap-3">
+                  <input
+                    type="radio"
+                    class="accent-blue-700 h-5 w-5 shrink-0"
+                    [name]="'open-' + entry.exceptionId"
+                    [checked]="entry.closed"
+                    (change)="updateException(entry.exceptionId, { closed: true })"
+                  />
+                  <span class="text-sm font-medium">Closed all day</span>
+                </label>
+                <label class="flex min-h-11 items-center gap-3">
+                  <input
+                    type="radio"
+                    class="accent-blue-700 h-5 w-5 shrink-0"
+                    [name]="'open-' + entry.exceptionId"
+                    [checked]="!entry.closed"
+                    (change)="updateException(entry.exceptionId, { closed: false })"
+                  />
+                  <span class="text-sm font-medium">Open at different times</span>
+                </label>
+              </div>
 
               @if (!entry.closed) {
-                <span class="flex items-center gap-2">
-                  <input
-                    type="time"
-                    class="field-input w-36"
-                    [attr.aria-label]="'Opening time for ' + entry.reason"
-                    [value]="entry.opensAt"
-                    (change)="
-                      updateException(entry.exceptionId, { opensAt: $any($event.target).value })
-                    "
-                  />
-                  <span class="text-ink-muted">to</span>
-                  <input
-                    type="time"
-                    class="field-input w-36"
-                    [attr.aria-label]="'Closing time for ' + entry.reason"
-                    [value]="entry.closesAt"
-                    (change)="
-                      updateException(entry.exceptionId, { closesAt: $any($event.target).value })
-                    "
-                  />
-                </span>
+                <div class="mt-2 flex flex-wrap gap-4">
+                  <div>
+                    <label class="field-label" [attr.for]="'opens-at-' + entry.exceptionId">
+                      Opens
+                    </label>
+                    <input
+                      [id]="'opens-at-' + entry.exceptionId"
+                      type="time"
+                      class="field-input w-36"
+                      [value]="entry.opensAt"
+                      [attr.aria-invalid]="!!timeError('ex-' + entry.exceptionId)"
+                      [attr.aria-describedby]="
+                        timeError('ex-' + entry.exceptionId)
+                          ? 'time-error-ex-' + entry.exceptionId
+                          : null
+                      "
+                      (change)="
+                        updateException(entry.exceptionId, { opensAt: $any($event.target).value })
+                      "
+                    />
+                  </div>
+                  <div>
+                    <label class="field-label" [attr.for]="'closes-at-' + entry.exceptionId">
+                      Closes
+                    </label>
+                    <input
+                      [id]="'closes-at-' + entry.exceptionId"
+                      type="time"
+                      class="field-input w-36"
+                      [value]="entry.closesAt"
+                      [attr.aria-invalid]="!!timeError('ex-' + entry.exceptionId)"
+                      [attr.aria-describedby]="
+                        timeError('ex-' + entry.exceptionId)
+                          ? 'time-error-ex-' + entry.exceptionId
+                          : null
+                      "
+                      (change)="
+                        updateException(entry.exceptionId, { closesAt: $any($event.target).value })
+                      "
+                    />
+                  </div>
+                </div>
+                @if (timeError('ex-' + entry.exceptionId); as message) {
+                  <p class="field-error" [id]="'time-error-ex-' + entry.exceptionId">
+                    <app-icon name="info" [size]="16" />
+                    {{ message }}
+                  </p>
+                }
               }
+            </fieldset>
 
+            <div class="border-line mt-4 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-4">
+              <p class="text-ink-muted min-w-0 flex-1 basis-56 text-sm">
+                Shows as: <span class="text-ink font-medium">{{ exceptionPreview(entry) }}</span>
+              </p>
               <button
                 type="button"
                 (click)="removeException(entry.exceptionId)"
-                class="border-danger-line text-danger hover:bg-danger-soft ml-auto inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
+                class="btn-danger-outline"
               >
                 <app-icon name="trash" [size]="15" />
-                Remove
+                Remove<span class="sr-only"> {{ exceptionPreview(entry) }}</span>
               </button>
             </div>
-
-            <p class="text-ink-muted border-line mt-3 border-t pt-3 text-sm">
-              Shows as: <span class="text-ink font-medium">{{ exceptionPreview(entry) }}</span>
-            </p>
           </li>
         }
       </ul>
     } @else {
-      <p class="text-ink-muted mt-5 text-sm">
-        None yet. The usual hours apply every week, including bank holidays, so add those here when
-        you know them.
-      </p>
+      <div class="empty-state mx-0 mt-5 mb-0">
+        <span class="empty-state-icon"><app-icon name="calendar" [size]="22" /></span>
+        <div class="min-w-0 flex-1 basis-60">
+          <p class="text-ink font-semibold">No closures or changed hours coming up</p>
+          <p class="text-ink-soft mt-0.5 text-sm">
+            The website is showing your usual hours on every date. Bank holidays are not added for
+            you, so add each one here if the library will be closed.
+          </p>
+        </div>
+      </div>
     }
 
     @if (pastExceptions().length) {
-      <details class="mt-6">
-        <summary
-          class="text-ink-soft inline-flex min-h-11 cursor-pointer items-center text-sm font-semibold"
-        >
-          {{ pastExceptions().length }} past {{ pastExceptions().length === 1 ? 'date' : 'dates' }}
+      <details class="group border-line -mx-6 mt-6 -mb-6 border-t sm:-mx-7 sm:-mb-7">
+        <summary class="section-toggle px-6 sm:px-7">
+          <span>
+            <strong class="text-ink font-semibold">
+              {{ pastExceptions().length }} past
+              {{ pastExceptions().length === 1 ? 'date' : 'dates' }}
+            </strong>
+            · no longer shown
+          </span>
+          <span class="text-navy-900 ml-auto inline-flex items-center gap-1.5 font-semibold">
+            <span class="group-open:hidden">Show</span>
+            <span class="hidden group-open:inline">Hide</span>
+            <app-icon name="chevronDown" [size]="16" class="toggle-chevron" />
+          </span>
         </summary>
-        <ul class="mt-3 flex flex-col gap-2">
+        <ul class="divide-line border-line divide-y border-t">
           @for (entry of pastExceptions(); track entry.exceptionId) {
-            <li class="text-ink-muted flex flex-wrap items-center gap-x-3 text-sm">
-              <span class="tabular-nums">{{ entry.from }}</span>
-              @if (entry.to !== entry.from) {
-                <span class="tabular-nums">– {{ entry.to }}</span>
-              }
-              <span>{{ entry.reason }}</span>
+            <li class="flex flex-wrap items-center gap-x-4 gap-y-1 px-6 py-2.5 text-sm sm:px-7">
+              <span class="min-w-0 flex-1 basis-56">
+                <span class="text-ink font-medium">{{ dateRange(entry) }}</span>
+                <span class="text-ink-muted"> · {{ entry.reason }}</span>
+              </span>
               <button
                 type="button"
                 (click)="removeException(entry.exceptionId)"
-                class="text-danger inline-flex min-h-9 items-center font-semibold hover:underline"
+                class="row-action-danger"
               >
-                Remove
+                <app-icon name="trash" [size]="15" />
+                Remove<span class="sr-only"> {{ entry.reason }}</span>
               </button>
             </li>
           }
@@ -299,8 +371,16 @@
             type="text"
             class="field-input"
             [value]="notice().title"
+            [attr.aria-invalid]="noticeTitleMissing()"
+            [attr.aria-describedby]="noticeTitleMissing() ? 'notice-title-error' : null"
             (input)="setNotice({ title: $any($event.target).value })"
           />
+          @if (noticeTitleMissing()) {
+            <p id="notice-title-error" class="field-error">
+              <app-icon name="info" [size]="16" />
+              Please give the notice a heading, or switch it off.
+            </p>
+          }
         </div>
         <div>
           <label class="field-label" for="notice-body">Message</label>
@@ -335,27 +415,54 @@
     }
   </section>
 
-  @if (dirty()) {
+  @if (dirty() || state() === 'saved') {
+    <!-- Every save message lands here, because this bar is in view wherever Save was pressed. -->
     <div class="sticky bottom-4 z-10 mt-8">
       <div
         class="bg-inverse shadow-raised flex flex-wrap items-center gap-3 rounded-2xl px-5 py-3 text-white"
       >
-        <app-icon name="info" [size]="18" />
-        <p class="min-w-0 flex-1 basis-56 text-sm font-medium">
-          You have changes that are not saved yet. The website keeps the old hours until you press
-          Save.
+        <span [class]="barTone() === 'problem' ? 'text-orange-300' : ''">
+          <app-icon [name]="barTone() === 'saved' ? 'checkCircle' : 'info'" [size]="18" />
+        </span>
+        <p class="min-w-0 flex-1 basis-56 text-sm font-medium" aria-live="polite">
+          @switch (barTone()) {
+            @case ('saved') {
+              Saved. The website is showing these hours now.
+            }
+            @case ('problem') {
+              {{ barProblem() }}
+            }
+            @default {
+              You have changes that are not saved yet. The website keeps the old hours until you
+              press Save.
+            }
+          }
         </p>
-        <button type="button" (click)="discard()" class="btn-on-dark-secondary btn-sm">
-          Undo changes
-        </button>
-        <button
-          type="button"
-          (click)="save()"
-          [disabled]="state() === 'saving'"
-          class="btn-on-dark btn-sm"
-        >
-          {{ state() === 'saving' ? 'Saving…' : 'Save changes' }}
-        </button>
+        @if (dirty()) {
+          <button type="button" (click)="discard()" class="btn-on-dark-secondary btn-sm">
+            Undo changes
+          </button>
+          <button
+            type="button"
+            (click)="save()"
+            [disabled]="state() === 'saving'"
+            class="btn-on-dark btn-sm"
+          >
+            {{ state() === 'saving' ? 'Saving…' : 'Save changes' }}
+          </button>
+        } @else {
+          <a href="/visit" target="_blank" rel="noopener" class="btn-on-dark-secondary btn-sm">
+            See the Visit page<span class="sr-only"> (opens in a new tab)</span>
+          </a>
+          <button
+            type="button"
+            (click)="state.set('idle')"
+            class="hover:bg-navy-900 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors"
+          >
+            <app-icon name="close" [size]="16" />
+            <span class="sr-only">Dismiss this message</span>
+          </button>
+        }
       </div>
     </div>
   }
