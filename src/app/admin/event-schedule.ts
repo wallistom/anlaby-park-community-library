@@ -7,6 +7,9 @@ export const ENDING_SOON_DAYS = 28;
 
 export type ClubStatus = 'running' | 'ending-soon' | 'finished';
 
+/** How far ahead What's On lists dates. Must match HORIZON_DAYS in backend/src/common/recurrence.py. */
+export const LISTING_HORIZON_DAYS = 120;
+
 export function isClub(event: LibraryEvent): boolean {
   return !!event.recurrence && event.recurrence !== 'none';
 }

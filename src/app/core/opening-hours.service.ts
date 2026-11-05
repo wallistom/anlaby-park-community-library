@@ -121,8 +121,9 @@ export class OpeningHoursService {
     window.setInterval(() => this.now.set(new Date()), 60_000);
   }
 
+  /** Fetches once per visit, but can be called again after a failure to retry. */
   load(): void {
-    if (this.loadStarted) {
+    if (this.loadStarted && this.loadStatus() !== 'failed') {
       return;
     }
     this.loadStarted = true;

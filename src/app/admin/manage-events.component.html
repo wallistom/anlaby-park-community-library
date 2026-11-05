@@ -262,13 +262,7 @@
       <span class="text-sm font-semibold">
         {{ event.recurrence !== 'none' ? 'Delete it and every date it meets?' : 'Delete it?' }}
       </span>
-      <button
-        type="button"
-        (click)="remove(event)"
-        class="border-danger-line text-danger hover:bg-danger-soft inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors"
-      >
-        Yes, delete
-      </button>
+      <button type="button" (click)="remove(event)" class="btn-danger-outline">Yes, delete</button>
       <button type="button" (click)="confirmingId.set(null)" class="btn-secondary btn-sm">
         Keep it
       </button>

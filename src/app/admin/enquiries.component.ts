@@ -53,17 +53,39 @@ export class EnquiriesComponent implements OnInit {
   protected readonly showDone = signal(false);
   protected readonly loading = signal(true);
   protected readonly loadError = signal(false);
-  protected readonly updateError = signal(false);
+  /** The row whose status change failed; the message sits beside its buttons, not off-screen. */
+  protected readonly failedId = signal<string | null>(null);
   /** The row and status being saved, so the pressed button can say so. */
   protected readonly pending = signal<{ id: string; status: EnquiryStatus } | null>(null);
+  /** Confirms a row that has just left the list, so it does not seem to vanish. */
+  protected readonly notice = signal<string | null>(null);
 
   protected readonly statusLabels = STATUS_LABELS;
 
-  protected readonly tabs: { value: Tab; label: string }[] = [
-    { value: 'hire', label: 'Room hire' },
-    { value: 'volunteers', label: 'Volunteers' },
-    { value: 'messages', label: 'Messages' },
+  protected readonly tabs: { value: Tab; label: string; empty: string; source: string }[] = [
+    {
+      value: 'hire',
+      label: 'Room hire',
+      empty: 'No room hire requests yet',
+      source: 'the Room Hire page',
+    },
+    {
+      value: 'volunteers',
+      label: 'Volunteers',
+      empty: 'No offers to volunteer yet',
+      source: 'the Volunteer page',
+    },
+    {
+      value: 'messages',
+      label: 'Messages',
+      empty: 'No messages yet',
+      source: 'the Contact page',
+    },
   ];
+
+  protected readonly currentTab = computed(
+    () => this.tabs.find((tab) => tab.value === this.activeTab()) ?? this.tabs[0],
+  );
 
   protected readonly rows = computed<Row[]>(() => {
     switch (this.activeTab()) {
@@ -132,6 +154,12 @@ export class EnquiriesComponent implements OnInit {
   }));
 
   ngOnInit(): void {
+    this.load();
+  }
+
+  protected load(): void {
+    this.loading.set(true);
+    this.loadError.set(false);
     forkJoin({
       hire: this.api.listHireEnquiries(),
       volunteers: this.api.listVolunteerApplications(),
@@ -153,6 +181,8 @@ export class EnquiriesComponent implements OnInit {
   protected switchTab(tab: Tab): void {
     this.activeTab.set(tab);
     this.expandedId.set(null);
+    this.failedId.set(null);
+    this.notice.set(null);
   }
 
   protected toggle(id: string): void {
@@ -176,16 +206,23 @@ export class EnquiriesComponent implements OnInit {
           ? 'volunteers'
           : 'messages';
 
-    this.updateError.set(false);
+    this.failedId.set(null);
+    this.notice.set(null);
     this.pending.set({ id: row.id, status });
     this.api.updateSubmissionStatus(kind, row.id, status).subscribe({
       next: () => {
         this.pending.set(null);
         this.applyStatusLocally(row.id, status);
+        if (status === 'closed' && !this.showDone()) {
+          this.expandedId.set(null);
+          this.notice.set(
+            `${row.name}'s enquiry is marked as done. Tick “Show the ones marked done” to see it again.`,
+          );
+        }
       },
       error: () => {
         this.pending.set(null);
-        this.updateError.set(true);
+        this.failedId.set(row.id);
       },
     });
   }

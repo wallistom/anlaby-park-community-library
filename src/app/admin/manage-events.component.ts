@@ -24,9 +24,10 @@ import { IconComponent } from '../shared/icon.component';
 import { TimePipe } from '../shared/time.pipe';
 import { ApiService } from '../core/api.service';
 import { LibraryEvent, RECURRENCE_LABELS, Recurrence } from '../core/models';
-import { fromIso, toIso } from '../core/calendar';
+import { addDays, fromIso, toIso } from '../core/calendar';
 import {
   ClubStatus,
+  LISTING_HORIZON_DAYS,
   clubStatus,
   compareClubs,
   daysBetween,
@@ -270,20 +271,41 @@ export class ManageEventsComponent implements OnInit {
             ? list.map((event) => (event.eventId === saved.eventId ? saved : event))
             : [...list, saved],
         );
-        this.notice.set(
-          saved.published
-            ? { text: `“${saved.title}” is saved and on the What's On page now.`, showLink: true }
-            : {
-                text: `“${saved.title}” is saved as a draft. It will not be on the website until you tick “Show on the website”.`,
-                showLink: false,
-              },
-        );
+        this.notice.set(this.savedNotice(saved));
       },
       error: () => {
         this.saving.set(false);
         this.error.set('We could not save that event. Check your connection and try again.');
       },
     });
+  }
+
+  /** Says where the event now shows, which is not always What's On straight away. */
+  private savedNotice(saved: LibraryEvent): Notice {
+    const name = `“${saved.title}”`;
+    if (!saved.published) {
+      return {
+        text: `${name} is saved as a draft. It will not be on the website until you tick “Show on the website”.`,
+        showLink: false,
+      };
+    }
+    if (isClub(saved) ? (saved.repeatUntil ?? '') < this.todayIso : saved.date < this.todayIso) {
+      return {
+        text: isClub(saved)
+          ? `${name} is saved, but its last date has passed, so it is not on the website. Set a later last date to put it back.`
+          : `${name} is saved, but its date has passed, so it is not on the website.`,
+        showLink: false,
+      };
+    }
+    const first = fromIso(saved.date);
+    const listedFrom = first ? toIso(addDays(first, -LISTING_HORIZON_DAYS)) : this.todayIso;
+    if (listedFrom > this.todayIso) {
+      return {
+        text: `${name} is saved. What's On lists dates about four months ahead, so it will appear there from ${formatDate(listedFrom)}.`,
+        showLink: false,
+      };
+    }
+    return { text: `${name} is saved and on the What's On page now.`, showLink: true };
   }
 
   protected remove(event: LibraryEvent): void {

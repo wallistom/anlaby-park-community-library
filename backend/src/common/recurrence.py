@@ -4,6 +4,7 @@ import calendar
 from datetime import date, timedelta
 from typing import Any
 
+# Mirrored by LISTING_HORIZON_DAYS in src/app/admin/event-schedule.ts; change both together.
 HORIZON_DAYS = 120
 
 MAX_OCCURRENCES_PER_EVENT = 200

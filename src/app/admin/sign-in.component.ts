@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { IconComponent } from '../shared/icon.component';
 import { AuthService } from '../core/auth.service';
 import { SITE } from '../core/site.data';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-sign-in',
@@ -58,17 +59,17 @@ import { SITE } from '../core/site.data';
             <div class="text-sm">
               <p>
                 <strong class="font-semibold break-all">{{ auth.currentUser()?.email }}</strong>
-                is not set up as a trustee account, so the admin area is closed to it.
+                is not on the list of trustee accounts, so it cannot open the trustee area.
               </p>
               <p class="mt-2">
-                If you have more than one Google account, sign out and pick the one you gave to the
-                Secretary.
+                If you have another Google account, try that one. If this is the one you gave to the
+                Secretary, ask them to check it has been added.
               </p>
             </div>
           </div>
 
-          <button type="button" class="btn-secondary mt-5 w-full" (click)="signOut()">
-            Sign out and try another account
+          <button type="button" class="btn-secondary mt-5 w-full" (click)="useAnotherAccount()">
+            Use a different Google account
           </button>
         }
 
@@ -89,7 +90,14 @@ import { SITE } from '../core/site.data';
         @if (error()) {
           <div class="mt-6 alert-danger" role="alert">
             <app-icon name="info" [size]="19" />
-            <p class="text-sm">{{ error() }}</p>
+            <div class="text-sm">
+              <p>{{ error() }}</p>
+              @if (environment.googleClientId) {
+                <button type="button" class="btn-secondary btn-sm mt-3" (click)="reload()">
+                  Reload the page
+                </button>
+              }
+            </div>
           </div>
         }
 
@@ -109,6 +117,7 @@ export class SignInComponent implements AfterViewInit {
   private readonly googleButton = viewChild.required<ElementRef<HTMLElement>>('googleButton');
 
   protected readonly site = SITE;
+  protected readonly environment = environment;
   protected readonly error = signal<string | null>(null);
 
   protected readonly refused = computed(
@@ -123,8 +132,13 @@ export class SignInComponent implements AfterViewInit {
     () => this.auth.isSignedIn() && this.auth.accessState() === 'unavailable',
   );
 
-  protected signOut(): void {
+  /** Forgets the refused account in this tab and brings the Google button back. */
+  protected useAnotherAccount(): void {
     this.auth.signOut();
+  }
+
+  protected reload(): void {
+    window.location.reload();
   }
 
   protected retry(): void {
@@ -152,8 +166,11 @@ export class SignInComponent implements AfterViewInit {
     try {
       await this.auth.renderSignInButton(this.googleButton().nativeElement);
     } catch {
+      // Without a client ID this is a set-up mistake; with one, Google's script did not load.
       this.error.set(
-        'Google sign-in is not configured yet. Set googleClientId in the environment file to the client ID from Terraform, then rebuild.',
+        environment.googleClientId
+          ? 'We could not reach Google sign-in just now. Check your connection and reload the page. If it keeps happening, a privacy or ad-blocking extension may be stopping it.'
+          : 'Google sign-in is not configured yet. Set googleClientId in the environment file to the client ID from Terraform, then rebuild.',
       );
     }
   }
