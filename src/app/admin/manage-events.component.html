@@ -1,8 +1,11 @@
 <div class="flex flex-wrap items-end justify-between gap-4">
-  <div>
+  <div class="max-w-2xl">
     <h1 class="text-3xl font-bold">Events</h1>
     <p class="text-ink-soft mt-2">
-      Anything published here appears on the public "What's On" page straight away.
+      Events you save here get published on the website's
+      <a href="/whats-on" target="_blank" rel="noopener" class="link">
+        What's On page<span class="sr-only"> (opens in a new tab)</span></a
+      >. Untick “Show on the website” to keep one as a draft.
     </p>
   </div>
   <button type="button" (click)="startAdding()" class="btn-primary">
@@ -12,55 +15,106 @@
 </div>
 
 @if (error()) {
-  <div class="mt-6 alert-danger" role="alert">
+  <div class="alert-danger mt-6" role="alert">
     <app-icon name="info" [size]="20" />
     <p class="text-sm">{{ error() }}</p>
   </div>
 }
 
+@if (notice(); as note) {
+  <div class="alert-success mt-6" role="status">
+    <app-icon name="checkCircle" [size]="20" />
+    <p class="text-sm">
+      {{ note.text }}
+      @if (note.showLink) {
+        <a
+          href="/whats-on"
+          target="_blank"
+          rel="noopener"
+          class="font-semibold underline underline-offset-4"
+        >
+          See it on the website<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      }
+    </p>
+  </div>
+}
+
 @if (editingId() !== null) {
-  <div class="border-blue-200 mt-8 rounded-2xl border bg-surface p-7">
-    <h2 class="text-xl font-semibold">
-      {{ editingId() ? 'Edit event' : 'New event' }}
-    </h2>
+  <div #formPanel class="border-blue-200 bg-surface mt-8 scroll-mt-6 rounded-2xl border p-6 sm:p-7">
+    <h2 class="text-xl font-semibold">{{ editingId() ? 'Edit event' : 'New event' }}</h2>
+    <p class="text-ink-muted mt-1 text-sm">Fields marked * are needed.</p>
 
     <form [formGroup]="form" (ngSubmit)="save()" class="mt-6 flex flex-col gap-5" novalidate>
+      <div>
+        <label for="title" class="field-label">Name <span aria-hidden="true">*</span></label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          class="field-input"
+          placeholder="Baby Bounce, Quiz night, Christmas Fayre…"
+          [attr.aria-invalid]="invalid('title')"
+        />
+        @if (invalid('title')) {
+          <p class="field-error"><app-icon name="info" [size]="15" /> Please give it a name.</p>
+        }
+      </div>
+
+      <fieldset class="border-line bg-page rounded-xl border p-5">
+        <legend class="sr-only">When it happens</legend>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="date" class="field-label">
+              {{ repeats() ? 'First date' : 'Date' }} <span aria-hidden="true">*</span>
+            </label>
+            <input
+              id="date"
+              type="date"
+              formControlName="date"
+              class="field-input"
+              [attr.aria-invalid]="invalid('date')"
+            />
+            @if (invalid('date')) {
+              <p class="field-error"><app-icon name="info" [size]="15" /> Please pick a date.</p>
+            }
+          </div>
+
+          <div>
+            <label for="recurrence" class="field-label">
+              How often does it happen? <span aria-hidden="true">*</span>
+            </label>
+            <select id="recurrence" formControlName="recurrence" class="field-input">
+              @for (option of recurrenceOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+
+          @if (repeats()) {
+            <div>
+              <label for="repeatUntil" class="field-label">
+                Last date <span aria-hidden="true">*</span>
+              </label>
+              <input
+                id="repeatUntil"
+                type="date"
+                formControlName="repeatUntil"
+                [min]="form.controls.date.value"
+                class="field-input"
+                [attr.aria-invalid]="repeatUntilError() !== null"
+              />
+              @if (repeatUntilError(); as message) {
+                <p class="field-error"><app-icon name="info" [size]="15" /> {{ message }}</p>
+              }
+            </div>
+          }
+        </div>
+
+        <p class="text-ink-soft mt-4 text-sm">{{ repeatPreview() }}</p>
+      </fieldset>
+
       <div class="grid gap-5 sm:grid-cols-2">
-        <div class="sm:col-span-2">
-          <label for="title" class="field-label">Title <span aria-hidden="true">*</span></label>
-          <input
-            id="title"
-            type="text"
-            formControlName="title"
-            class="field-input"
-            [attr.aria-invalid]="invalid('title')"
-          />
-          @if (invalid('title')) {
-            <p class="field-error"><app-icon name="info" [size]="15" /> Please give it a title.</p>
-          }
-        </div>
-
-        <div>
-          <label for="date" class="field-label">Date <span aria-hidden="true">*</span></label>
-          <input
-            id="date"
-            type="date"
-            formControlName="date"
-            class="field-input"
-            [attr.aria-invalid]="invalid('date')"
-          />
-          @if (invalid('date')) {
-            <p class="field-error"><app-icon name="info" [size]="15" /> Please pick a date.</p>
-          }
-        </div>
-
-        <div>
-          <label for="location" class="field-label">
-            Location <span aria-hidden="true">*</span>
-          </label>
-          <input id="location" type="text" formControlName="location" class="field-input" />
-        </div>
-
         <div>
           <label for="startTime" class="field-label">Start time</label>
           <input id="startTime" type="time" formControlName="startTime" class="field-input" />
@@ -71,59 +125,30 @@
           <input id="endTime" type="time" formControlName="endTime" class="field-input" />
         </div>
 
-        <div class="sm:col-span-2">
+        <div>
+          <label for="location" class="field-label">Where <span aria-hidden="true">*</span></label>
+          <input
+            id="location"
+            type="text"
+            formControlName="location"
+            class="field-input"
+            [attr.aria-invalid]="invalid('location')"
+          />
+          @if (invalid('location')) {
+            <p class="field-error"><app-icon name="info" [size]="15" /> Please say where it is.</p>
+          }
+        </div>
+
+        <div>
           <label for="cost" class="field-label">Cost</label>
           <input
             id="cost"
             type="text"
             formControlName="cost"
             class="field-input"
-            placeholder="e.g. Free, or £3 including refreshments"
+            placeholder="Free, or £3 including refreshments"
           />
-        </div>
-
-        <div class="border-line bg-page rounded-xl border p-5 sm:col-span-2">
-          <div class="grid gap-5 sm:grid-cols-2">
-            <div>
-              <label for="recurrence" class="field-label">How often does it happen?</label>
-              <select id="recurrence" formControlName="recurrence" class="field-input">
-                @for (option of recurrenceOptions; track option.value) {
-                  <option [value]="option.value">{{ option.label }}</option>
-                }
-              </select>
-            </div>
-
-            @if (repeats()) {
-              <div>
-                <label for="repeatUntil" class="field-label">
-                  Repeat until <span aria-hidden="true">*</span>
-                </label>
-                <input
-                  id="repeatUntil"
-                  type="date"
-                  formControlName="repeatUntil"
-                  [min]="form.controls.date.value"
-                  class="field-input"
-                  [attr.aria-invalid]="invalid('repeatUntil')"
-                />
-                @if (invalid('repeatUntil')) {
-                  <p class="field-error">
-                    <app-icon name="info" [size]="15" />
-                    Please say when the repeat should stop.
-                  </p>
-                }
-              </div>
-            }
-          </div>
-
-          <p class="field-hint">
-            @if (repeats()) {
-              The website will show each date separately, from the first date above until the repeat
-              ends. Change this one entry and every date updates.
-            } @else {
-              Choose a frequency to turn this into a regular club or group.
-            }
-          </p>
+          <p class="field-hint">Leave blank if there is nothing to pay.</p>
         </div>
 
         <div class="sm:col-span-2">
@@ -139,7 +164,11 @@
           ></textarea>
           @if (invalid('description')) {
             <p class="field-error">
-              <app-icon name="info" [size]="15" /> Please describe the event.
+              <app-icon name="info" [size]="15" /> Please say a little about it.
+            </p>
+          } @else {
+            <p class="field-hint">
+              A sentence or two for the public: who it is for, and whether they need to book.
             </p>
           }
         </div>
@@ -154,14 +183,14 @@
           class="accent-blue-700 mt-0.5 h-5 w-5 shrink-0"
         />
         <span class="text-ink-soft text-sm">
-          <strong class="text-ink block">Publish on the website</strong>
-          Leave this unticked to save it as a draft that only trustees can see.
+          <strong class="text-ink block">Show on the website</strong>
+          Untick this to keep it as a draft that only trustees can see.
         </span>
       </label>
 
       <div class="flex flex-wrap gap-3">
         <button type="submit" [disabled]="saving()" class="btn-primary">
-          {{ saving() ? 'Saving…' : 'Save event' }}
+          {{ saving() ? 'Saving…' : editingId() ? 'Save changes' : 'Save event' }}
         </button>
         <button type="button" (click)="cancel()" class="btn-secondary">Cancel</button>
       </div>
@@ -169,8 +198,43 @@
   </div>
 }
 
+<ng-template #actions let-event>
+  @if (confirmingId() === event.eventId) {
+    <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Confirm delete">
+      <span class="text-sm font-semibold">
+        {{ event.recurrence !== 'none' ? 'Delete it and every date it meets?' : 'Delete it?' }}
+      </span>
+      <button
+        type="button"
+        (click)="remove(event)"
+        class="border-danger-line text-danger hover:bg-danger-soft inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors"
+      >
+        Yes, delete
+      </button>
+      <button type="button" (click)="confirmingId.set(null)" class="btn-secondary btn-sm">
+        Keep it
+      </button>
+    </div>
+  } @else {
+    <div class="flex gap-2">
+      <button type="button" (click)="startEditing(event)" class="btn-secondary btn-sm">
+        <app-icon name="edit" [size]="15" />
+        Edit
+      </button>
+      <button
+        type="button"
+        (click)="confirmingId.set(event.eventId)"
+        class="border-danger-line text-danger hover:bg-danger-soft inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors"
+      >
+        <app-icon name="trash" [size]="15" />
+        Delete<span class="sr-only"> {{ event.title }}</span>
+      </button>
+    </div>
+  }
+</ng-template>
+
 @if (loading()) {
-  <ul class="mt-8 flex flex-col gap-3" aria-hidden="true">
+  <ul class="mt-10 flex flex-col gap-3" aria-hidden="true">
     @for (row of [1, 2, 3, 4]; track row) {
       <li class="card flex flex-wrap items-start gap-4 p-5">
         <span class="skeleton h-14 w-16 shrink-0 rounded-xl"></span>
@@ -187,76 +251,180 @@
   </ul>
   <p class="sr-only" aria-live="polite">Loading events</p>
 } @else if (events().length > 0) {
-  <ul class="mt-8 flex flex-col gap-3">
-    @for (event of events(); track event.eventId) {
-      <li class="border-line flex flex-wrap items-start gap-4 rounded-2xl border bg-surface p-5">
-        <div
-          class="bg-blue-50 text-navy-800 flex w-16 shrink-0 flex-col items-center rounded-xl py-2"
-        >
-          <span class="text-xs font-semibold uppercase">{{ event.date | date: 'MMM' }}</span>
-          <span class="font-display text-2xl font-semibold">{{ event.date | date: 'd' }}</span>
-        </div>
+  <section class="mt-10" aria-labelledby="clubs-heading">
+    <h2 id="clubs-heading" class="font-sans text-xl font-semibold">Regular clubs and groups</h2>
+    <p class="text-ink-soft mt-1 text-sm">
+      Anything that repeats. Each one stays on the website until its last date, so extend it before
+      then if it carries on.
+    </p>
 
-        <div class="min-w-0 flex-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <h2 class="font-sans text-lg font-semibold">{{ event.title }}</h2>
-            @if (event.published) {
-              <span class="chip-success"> Published </span>
-            } @else {
-              <span class="chip-neutral"> Draft </span>
-            }
-            @if (repeatSummary(event); as summary) {
-              <span class="chip-accent">
-                {{ summary }}
+    @if (clubs().length) {
+      <ul class="mt-4 flex flex-col gap-3">
+        @for (event of clubs(); track event.eventId) {
+          <li class="card flex flex-wrap items-start gap-4 p-5">
+            <div
+              class="bg-blue-50 text-navy-800 flex w-20 shrink-0 flex-col items-center rounded-xl py-2"
+              [class.opacity-60]="status(event) === 'finished'"
+            >
+              <span class="text-xs font-semibold uppercase">{{ event.date | date: 'EEE' }}</span>
+              <span class="font-display text-base font-semibold">
+                {{ event.startTime ? (event.startTime | libraryTime) : '—' }}
               </span>
-            }
-          </div>
-          <p class="text-ink-soft mt-1 text-sm">{{ event.description }}</p>
-          <p class="text-ink-muted mt-2 text-sm">
-            {{ event.location }}
-            @if (event.startTime) {
-              <span>· {{ event.startTime }}</span>
-            }
-            @if (event.cost) {
-              <span>· {{ event.cost }}</span>
-            }
-          </p>
-        </div>
+            </div>
 
-        <div class="flex gap-2">
-          <button
-            type="button"
-            (click)="startEditing(event)"
-            class="border-line-strong hover:bg-page flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors"
-          >
-            <app-icon name="edit" [size]="15" />
-            Edit
-          </button>
-          <button
-            type="button"
-            (click)="remove(event)"
-            class="flex items-center gap-1.5 rounded-lg border border-danger-line px-3 py-2 text-sm font-semibold text-danger transition-colors hover:bg-danger-soft"
-          >
-            <app-icon name="trash" [size]="15" />
-            <span class="sr-only">Delete {{ event.title }}</span>
-            Delete
-          </button>
-        </div>
-      </li>
+            <div class="min-w-0 flex-1 basis-48">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-sans text-lg font-semibold">{{ event.title }}</h3>
+                @if (!event.published) {
+                  <span class="chip-neutral">Draft, not on the website</span>
+                }
+                @switch (status(event)) {
+                  @case ('finished') {
+                    <span class="chip-danger">Finished</span>
+                  }
+                  @case ('ending-soon') {
+                    <span class="chip-accent">
+                      {{
+                        daysLeft(event) === 0
+                          ? 'Last date is today'
+                          : 'Ends in ' +
+                            daysLeft(event) +
+                            (daysLeft(event) === 1 ? ' day' : ' days')
+                      }}
+                    </span>
+                  }
+                }
+              </div>
+              <p class="text-ink mt-1 text-sm font-medium">
+                {{ schedule(event) }}
+                @if (event.startTime) {
+                  <span class="text-ink-soft font-normal">
+                    · {{ event.startTime | libraryTime
+                    }}{{ event.endTime ? ' – ' + (event.endTime | libraryTime) : '' }}
+                  </span>
+                }
+              </p>
+              <p class="text-ink-muted mt-1 text-sm">
+                {{ event.location }}
+                @if (event.cost) {
+                  <span>· {{ event.cost }}</span>
+                }
+                @if (event.repeatUntil) {
+                  <span>
+                    ·
+                    {{ status(event) === 'finished' ? 'Finished on' : 'Until' }}
+                    {{ event.repeatUntil | date: 'd MMMM y' }}
+                  </span>
+                }
+              </p>
+              @if (status(event) === 'finished') {
+                <p class="text-danger mt-2 text-sm">
+                  It is no longer on the website. Edit it and set a later last date if it still
+                  meets, or delete it.
+                </p>
+              }
+            </div>
+
+            <ng-container *ngTemplateOutlet="actions; context: { $implicit: event }" />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="text-ink-muted mt-4 text-sm">
+        None yet. Add an event and choose how often it happens.
+      </p>
     }
-  </ul>
+  </section>
+
+  <section class="mt-10" aria-labelledby="upcoming-heading">
+    <h2 id="upcoming-heading" class="font-sans text-xl font-semibold">One-off events coming up</h2>
+    <p class="text-ink-soft mt-1 text-sm">
+      Talks, fayres, sales, and anything else that happens once.
+    </p>
+
+    @if (upcoming().length) {
+      <ul class="mt-4 flex flex-col gap-3">
+        @for (event of upcoming(); track event.eventId) {
+          <li class="card flex flex-wrap items-start gap-4 p-5">
+            <div class="date-chip">
+              <span class="text-xs font-semibold uppercase">{{ event.date | date: 'MMM' }}</span>
+              <span class="font-display text-2xl font-semibold">{{ event.date | date: 'd' }}</span>
+            </div>
+
+            <div class="min-w-0 flex-1 basis-48">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-sans text-lg font-semibold">{{ event.title }}</h3>
+                @if (!event.published) {
+                  <span class="chip-neutral">Draft, not on the website</span>
+                }
+              </div>
+              <p class="text-ink mt-1 text-sm font-medium">
+                {{ event.date | date: 'EEEE d MMMM y' }}
+                @if (event.startTime) {
+                  <span class="text-ink-soft font-normal">
+                    · {{ event.startTime | libraryTime
+                    }}{{ event.endTime ? ' – ' + (event.endTime | libraryTime) : '' }}
+                  </span>
+                }
+              </p>
+              <p class="text-ink-muted mt-1 text-sm">
+                {{ event.location }}
+                @if (event.cost) {
+                  <span>· {{ event.cost }}</span>
+                }
+              </p>
+              <p class="text-ink-soft mt-2 text-sm">{{ event.description }}</p>
+            </div>
+
+            <ng-container *ngTemplateOutlet="actions; context: { $implicit: event }" />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="text-ink-muted mt-4 text-sm">
+        Nothing coming up. Add an event to put one on the website.
+      </p>
+    }
+  </section>
+
+  @if (past().length) {
+    <details class="mt-10">
+      <summary
+        class="text-ink-soft inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold"
+      >
+        {{ past().length }} past {{ past().length === 1 ? 'event' : 'events' }}
+        <span class="text-ink-muted font-normal">· no longer on the website</span>
+      </summary>
+      <ul class="mt-3 flex flex-col gap-2">
+        @for (event of past(); track event.eventId) {
+          <li
+            class="border-line flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-4 py-3"
+          >
+            <span class="text-ink-muted w-28 shrink-0 text-sm tabular-nums">
+              {{ event.date | date: 'd MMM y' }}
+            </span>
+            <span class="min-w-0 flex-1 basis-40 font-medium">{{ event.title }}</span>
+            <ng-container *ngTemplateOutlet="actions; context: { $implicit: event }" />
+          </li>
+        }
+      </ul>
+    </details>
+  }
 } @else if (!error()) {
   <div
-    class="border-line-strong mt-8 rounded-2xl border border-dashed bg-surface/60 px-6 py-16 text-center"
+    class="border-line-strong bg-surface/60 mt-8 rounded-2xl border border-dashed px-6 py-16 text-center"
   >
-    <span
-      class="bg-blue-50 text-blue-600 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
-    >
+    <span class="icon-tile mx-auto h-14 w-14 rounded-2xl">
       <app-icon name="calendar" [size]="26" />
     </span>
-    <h2 class="font-sans mt-4 text-xl font-semibold">No events yet</h2>
-    <p class="text-ink-soft mt-2">
-      Add your first one and it will appear on the website immediately.
+    <h2 class="mt-4 font-sans text-xl font-semibold">No events yet</h2>
+    <p class="text-ink-soft mx-auto mt-2 max-w-md">
+      Add your first one. Regular clubs go in once with how often they meet, and one-off events go
+      in with their date.
     </p>
+    <button type="button" (click)="startAdding()" class="btn-primary mt-6">
+      <app-icon name="plus" [size]="18" />
+      Add an event
+    </button>
   </div>
 }

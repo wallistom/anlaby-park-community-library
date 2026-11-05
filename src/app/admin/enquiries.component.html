@@ -1,14 +1,15 @@
 <h1 class="text-3xl font-bold">Enquiries</h1>
-<p class="text-ink-soft mt-2">
-  Everything submitted through the website. Mark items as you deal with them so other trustees know
-  where things stand.
+<p class="text-ink-soft mt-2 max-w-2xl">
+  Everything sent through the website's forms: room hire requests, offers to volunteer, and messages
+  from the Contact page. Mark each one as you deal with it, so other trustees know where things
+  stand.
 </p>
 
 <div role="group" aria-label="Choose a type of enquiry" class="mt-8 flex flex-wrap gap-2">
   @for (tab of tabs; track tab.value) {
     <button
       type="button"
-      (click)="activeTab.set(tab.value); expandedId.set(null)"
+      (click)="switchTab(tab.value)"
       [attr.aria-pressed]="activeTab() === tab.value"
       [class]="activeTab() === tab.value ? 'pill-on' : 'pill-off'"
     >
@@ -22,28 +23,34 @@
               : 'bg-orange-100 text-orange-900'
           "
         >
-          {{ newCounts()[tab.value] }}
+          {{ newCounts()[tab.value] }} new
         </span>
       }
     </button>
   }
 </div>
 
-@if (error()) {
-  <div class="mt-6 alert-danger" role="alert">
+@if (loadError()) {
+  <div class="alert-danger mt-6" role="alert">
     <app-icon name="info" [size]="20" />
     <div>
-      <p class="font-semibold">Something went wrong</p>
+      <p class="font-semibold">We could not load the enquiries</p>
       <p class="mt-1 text-sm">
-        The API may not be deployed yet, or your session may have expired. Try signing out and back
-        in.
+        Check your connection and reload the page. If it keeps happening, sign out and back in.
       </p>
     </div>
   </div>
 }
 
+@if (updateError()) {
+  <div class="alert-danger mt-6" role="alert">
+    <app-icon name="info" [size]="20" />
+    <p class="text-sm">We could not update that one. Please try again.</p>
+  </div>
+}
+
 @if (loading()) {
-  <div class="mt-6 h-5 w-56 skeleton"></div>
+  <div class="skeleton mt-6 h-5 w-56"></div>
   <ul class="mt-4 flex flex-col gap-3" aria-hidden="true">
     @for (row of [1, 2, 3, 4, 5]; track row) {
       <li class="card flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
@@ -55,14 +62,31 @@
   </ul>
   <p class="sr-only" aria-live="polite">Loading enquiries</p>
 } @else {
-  <p class="text-ink-muted mt-6 text-sm" aria-live="polite">
-    {{ rows().length }} in total, {{ newCount() }} not yet picked up.
-  </p>
+  <div class="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+    <p class="text-ink-muted text-sm" aria-live="polite">
+      @if (rows().length === 0) {
+        Nothing in this list yet.
+      } @else {
+        {{ counts().new }} new · {{ counts().inProgress }} in progress · {{ counts().done }} done
+      }
+    </p>
+    @if (counts().done > 0) {
+      <label class="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm font-medium">
+        <input
+          type="checkbox"
+          class="accent-blue-700 h-5 w-5"
+          [checked]="showDone()"
+          (change)="showDone.set($any($event.target).checked)"
+        />
+        Show the ones marked done
+      </label>
+    }
+  </div>
 
-  @if (rows().length > 0) {
+  @if (visibleRows().length > 0) {
     <ul class="mt-4 flex flex-col gap-3">
-      @for (row of rows(); track row.id) {
-        <li class="border-line overflow-hidden rounded-2xl border bg-surface">
+      @for (row of visibleRows(); track row.id) {
+        <li class="border-line bg-surface overflow-hidden rounded-2xl border">
           <button
             type="button"
             (click)="toggle(row.id)"
@@ -79,13 +103,7 @@
                     : 'bg-line text-ink-soft'
               "
             >
-              {{
-                row.status === 'in_progress'
-                  ? 'In progress'
-                  : row.status === 'new'
-                    ? 'New'
-                    : 'Closed'
-              }}
+              {{ statusLabels[row.status] }}
             </span>
 
             <span class="font-sans font-semibold">{{ row.name }}</span>
@@ -125,6 +143,12 @@
                       </dd>
                     </div>
                   }
+                  <div>
+                    <dt class="text-ink-muted text-xs tracking-wide uppercase">Sent</dt>
+                    <dd class="text-ink mt-0.5 font-medium">
+                      {{ row.submittedAt | date: 'EEEE d MMMM y, HH:mm' }}
+                    </dd>
+                  </div>
                   @for (detail of row.details; track detail.label) {
                     <div>
                       <dt class="text-ink-muted text-xs tracking-wide uppercase">
@@ -137,38 +161,49 @@
 
                 @if (row.body) {
                   <div class="border-line mt-5 border-t pt-5">
-                    <p class="text-ink-muted text-xs tracking-wide uppercase">Message</p>
+                    <p class="text-ink-muted text-xs tracking-wide uppercase">Their message</p>
                     <p class="text-ink mt-2 leading-relaxed whitespace-pre-line">
                       {{ row.body }}
                     </p>
                   </div>
                 }
 
-                <div class="border-line mt-5 flex flex-wrap gap-2 border-t pt-5">
-                  <button
-                    type="button"
-                    (click)="setStatus(row, 'new')"
-                    [disabled]="row.status === 'new'"
-                    class="border-line-strong hover:bg-surface rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
-                  >
-                    Mark as new
-                  </button>
-                  <button
-                    type="button"
-                    (click)="setStatus(row, 'in_progress')"
-                    [disabled]="row.status === 'in_progress'"
-                    class="border-line-strong hover:bg-surface rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
-                  >
-                    I'm dealing with this
-                  </button>
-                  <button
-                    type="button"
-                    (click)="setStatus(row, 'closed')"
-                    [disabled]="row.status === 'closed'"
-                    class="bg-navy-800 hover:bg-blue-700 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-40"
-                  >
-                    Mark as done
-                  </button>
+                <div class="border-line mt-5 flex flex-wrap items-center gap-2 border-t pt-5">
+                  <a [href]="mailto(row)" class="btn-secondary btn-sm">
+                    <app-icon name="mail" [size]="16" />
+                    Reply by email
+                  </a>
+                  <span
+                    class="border-line mx-1 hidden h-6 border-l sm:block"
+                    aria-hidden="true"
+                  ></span>
+                  @if (row.status !== 'in_progress') {
+                    <button
+                      type="button"
+                      (click)="setStatus(row, 'in_progress')"
+                      class="btn-secondary btn-sm"
+                    >
+                      I'm dealing with this
+                    </button>
+                  }
+                  @if (row.status !== 'closed') {
+                    <button
+                      type="button"
+                      (click)="setStatus(row, 'closed')"
+                      class="btn-primary btn-sm"
+                    >
+                      <app-icon name="check" [size]="16" />
+                      Mark as done
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      (click)="setStatus(row, 'new')"
+                      class="btn-secondary btn-sm"
+                    >
+                      Reopen
+                    </button>
+                  }
                 </div>
               </div>
             </div>
@@ -176,17 +211,29 @@
         </li>
       }
     </ul>
-  } @else if (!error()) {
+  } @else if (rows().length > 0) {
     <div
-      class="border-line-strong mt-4 rounded-2xl border border-dashed bg-surface/60 px-6 py-16 text-center"
+      class="border-line-strong bg-surface/60 mt-4 rounded-2xl border border-dashed px-6 py-12 text-center"
     >
-      <span
-        class="bg-blue-50 text-blue-600 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
-      >
+      <span class="icon-tile mx-auto h-14 w-14 rounded-2xl">
+        <app-icon name="checkCircle" [size]="26" />
+      </span>
+      <h2 class="mt-4 font-sans text-xl font-semibold">All done</h2>
+      <p class="text-ink-soft mt-2">
+        Everything in this list has been dealt with. Tick “Show the ones marked done” to see them.
+      </p>
+    </div>
+  } @else if (!loadError()) {
+    <div
+      class="border-line-strong bg-surface/60 mt-4 rounded-2xl border border-dashed px-6 py-16 text-center"
+    >
+      <span class="icon-tile mx-auto h-14 w-14 rounded-2xl">
         <app-icon name="inbox" [size]="26" />
       </span>
-      <h2 class="font-sans mt-4 text-xl font-semibold">Nothing here yet</h2>
-      <p class="text-ink-soft mt-2">Submissions from the website will appear here.</p>
+      <h2 class="mt-4 font-sans text-xl font-semibold">Nothing here yet</h2>
+      <p class="text-ink-soft mt-2">
+        When somebody fills in a form on the website, it will appear here.
+      </p>
     </div>
   }
 }

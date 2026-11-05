@@ -410,7 +410,8 @@
 
   .chip-neutral,
   .chip-accent,
-  .chip-success {
+  .chip-success,
+  .chip-danger {
     @apply inline-block rounded-full px-3 py-1 text-xs font-semibold;
   }
 
@@ -424,6 +425,10 @@
 
   .chip-success {
     @apply bg-success-soft text-success;
+  }
+
+  .chip-danger {
+    @apply bg-danger-soft text-danger;
   }
 
   .segmented {
@@ -565,12 +570,17 @@
   }
 
   .alert,
-  .alert-danger {
+  .alert-danger,
+  .alert-success {
     @apply flex items-start gap-3 rounded-xl border p-4;
   }
 
   .alert-danger {
     @apply border-danger-line bg-danger-soft text-danger;
+  }
+
+  .alert-success {
+    @apply border-success-line bg-success-soft text-success;
   }
 }
 

@@ -130,7 +130,7 @@ export class SignInComponent implements AfterViewInit {
   protected retry(): void {
     void this.auth.verifyTrustee(true).then((isTrustee) => {
       if (isTrustee) {
-        void this.router.navigate(['/admin/enquiries']);
+        void this.router.navigate(['/admin/dashboard']);
       }
     });
   }
@@ -142,7 +142,7 @@ export class SignInComponent implements AfterViewInit {
       }
       void this.auth.verifyTrustee().then((isTrustee) => {
         if (isTrustee) {
-          void this.router.navigate(['/admin/enquiries']);
+          void this.router.navigate(['/admin/dashboard']);
         }
       });
     });

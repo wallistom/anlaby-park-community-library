@@ -73,13 +73,14 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        redirectTo: 'enquiries',
-        pathMatch: 'full',
+        canActivate: [adminGuard],
+        title: 'Overview — Trustee area',
+        loadComponent: () => import('./admin/overview.component').then((m) => m.OverviewComponent),
       },
       {
         path: 'events',
         canActivate: [adminGuard],
-        title: 'Manage events — Trustee area',
+        title: 'Events — Trustee area',
         loadComponent: () =>
           import('./admin/manage-events.component').then((m) => m.ManageEventsComponent),
       },

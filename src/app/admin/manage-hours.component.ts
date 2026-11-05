@@ -17,7 +17,7 @@ import {
   SiteNotice,
   formatTime,
 } from '../core/opening-hours.model';
-import { toIso } from '../core/calendar';
+import { fromIso, toIso } from '../core/calendar';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -26,6 +26,17 @@ const NEW_DAY_CLOSES = '12:30';
 
 interface PatternRow extends OpeningDayPattern {
   name: string;
+}
+
+function longDate(iso: string): string {
+  return (
+    fromIso(iso)?.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }) ?? iso
+  );
 }
 
 @Component({
@@ -51,7 +62,19 @@ export class ManageHoursComponent {
   );
   protected readonly notice = signal<SiteNotice>({ ...this.hours.settings().notice });
 
+  /** What was last loaded or saved, so unsaved edits can be spotted and undone. */
+  private readonly baseline = signal('');
   private seeded = false;
+
+  private readonly snapshot = computed(() =>
+    JSON.stringify({
+      pattern: this.pattern(),
+      exceptions: this.exceptions(),
+      notice: this.notice(),
+    }),
+  );
+
+  protected readonly dirty = computed(() => this.ready() && this.snapshot() !== this.baseline());
 
   protected readonly upcomingExceptions = computed(() =>
     this.exceptions()
@@ -71,14 +94,25 @@ export class ManageHoursComponent {
         return;
       }
       this.seeded = true;
-      this.pattern.set(this.readPattern());
-      this.exceptions.set(structuredClone(this.hours.settings().exceptions));
-      this.notice.set({ ...this.hours.settings().notice });
+      this.seed();
     });
   }
 
   protected preview(day: PatternRow): string {
     return day.closed ? 'Closed' : `${formatTime(day.opensAt)} – ${formatTime(day.closesAt)}`;
+  }
+
+  /** The exception as the public will read it. */
+  protected exceptionPreview(entry: OpeningException): string {
+    const when =
+      entry.from === entry.to
+        ? longDate(entry.from)
+        : `${longDate(entry.from)} to ${longDate(entry.to)}`;
+    const hours = entry.closed
+      ? 'Closed'
+      : `Open ${formatTime(entry.opensAt)} – ${formatTime(entry.closesAt)}`;
+    const reason = entry.reason.trim();
+    return `${hours}, ${when}${reason ? ` — ${reason}` : ''}`;
   }
 
   protected setClosed(dayIndex: number, closed: boolean): void {
@@ -142,6 +176,12 @@ export class ManageHoursComponent {
     this.exceptions.update((list) => list.filter((entry) => entry.exceptionId !== id));
   }
 
+  protected discard(): void {
+    this.seed();
+    this.state.set('idle');
+    this.error.set(null);
+  }
+
   protected save(): void {
     const settings: LibrarySettings = {
       pattern: this.pattern().map(({ name: _name, ...day }) => day),
@@ -149,11 +189,15 @@ export class ManageHoursComponent {
       notice: this.notice(),
     };
 
-    const missingReason = settings.exceptions.find((entry) => !entry.reason.trim());
-    if (missingReason) {
+    if (settings.exceptions.some((entry) => !entry.reason.trim())) {
       this.error.set(
-        'Every exception needs a reason — it is shown on the website so people know why.',
+        'Each different day needs a reason, because the website shows it so people know why.',
       );
+      this.state.set('error');
+      return;
+    }
+    if (settings.notice.active && !settings.notice.title.trim()) {
+      this.error.set('The notice needs a heading, or switch it off.');
       this.state.set('error');
       return;
     }
@@ -163,14 +207,21 @@ export class ManageHoursComponent {
     this.api.saveSettings(settings).subscribe({
       next: (saved) => {
         this.hours.apply(saved);
-        this.exceptions.set(structuredClone(saved.exceptions));
+        this.seed();
         this.state.set('saved');
       },
       error: () => {
         this.state.set('error');
-        this.error.set('We could not save that. Please try again.');
+        this.error.set('We could not save that. Check your connection and try again.');
       },
     });
+  }
+
+  private seed(): void {
+    this.pattern.set(this.readPattern());
+    this.exceptions.set(structuredClone(this.hours.settings().exceptions));
+    this.notice.set({ ...this.hours.settings().notice });
+    this.baseline.set(this.snapshot());
   }
 
   private readPattern(): PatternRow[] {
